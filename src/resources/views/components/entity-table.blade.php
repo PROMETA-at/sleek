@@ -4,13 +4,13 @@
 
 <table {{ $attributes->class(['table', 'table-striped', 'table-hover', "table-$size" => !!$size]) }}>
     <thead>
-        <th>
+        <tr>
             @foreach($columns as $column)
-                <td>
+                <th>
                     {{ $column['label'] }}
-                </td>
+                </th>
             @endforeach
-        </th>
+        </tr>
     </thead>
     <tbody>
         @foreach($entities as $entity)

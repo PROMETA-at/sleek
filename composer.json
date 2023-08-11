@@ -1,0 +1,17 @@
+{
+    "name": "prometa/sleek",
+    "description": "Bootstrap UI components with aggressive defaults",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Prometa\\Sleek\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "PROMETA"
+        }
+    ],
+    "require": {}
+}

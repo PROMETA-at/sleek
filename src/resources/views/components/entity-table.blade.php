@@ -16,7 +16,7 @@
         @foreach($entities as $entity)
         <tr @isset($row){{ $row->attributes }}@endisset>
             @foreach($columns as $column)
-                @php($value = $entity->{$column['accessor']})
+                @php($value = data_get($entity, $column['accessor']))
                 @php($columnSlotName = \Illuminate\Support\Str::camel("column-{$column['name']}"))
                 @php($columnSlotAttributesName = \Illuminate\Support\Str::camel("column-{$column['name']}-attributes"))
                 <td @isset(${$columnSlotAttributesName}){{ ${$columnSlotAttributesName}->attributes }}@endisset>

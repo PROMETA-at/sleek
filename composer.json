@@ -13,5 +13,8 @@
             "name": "PROMETA"
         }
     ],
-    "require": {}
+    "require": {
+        "php": "^8.0",
+        "laravel/framework": ">=7.0.0"
+    }
 }

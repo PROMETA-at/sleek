@@ -1,5 +1,8 @@
 <?php namespace Prometa\Sleek\Views\Components;
 
+use Illuminate\Routing\UrlGenerator;
+use Illuminate\Support\Facades\Route;
+
 class EntityTable extends \Illuminate\View\Component
 {
     public function __construct(
@@ -7,7 +10,8 @@ class EntityTable extends \Illuminate\View\Component
         public $entities = [],
         public $columns = [],
         public $size = null,
-        public $responsive = false
+        public $responsive = false,
+        public bool|array $sortable = false
     ) {
         // The key is used to automagically resolve translation entries and routes for detail and edit views.
         //  If not set, we try to resolve a reasonable key from the current route name.
@@ -52,8 +56,17 @@ class EntityTable extends \Illuminate\View\Component
             if (! isset($value['label'])) {
                 $value['label'] = __("{$this->key}.fields.{$value['name']}");
             }
+
+            $value['sortable'] = $this->sortable === true || (is_array($this->sortable) && in_array($value['name'], $this->sortable));
         });
         $this->columns = array_values($this->columns);
+    }
+
+    public function currentRoute($extra = []) {
+        /** @var UrlGenerator $urlGenerator */
+        $urlGenerator = app(UrlGenerator::class);
+        $currentRoute = Route::getCurrentRoute();
+        return $urlGenerator->toRoute($currentRoute, array_merge($currentRoute->parameters(), request()->query(), $extra), false);
     }
 
     public function render()

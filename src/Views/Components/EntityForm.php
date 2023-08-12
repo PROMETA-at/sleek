@@ -8,10 +8,17 @@ class EntityForm extends \Illuminate\View\Component
 {
     public function __construct(
         public $action = '',
+        public $key = null,
         public $model = null,
         public $fields = [],
         public $method = null
     ) {
+        // The key is used to automagically resolve translation entries and routes for detail and edit views.
+        //  If not set, we try to resolve a reasonable key from the current route name.
+        if (! $this->key) {
+            $this->key = explode('.', request()->route()->getName())[0] ?? null;
+        }
+
         if (! $this->method) {
             $this->method = !!$model ? 'put' : 'post';
         }
@@ -35,7 +42,7 @@ class EntityForm extends \Illuminate\View\Component
         }
 
         if (! isset($data['type'])) $data['type'] = 'text';
-        if (! isset($data['label'])) $data['label'] = __("$key.fields.{$data['name']}");
+        if (! isset($data['label'])) $data['label'] = __("$this->key.fields.{$data['name']}");
 
         if (! isset($data['attributes'])) $data['attributes'] = new ComponentAttributeBag([]);
         if (! $data['attributes'] instanceof ComponentAttributeBag)

@@ -1,6 +1,6 @@
-<?php
+<?php namespace Prometa\Sleek\Views\Components;
 
-namespace Prometa\Sleek\Views\Components;
+use function Prometa\Sleek\resolveKeyFromContext;
 
 class FormField extends \Illuminate\View\Component
 {
@@ -11,10 +11,12 @@ class FormField extends \Illuminate\View\Component
         public $label = null,
         public $value = null
     ) {
+        $modelFromContext = static::factory()->getConsumableComponentData('model');
+
         // The key is used to automagically resolve translation entries and routes for detail and edit views.
         //  If not set, we try to resolve a reasonable key from the current route name.
         if (! $this->key) {
-            $this->key = explode('.', request()->route()->getName())[0] ?? null;
+            $this->key = resolveKeyFromContext($modelFromContext);
         }
 
         if (! $this->label) $this->label = __("$this->key.fields.$name");

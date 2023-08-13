@@ -2,6 +2,7 @@
 
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Route;
+use function Prometa\Sleek\resolveKeyFromContext;
 
 class EntityTable extends \Illuminate\View\Component
 {
@@ -16,7 +17,7 @@ class EntityTable extends \Illuminate\View\Component
         // The key is used to automagically resolve translation entries and routes for detail and edit views.
         //  If not set, we try to resolve a reasonable key from the current route name.
         if (! $this->key) {
-            $this->key = explode('.', request()->route()->getName())[0] ?? null;
+            $this->key = resolveKeyFromContext($this->entities[0] ?? null);
         }
 
         array_walk($this->columns, function (&$value, $key) {

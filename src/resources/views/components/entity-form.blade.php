@@ -1,11 +1,7 @@
 <x-sleek::form :method="$method" :action="$action" {{ $attributes }}>
     @foreach($fields as $fieldData)
-        <x-sleek::form-field
-            :name="$fieldData['name']"
-            :type="$fieldData['type']"
-            :label="$fieldData['label']"
-            :attributes="$fieldData['attributes']"
-        />
+        @component('Prometa\Sleek\Views\Components\FormField', 'sleek::form-field', $fieldData)
+        @endcomponentClass
     @endforeach
 
     {{ $slot }}

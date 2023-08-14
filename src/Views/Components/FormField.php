@@ -9,7 +9,8 @@ class FormField extends \Illuminate\View\Component
         public $key = null,
         public $type = 'text',
         public $label = null,
-        public $value = null
+        public $value = null,
+        public $options = null
     ) {
         $modelFromContext = static::factory()->getConsumableComponentData('model');
 

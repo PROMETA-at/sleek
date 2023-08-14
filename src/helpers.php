@@ -12,7 +12,7 @@ if (! function_exists('resolveKeyFromContext')) {
 
         $currentRoute = Route::getCurrentRoute();
         if ($routeName = $currentRoute->getName()) {
-            return substr($routeName, 0, strrpos($routeName, '.') || strlen($routeName));
+            return substr($routeName, 0, strrpos($routeName, '.') ?: strlen($routeName));
         }
 
         if (($action = $currentRoute->getActionName()) != "Closure") {

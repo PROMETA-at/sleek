@@ -29,7 +29,7 @@ class EntityForm extends \Illuminate\View\Component
         //  path and method.
         if (! $this->action) {
             if ($this->method == 'put' || $this->method == 'patch')
-                $this->action = route("{$this->key}.update");
+                $this->action = route("{$this->key}.update", [$this->model]);
             else if ($this->method == 'post')
                 $this->action = route("{$this->key}.store");
         }

@@ -7,12 +7,12 @@
                id="{{ $name }}"
                name="{{ $name }}"
                value="{{ old($name) ?? $value ?? optional($model, fn ($x) => $x->{$name}) ?? '' }}"
-               {{ $attributes->class(['form-control', 'invalid' => isset($errors->{$name})]) }}
+               {{ $attributes->class(['form-control', 'invalid' => $errors->has($name)]) }}
         />
     @else
         <select id="{{ $name }}"
                 name="{{ $name }}"
-                {{ $attributes->class(['form-select', 'invalid' => isset($errors->{$name})]) }}
+                {{ $attributes->class(['form-select', 'invalid' => $errors->has($name)]) }}
         >
             @isset($options)
                 @php($selectedValue = old($name) ?? $value ?? optional($model, fn ($x) => $x->{$name}) ?? '')
@@ -26,7 +26,7 @@
     @endunless
     @error($name)
         <div class="invalid-feedback">
-            {{ $errors[$name] }}
+            {{ $message }}
         </div>
     @enderror
 </div>

@@ -16,7 +16,8 @@ if (! function_exists('resolveKeyFromContext')) {
         }
 
         if (($action = $currentRoute->getActionName()) != "Closure") {
-            $controllerName = explode('@', $action)[0];
+            $controllerClassName = explode('@', $action)[0];
+            $controllerName = array_slice(explode('\\', $controllerClassName), -1)[0];
             return Str::snake(str_replace('Controller', '', $controllerName), '-');
         }
     }

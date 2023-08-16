@@ -11,14 +11,27 @@ class EntityForm extends \Illuminate\View\Component
     public function __construct(
         public $action = null,
         public $key = null,
+        public $i18nPrefix = null,
+        public $routePrefix = null,
         public $model = null,
         public $fields = [],
         public $method = null
     ) {
         // The key is used to automagically resolve translation entries and routes for detail and edit views.
         //  If not set, we try to resolve a reasonable key from the current route name.
+        //  We do not pass the model here, because we need a proper key including routing information.
         if (! $this->key) {
             $this->key = resolveKeyFromContext($this->model);
+        }
+
+        // If we need to guess the i18nPrefix, we take the last part of the key, as this is usually the "model" key,
+        //  since we expect translations to be grouped by model.
+        if (! $this->i18nPrefix) {
+            $this->i18nPrefix = array_slice(explode('.', $this->key), -1)[0];
+        }
+
+        if (! $this->routePrefix) {
+            $this->routePrefix = $this->key;
         }
 
         if (! $this->method) {
@@ -29,9 +42,9 @@ class EntityForm extends \Illuminate\View\Component
         //  path and method.
         if (! $this->action) {
             if ($this->method == 'put' || $this->method == 'patch')
-                $this->action = route("{$this->key}.update", [$this->model]);
+                $this->action = route("$this->routePrefix.update", [$this->model]);
             else if ($this->method == 'post')
-                $this->action = route("{$this->key}.store");
+                $this->action = route("$this->routePrefix.store");
         }
 
         array_walk($this->fields, function (&$value, $key) {
@@ -47,7 +60,7 @@ class EntityForm extends \Illuminate\View\Component
             }
 
             if (!isset($value['type'])) $value['type'] = 'text';
-            if (!isset($value['label'])) $value['label'] = __("$this->key.fields.{$value['name']}");
+            if (!isset($value['label'])) $value['label'] = __("$this->i18nPrefix.fields.{$value['name']}");
 
             if (!isset($value['attributes'])) $value['attributes'] = new ComponentAttributeBag([]);
             if (!$value['attributes'] instanceof ComponentAttributeBag)

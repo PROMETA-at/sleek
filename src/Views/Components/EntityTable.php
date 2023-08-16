@@ -8,6 +8,7 @@ class EntityTable extends \Illuminate\View\Component
 {
     public function __construct(
         public $key = null,
+        public $i18nPrefix = null,
         public $entities = [],
         public $columns = [],
         public $size = null,
@@ -18,6 +19,10 @@ class EntityTable extends \Illuminate\View\Component
         //  If not set, we try to resolve a reasonable key from the current route name.
         if (! $this->key) {
             $this->key = resolveKeyFromContext($this->entities[0] ?? null);
+        }
+
+        if (! $this->i18nPrefix) {
+            $this->i18nPrefix = array_slice(explode('.', $this->key), -1)[0];
         }
 
         array_walk($this->columns, function (&$value, $key) {
@@ -55,7 +60,7 @@ class EntityTable extends \Illuminate\View\Component
             }
 
             if (! isset($value['label'])) {
-                $value['label'] = __("{$this->key}.fields.{$value['name']}");
+                $value['label'] = __("{$this->i18nPrefix}.fields.{$value['name']}");
             }
 
             $value['sortable'] = $this->sortable === true || (is_array($this->sortable) && in_array($value['name'], $this->sortable));

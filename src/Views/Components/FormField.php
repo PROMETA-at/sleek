@@ -7,6 +7,7 @@ class FormField extends \Illuminate\View\Component
     public function __construct(
         public $name,
         public $key = null,
+        public $i18nPrefix = null,
         public $type = 'text',
         public $label = null,
         public $value = null,
@@ -20,7 +21,11 @@ class FormField extends \Illuminate\View\Component
             $this->key = resolveKeyFromContext($modelFromContext);
         }
 
-        if (! $this->label) $this->label = __("$this->key.fields.$name");
+        if (! $this->i18nPrefix) {
+            $this->i18nPrefix = array_slice(explode('.', $this->key), -1)[0];
+        }
+
+        if (! $this->label) $this->label = __("$this->i18nPrefix.fields.$name");
     }
 
     /**

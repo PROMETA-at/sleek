@@ -1,29 +1,20 @@
 <?php namespace Prometa\Sleek\Views\Components;
 
-use function Prometa\Sleek\resolveKeyFromContext;
-
 class FormField extends \Illuminate\View\Component
 {
+    use ResolvesPrefixesFromContext;
+
     public function __construct(
-        public $name,
-        public $key = null,
-        public $i18nPrefix = null,
-        public $type = 'text',
-        public $label = null,
-        public $value = null,
-        public $options = null
+        public string  $name,
+        public ?string $key = null,
+        public ?string $i18nPrefix = null,
+        public string  $type = 'text',
+        public ?string $label = null,
+        public mixed   $value = null,
+        public ?array  $options = null
     ) {
         $modelFromContext = static::factory()->getConsumableComponentData('model');
-
-        // The key is used to automagically resolve translation entries and routes for detail and edit views.
-        //  If not set, we try to resolve a reasonable key from the current route name.
-        if (! $this->key) {
-            $this->key = resolveKeyFromContext($modelFromContext);
-        }
-
-        if (! $this->i18nPrefix) {
-            $this->i18nPrefix = array_slice(explode('.', $this->key), -1)[0];
-        }
+        $this->resolvePrefixesFromContext($modelFromContext);
 
         if (! $this->label) $this->label = __("$this->i18nPrefix.fields.$name");
     }

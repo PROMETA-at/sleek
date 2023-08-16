@@ -2,37 +2,23 @@
 
 namespace Prometa\Sleek\Views\Components;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\View\ComponentAttributeBag;
-use function is_string;
-use function Prometa\Sleek\resolveKeyFromContext;
 
 class EntityForm extends \Illuminate\View\Component
 {
+    use ResolvesPrefixesFromContext;
+
     public function __construct(
-        public $action = null,
-        public $key = null,
-        public $i18nPrefix = null,
-        public $routePrefix = null,
-        public $model = null,
-        public $fields = [],
-        public $method = null
+        public ?string  $action = null,
+        public ?string  $key = null,
+        public ?string  $i18nPrefix = null,
+        public ?string  $routePrefix = null,
+        public ?Model   $model = null,
+        public iterable $fields = [],
+        public ?string  $method = null
     ) {
-        // The key is used to automagically resolve translation entries and routes for detail and edit views.
-        //  If not set, we try to resolve a reasonable key from the current route name.
-        //  We do not pass the model here, because we need a proper key including routing information.
-        if (! $this->key) {
-            $this->key = resolveKeyFromContext($this->model);
-        }
-
-        // If we need to guess the i18nPrefix, we take the last part of the key, as this is usually the "model" key,
-        //  since we expect translations to be grouped by model.
-        if (! $this->i18nPrefix) {
-            $this->i18nPrefix = array_slice(explode('.', $this->key), -1)[0];
-        }
-
-        if (! $this->routePrefix) {
-            $this->routePrefix = $this->key;
-        }
+        $this->resolvePrefixesFromContext($this->model);
 
         if (! $this->method) {
             $this->method = !!$model ? 'put' : 'post';

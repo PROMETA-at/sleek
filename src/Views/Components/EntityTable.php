@@ -2,28 +2,21 @@
 
 use Illuminate\Routing\UrlGenerator;
 use Illuminate\Support\Facades\Route;
-use function Prometa\Sleek\resolveKeyFromContext;
 
 class EntityTable extends \Illuminate\View\Component
 {
+    use ResolvesPrefixesFromContext;
+
     public function __construct(
-        public $key = null,
-        public $i18nPrefix = null,
-        public $entities = [],
-        public $columns = [],
-        public $size = null,
-        public $responsive = false,
+        public ?string  $key = null,
+        public ?string  $i18nPrefix = null,
+        public iterable $entities = [],
+        public iterable $columns = [],
+        public ?string  $size = null,
+        public bool     $responsive = false,
         public bool|array $sortable = false
     ) {
-        // The key is used to automagically resolve translation entries and routes for detail and edit views.
-        //  If not set, we try to resolve a reasonable key from the current route name.
-        if (! $this->key) {
-            $this->key = resolveKeyFromContext($this->entities[0] ?? null);
-        }
-
-        if (! $this->i18nPrefix) {
-            $this->i18nPrefix = array_slice(explode('.', $this->key), -1)[0];
-        }
+        $this->resolvePrefixesFromContext($this->entities[0] ?? null);
 
         array_walk($this->columns, function (&$value, $key) {
             $originalIsArray = is_array($value);

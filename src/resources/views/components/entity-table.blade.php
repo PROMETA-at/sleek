@@ -1,5 +1,8 @@
 @if ($entities instanceof \Illuminate\Contracts\Pagination\Paginator)
-    {{ $entities->links() }}
+    {{ $entities->appends([
+        'sort-by' => request('sort-by'),
+        'sort-direction' => request('sort-direction')
+    ])->links() }}
 @endif
 
 <table {{ $attributes->class(['table', 'table-striped', 'table-hover', "table-$size" => !!$size]) }}>

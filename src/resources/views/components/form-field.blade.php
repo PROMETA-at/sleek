@@ -3,6 +3,12 @@
 <div class="mb-2">
     <label for="{{ $name }}" {{ ($label->attributes ?? new \Illuminate\View\ComponentAttributeBag())->class(['form-label']) }}>{{ $label }}</label>
     @unless($type == 'select')
+        @php
+            $value = old($name) ?? $value ?? optional($model, fn ($x) => $x->{$name}) ?? '';
+            if ($value instanceof DateTime) {
+                $value = $value->format('Y-m-d');
+            }
+        @endphp
         <input type="{{ $type }}"
                id="{{ $name }}"
                name="{{ $name }}"

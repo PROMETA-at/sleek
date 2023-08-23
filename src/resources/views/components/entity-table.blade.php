@@ -11,10 +11,13 @@
             @foreach($columns as $column)
                 <th>
                     @if($column['sortable'])
-                        <a href="{{ $currentRoute([
-                            'sort-by' => $column['name'],
-                            'sort-direction' => (!request('sort-direction') || request('sort-by') !== $column['name'] || request('sort-direction') === 'desc') ? 'asc' : 'desc'
-                        ]) }}">
+                        <a
+                            href="{{ $currentRoute([
+                                'sort-by' => $column['name'],
+                                'sort-direction' => (!request('sort-direction') || request('sort-by') !== $column['name'] || request('sort-direction') === 'desc') ? 'asc' : 'desc'
+                            ]) }}"
+                            hx-boost="true"
+                        >
                             {{ $column['label'] }}
                             @if(!(request('sort-direction') && request('sort-by') === $column['name']))
                                 <i class="bi bi-chevron-expand"></i>
@@ -38,14 +41,13 @@
             @foreach($columns as $column)
                 @php($value = data_get($entity, $column['accessor']))
                 @php($columnSlotName = \Illuminate\Support\Str::camel("column-{$column['name']}"))
-                @php($columnSlotAttributesName = \Illuminate\Support\Str::camel("column-{$column['name']}-attributes"))
-                <td @isset(${$columnSlotAttributesName}){{ ${$columnSlotAttributesName}->attributes }}@endisset>
-                    @isset(${$columnSlotName})
+                @isset(${$columnSlotName})
+                    <td {{ ${$columnSlotName}->attributes }}>
                         {{ ${$columnSlotName}($value, $entity) }}
-                    @else
-                        {{ $value }}
-                    @endisset
-                </td>
+                    </td>
+                @else
+                    <td>{{ $value }}</td>
+                @endisset
             @endforeach
         </tr>
         @endforeach

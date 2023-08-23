@@ -25,7 +25,7 @@ class BladeCompiler extends \Illuminate\View\Compilers\BladeCompiler
     protected function compileSlot($expression)
     {
         $isScoped = preg_match('/^(?<args>.*) bind ?\((?<bindings>.+)\)( use ?\((?<uses>.+)\))?/', substr($expression, 1, -1), $matches);
-        static::$slotStack[] = compact('isScoped');
+
 
         if ($isScoped) {
             list($slot, $attributes) = explode(',', $matches['args']);
@@ -35,12 +35,12 @@ class BladeCompiler extends \Illuminate\View\Compilers\BladeCompiler
             $uses[] = '$__env';
             $uses = implode(', ', $uses);
 
-            $attributesSlot = "'".trim($slot, "'")."Attributes'";
+            static::$slotStack[] = compact('isScoped', 'attributes');
             return implode('\n', [
-                "<?php \$__env->slot({$attributesSlot}, null,{$attributes}); \$__env->endSlot(); ?>",
                 "<?php \$__env->slot({$slot}, function ({$matches['bindings']}) use ({$uses}) { ?>"
             ]);
         } else {
+            static::$slotStack[] = compact('isScoped');
             return "<?php \$__env->slot{$expression}; ?>";
         }
     }
@@ -55,7 +55,7 @@ class BladeCompiler extends \Illuminate\View\Compilers\BladeCompiler
         $slotMeta = array_pop(static::$slotStack);
 
         return $slotMeta['isScoped']
-            ? "<?php }); ?>"
+            ? "<?php }, ${slotMeta['attributes']}); ?>"
             : '<?php $__env->endSlot(); ?>';
     }
 }

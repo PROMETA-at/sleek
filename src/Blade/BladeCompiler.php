@@ -24,8 +24,7 @@ class BladeCompiler extends \Illuminate\View\Compilers\BladeCompiler
 
     protected function compileSlot($expression)
     {
-        $isScoped = preg_match('/^(?<args>.*) bind ?\((?<bindings>.+)\)( use ?\((?<uses>.+)\))?/', substr($expression, 1, -1), $matches);
-
+        $isScoped = preg_match('/^(?<args>.*) bind ?\((?<bindings>.*?)\)( use ?\((?<uses>.*?)\))?/', substr($expression, 1, -1), $matches);
 
         if ($isScoped) {
             list($slot, $attributes) = explode(',', $matches['args']);

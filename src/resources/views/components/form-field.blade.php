@@ -3,16 +3,10 @@
 <div class="mb-2">
     <label for="{{ $name }}" {{ ($label->attributes ?? new \Illuminate\View\ComponentAttributeBag())->class(['form-label']) }}>{{ $label }}</label>
     @unless($type == 'select')
-        @php
-            $value = old($name) ?? $value ?? optional($model, fn ($x) => $x->{$name}) ?? '';
-            if ($value instanceof DateTime) {
-                $value = $value->format('Y-m-d');
-            }
-        @endphp
         <input type="{{ $type }}"
                id="{{ $name }}"
                name="{{ $name }}"
-               value="{{ old($name) ?? $value ?? optional($model, fn ($x) => $x->{$name}) ?? '' }}"
+               value="{{ $value }}"
                {{ $attributes->class(['form-control', 'is-invalid' => $errors->has($name)]) }}
         />
     @else
@@ -21,7 +15,7 @@
                 {{ $attributes->class(['form-select', 'is-invalid' => $errors->has($name)]) }}
         >
             @isset($options)
-                @php($selectedValue = old($name) ?? $value ?? optional($model, fn ($x) => $x->{$name}) ?? '')
+                @php($selectedValue = $value)
                 @foreach($options as $value => $label)
                     <option value="{{ $value }}" {{ $value == $selectedValue ? 'selected' : '' }}>{{ $label }}</option>
                 @endforeach

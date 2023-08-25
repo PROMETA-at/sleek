@@ -79,7 +79,9 @@ class ComponentTagCompiler extends \Illuminate\View\Compilers\ComponentTagCompil
             if ($isScoped) {
                 $bindings = trim($attributes['bind'], "'");
                 unset($attributes['bind']);
-                return " @slot({$name}, [".$this->attributesToString($attributes)."] bind ({$bindings}))";
+                $uses = trim($attributes['use'] ?? '', "'");
+                unset($attributes['use']);
+                return " @slot({$name}, [".$this->attributesToString($attributes)."] bind ({$bindings})" . (strlen($uses) ? " use ({$uses})" : '') . ')';
             } else return " @slot({$name}, null, [".$this->attributesToString($attributes).']) ';
         }, $value);
 

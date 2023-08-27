@@ -1,18 +1,33 @@
 @aware(['model'])
 
 <div class="mb-2">
-    <label for="{{ $name }}" {{ ($label->attributes ?? new \Illuminate\View\ComponentAttributeBag())->class(['form-label']) }}>{{ $label }}</label>
-    @unless($type == 'select')
-        <input type="{{ $type }}"
-               id="{{ $name }}"
-               name="{{ $name }}"
-               value="{{ $value }}"
-               {{ $attributes->class(['form-control', 'is-invalid' => $errors->has($name)]) }}
-        />
-    @else
+    @if($label && !$fieldHasInlineLabel())
+        <label for="{{ $name }}" {{ ($label->attributes ?? new \Illuminate\View\ComponentAttributeBag())->class(['form-label']) }}>{{ $label }}</label>
+    @endif
+
+    @if($type === 'textarea')
+        <textarea id="{{ $name }}" name="{{ $name }}" {{ $attributes->class(['form-control', 'is-invalid' => $errors->has($name)]) }}>{{ $value }}</textarea>
+    @elseif($type === 'checkbox')
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="{{ $name }}" name="{{ $name }}" {{ $value ? 'checked' : '' }}>
+            <label class="form-check-label" for="{{ $name }}">
+                {{ $label }}
+            </label>
+        </div>
+    @elseif($type === 'radio-group')
+        @php($selectedValue = $value)
+        @foreach($options as $value => $label)
+            <div class="form-check">
+                <input class="form-check-input" type="radio" name="{{ $name }}" id="{{ $name }}-{{ $value }}" value="{{ $value }}" {{ $value === $selectedValue ? 'checked' : '' }}>
+                <label class="form-check-label" for="{{ $name }}-{{ $value }}">
+                    {{ $label }}
+                </label>
+            </div>
+        @endforeach
+    @elseif($type === 'select')
         <select id="{{ $name }}"
                 name="{{ $name }}"
-                {{ $attributes->class(['form-select', 'is-invalid' => $errors->has($name)]) }}
+            {{ $attributes->class(['form-select', 'is-invalid' => $errors->has($name)]) }}
         >
             @isset($options)
                 @php($selectedValue = $value)
@@ -23,7 +38,15 @@
                 {{ $slot }}
             @endisset
         </select>
-    @endunless
+    @else
+        <input type="{{ $type }}"
+               id="{{ $name }}"
+               name="{{ $name }}"
+               value="{{ $value }}"
+               {{ $attributes->class(['form-control', 'is-invalid' => $errors->has($name)]) }}
+        />
+    @endif
+
     @error($name)
         <div class="invalid-feedback">
             {{ $message }}

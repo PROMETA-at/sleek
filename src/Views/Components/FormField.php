@@ -20,7 +20,7 @@ class FormField extends \Illuminate\View\Component
         $modelFromContext = static::factory()->getConsumableComponentData('model');
         $this->resolvePrefixesFromContext($modelFromContext);
 
-        if (! $this->label) $this->label = __("$this->i18nPrefix.fields.$name");
+        if ($this->label === null) $this->label = __("$this->i18nPrefix.fields.$name");
 
         if (! $this->accessor) $this->accessor = $name;
         // Sometimes, a field might need to reference nested data, as part of a JSON-field for example.
@@ -41,5 +41,9 @@ class FormField extends \Illuminate\View\Component
     public function render()
     {
         return view('sleek::components.form-field');
+    }
+
+    public function fieldHasInlineLabel() {
+        return $this->type === 'checkbox';
     }
 }

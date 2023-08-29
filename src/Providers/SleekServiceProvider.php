@@ -1,5 +1,6 @@
 <?php namespace Prometa\Sleek\Providers;
 
+use Illuminate\Pagination\Paginator;
 use Prometa\Sleek\Blade\BladeCompiler;
 use Prometa\Sleek\Views\Factory;
 
@@ -32,5 +33,6 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->publishes([
             __DIR__.'/../resources/views' => resource_path('views/vendor/sleek'),
         ]);
+        Paginator::defaultView('sleek::pagination');
     }
 }

@@ -1,7 +1,8 @@
 @if ($entities instanceof \Illuminate\Contracts\Pagination\Paginator)
     {{ $entities->appends([
         'sort-by' => request('sort-by'),
-        'sort-direction' => request('sort-direction')
+        'sort-direction' => request('sort-direction'),
+        'pageSize' => request('pageSize')
     ])->links() }}
 @endif
 

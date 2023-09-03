@@ -2,6 +2,7 @@
 
 use Illuminate\Pagination\Paginator;
 use Prometa\Sleek\Blade\BladeCompiler;
+use Prometa\Sleek\HandleQueryParametersMixin;
 use Prometa\Sleek\Views\Factory;
 
 class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
@@ -34,5 +35,8 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
             __DIR__.'/../resources/views' => resource_path('views/vendor/sleek'),
         ]);
         Paginator::defaultView('sleek::pagination');
+
+        \Illuminate\Database\Eloquent\Builder::mixin(new HandleQueryParametersMixin);
+        \Illuminate\Database\Query\Builder::mixin(new HandleQueryParametersMixin);
     }
 }

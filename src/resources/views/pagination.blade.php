@@ -25,7 +25,7 @@
     </ul>
   </div>
 
-  <div class="flex-fill d-flex align-items-center gap-2">
+  <div class="flex-fill d-flex align-items-center gap-2 mb-2">
     <span class="small text-muted">
       {!! __('pagination.showing') !!}
       <span class="fw-semibold">{{ $paginator->firstItem() }}</span>
@@ -79,7 +79,7 @@
       @foreach([10, 20, 50, 100] as $pageSize)
         <a
           @if($pageSize !== $paginator->perPage())
-            href="{{ request()->fullUrlWithQuery(['page-size' => $pageSize]) }}"
+            href="{{ request()->fullUrlWithQuery(['page-size' => $pageSize, 'page' => null]) }}"
           @else
             aria-current="page"
           @endif

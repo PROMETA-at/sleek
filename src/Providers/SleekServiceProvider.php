@@ -38,5 +38,6 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
 
         \Illuminate\Database\Eloquent\Builder::mixin(new HandleQueryParametersMixin);
         \Illuminate\Database\Query\Builder::mixin(new HandleQueryParametersMixin);
+        \Illuminate\Database\Eloquent\Relations\Relation::mixin(new HandleQueryParametersMixin);
     }
 }

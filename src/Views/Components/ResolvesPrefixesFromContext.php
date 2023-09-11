@@ -12,7 +12,7 @@ trait ResolvesPrefixesFromContext
     public ?string $i18nPrefix;
     public ?string $routePrefix;
 
-    private function resolvePrefixesFromContext(Model $model = null) {
+    private function resolvePrefixesFromContext($model = null) {
         // The key is used to automagically resolve translation entries and routes for detail and edit views.
         //  If not set, we try to resolve a reasonable key from the current route name.
         //  We do not pass the model here, because we need a proper key including routing information.

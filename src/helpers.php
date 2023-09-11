@@ -14,8 +14,8 @@ if (! function_exists('resolveKeyFromContext')) {
 }
 
 if (! function_exists('resolveI18nPrefixFromModel')) {
-    function resolveI18nPrefixFromModel(Model $model = null) {
-        if ($model)
+    function resolveI18nPrefixFromModel($model = null) {
+        if ($model instanceof Model)
             return str_replace('_', '-', Str::snake($model->getTable(), '-'));
         return null;
     }

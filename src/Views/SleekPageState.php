@@ -7,6 +7,23 @@ class SleekPageState
   private $menuDataProvider = null;
   private $authenticationProvider = null;
   private $documentProvider = null;
+  private $languageProvider = null;
+
+  public function language(callable|array $data): static
+  {
+      $factory =
+          is_callable($data)
+              ? $data
+              : fn () => $data;
+
+      $this->languageProvider = $factory;
+
+      return $this;
+  }
+
+  public function resolveLanguage(){
+      return $this->resolve($this->languageProvider, []);
+  }
 
   public function authentication(callable|array $data): static
   {
@@ -55,7 +72,6 @@ class SleekPageState
   }
 
   private function resolve(callable|null $providerFn, mixed $defaultValue = null) {
-      //dd(($providerFn));
     return app()->call($providerFn ?? fn () => $defaultValue);
   }
 }

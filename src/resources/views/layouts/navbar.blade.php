@@ -34,6 +34,15 @@
           </li>
         @endif
       </ul>
+      @if(isset($__data['sleek::language']))
+        <select class="form-select w-auto" onchange="window.location.href=`/lang/${this.value}`">
+          @foreach($__data['sleek::language'] as $key => $lang)
+            <option value="{{ $key }}" {{ App::getLocale() == $key ? 'selected' : '' }}>
+              {{ $lang }}
+            </option>
+          @endforeach
+        </select>
+      @endif
     </div>
   </div>
 </nav>

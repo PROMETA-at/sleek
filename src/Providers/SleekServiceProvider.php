@@ -3,8 +3,10 @@
 use Illuminate\Pagination\Paginator;
 use Prometa\Sleek\Blade\BladeCompiler;
 use Prometa\Sleek\HandleQueryParametersMixin;
+use prometa\Sleek\Middleware\SetLocale;
 use Prometa\Sleek\Views\Factory;
 use Prometa\Sleek\Views\SleekPageState;
+use Illuminate\Support\Facades\Route;
 
 class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
 {
@@ -34,15 +36,23 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
       view()->share('sleek::navbar', $pageState->resolveMenuStructure());
       view()->share('sleek::authentication', $pageState->resolveAuthentication());
       view()->share('sleek::document', $pageState->resolveDocument());
+      view()->share('sleek::language', $pageState->resolveLanguage());
     });
+
 
     \Illuminate\Database\Eloquent\Builder::mixin(new HandleQueryParametersMixin);
     \Illuminate\Database\Query\Builder::mixin(new HandleQueryParametersMixin);
     \Illuminate\Database\Eloquent\Relations\Relation::mixin(new HandleQueryParametersMixin);
+
+    $this->booted(function () {
+        Route::middleware('web')->group(__DIR__.'/../routes/web.php');
+    });
   }
 
-  public function boot(): void
+  public function boot(\Illuminate\Contracts\Http\Kernel $kernel): void
   {
+    $kernel->appendMiddlewareToGroup('web', \Prometa\Sleek\Middleware\LocaleMiddleware::class);
+
     $this->loadViewsFrom(__DIR__.'/../resources/views', 'sleek');
     $this->publishes([
         __DIR__.'/../resources/views' => resource_path('views/vendor/sleek'),

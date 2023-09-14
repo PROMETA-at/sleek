@@ -5,7 +5,24 @@ namespace Prometa\Sleek\Views;
 class SleekPageState
 {
   private $menuDataProvider = null;
+  private $authenticationProvider = null;
   private $documentProvider = null;
+
+  public function authentication(callable|array $data): static
+  {
+      $factory =
+          is_callable($data)
+              ? $data
+              : fn () => $data;
+
+      $this->authenticationProvider = $factory;
+
+      return $this;
+  }
+
+  public function resolveAuthentication(){
+      return $this->resolve($this->authenticationProvider, []);
+  }
 
   public function menu(callable|array $data): static {
     $factory =
@@ -38,6 +55,7 @@ class SleekPageState
   }
 
   private function resolve(callable|null $providerFn, mixed $defaultValue = null) {
+      //dd(($providerFn));
     return app()->call($providerFn ?? fn () => $defaultValue);
   }
 }

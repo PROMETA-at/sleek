@@ -19,6 +19,21 @@
           </li>
         @endforeach
       </ul>
+      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+        @if(Auth::check())
+          <li class="nav-item">
+            <a class="nav-link" href="{{isset($__data['sleek::authentication']['logout']) ? $__data['sleek::authentication']['logout'] : route('logout') }}">
+              <i class="bi bi-box-arrow-in-left"></i> Logout
+            </a>
+          </li>
+        @else
+          <li class="nav-item">
+            <a class="nav-link" href="{{isset($__data['sleek::authentication']['login']) ? $__data['sleek::authentication']['login'] : route('login') }}">
+              <i class="bi bi-box-arrow-in-right"></i> Login
+            </a>
+          </li>
+        @endif
+      </ul>
     </div>
   </div>
 </nav>

@@ -6,8 +6,6 @@ Sleek is a Laravel package that provides a variety of useful features for your L
 1. [Installation](#installation)
 2. [Page Layout](#page-layout)
 3. [UI Components](#ui-components)
-4. [Contributing](#contributing)
-5. [License](#license)
 
 ## Installation
 
@@ -17,7 +15,7 @@ To get started, install Sleek via the Composer package manager:
 composer require prometa/sleek
 ```
 
-## Basic usage
+## Page Layout
 ### Layout
 #### Creating a Simple Layout
 
@@ -33,6 +31,36 @@ With this package, you can easily create a simple layout for your application. F
 #### Including Assets
 The `assets` section allows you to include any required assets for your layout.
 
+#### Using Your Custom Layout
+Once your custom layout is created, you can use it in all of your Blade files like so:
+```html
+@extends('layouts.app')
+
+@section('body')
+    <your html/blade>
+@endsection
+```
+### Navbar Configuration
+
+The package comes with a simple, yet configurable, navbar that supports features like Login/Logout and a language selector. You can configure it to better suit the needs of your application.
+
+#### Login/Lougut
+By default, the routes named Login and Logout are used. You can define the routes in the `AppServiceProvider` as follows.
+```php
+Sleek::authentication(['login' => '/login', 'logout' => '/logout']);
+```
+#### Navbar Elements
+To insert elements in the menu bar, this can also be done in the `AppServiceProvider`.
+```php
+Sleek::menu([['route' => '/users', 'label' => 'Benutzer']]);
+```
+
+#### Language Switcher
+The package has a built-in language switcher. You only need to define the available languages in the AppServiceProvider. For example:
+```php
+Sleek::language(['de' => 'Deutsch', 'en' => 'Englisch']);
+```
+## UI Components
 ### Entity-Table
 
 You can easily create a table with data using the `entity-table` component. The table also supports pagination out-of-the-box.
@@ -52,11 +80,9 @@ Here's a basic example:
 
 In the above example, the `entities` parameter is set to `$users`, which means the table will display data from the `$users` collection. The `columns` parameter specifies that the fields `'name', 'email', 'actions'` will be shown.
 
-## Advanced Features
-### Entity-Table
 #### Customize the Table
 You can further customise each field of the table, e.g. by adjusting the formatting in each table cell using slots, or you can display other fields.
-##### Customizing Cell Format
+#### Customizing Cell Format
 To customize the format of a specific column, you can use the slot with the column name. This is very useful for date fields to display in the format of your region. Here's an example that customizes the `name` column:
 
 ```html
@@ -65,7 +91,7 @@ To customize the format of a specific column, you can use the slot with the colu
 </x-slot:column-name>
 ```
 This changes the way names are displayed in the `name` column
-##### Accessing Full Model Data
+#### Accessing Full Model Data
 
 You can also pass the entire model as an argument to the slot to have access to all of its fields. This can be especially useful for incorporating model IDs into routes for actions like deleting an entry. Here's how you can do it:
 

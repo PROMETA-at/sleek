@@ -83,6 +83,10 @@ In the above example, the `entities` parameter is set to `$users`, which means t
 #### Customize the Table
 You can further customise each field of the table, e.g. by adjusting the formatting in each table cell using slots, or you can display other fields.
 #### Customizing Cell Format
+It is important that the name of the column is used in the slot.
+`<x-slot:column-<columnName> />`
+
+
 To customize the format of a specific column, you can use the slot with the column name. This is very useful for date fields to display in the format of your region. Here's an example that customizes the `name` column:
 
 ```html
@@ -92,7 +96,6 @@ To customize the format of a specific column, you can use the slot with the colu
 ```
 This changes the way names are displayed in the `name` column
 #### Accessing Full Model Data
-
 You can also pass the entire model as an argument to the slot to have access to all of its fields. This can be especially useful for incorporating model IDs into routes for actions like deleting an entry. Here's how you can do it:
 
 ```html
@@ -104,3 +107,49 @@ You can also pass the entire model as an argument to the slot to have access to 
 
 As you can see, this allows you to access fields that may not even be displayed in the table, such as the model's ID.
 
+### Entity-Form
+The Entity Form feature allows you to easily create forms for editing existing entities and create forms. Instead of manually specifying each field and its value, you can simply pass the entity and the list of fields to display. The CSRF Token will be set automatically. You can also set the Method to PUT, POST, DELETE, GET
+```html
+<x-sleek::entity-form :fields="['name' , 'email']">
+    <button type="submit" class="btn btn-primary">Submit</button>
+</x-sleek::entity-form>
+```
+This example would create a form with two field name and email.
+#### Customize Route
+You can easily change the route of the form by defining the action.
+```html
+<x-sleek::entity-form action="{{route('profil.update',$user)}}"
+    :fields="['name','email']"
+>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</x-sleek::entity-form>
+```
+#### Use a model
+If you give the model attribute a user model, for example, then the fields are automatically filled with the existing data. This way you can easily develop e.g. a user edit page. 
+```html
+<x-sleek::entity-form action="{{route('profil.update',$user)}}"
+    :model="$user"
+    :fields="['name','email']"
+>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</x-sleek::entity-form>
+```
+### Form
+The component helps to create a form. You can specify `PUT`, `POST`, `GET`, `DELETE` as mehtod and define an action. The CSRF token is set automatically.
+#### Usage
+You can either use the `form-field` components to create fields. The most common types are supported. It is also possible to create fields with normal HTML and use the form component only as a help for the CSRF token and the method
+```html
+<x-sleek::form method="PUT" action="{{route('user.update',$user->id)}}">
+    <x-sleek::form-field name="desc"></x-sleek::form-field>
+    <button type="submit" class="btn btn-primary">{{__('messages.assign_import')}}</button>
+</x-sleek::form>
+```
+
+It is also possible to create select fields.
+```html
+<x-sleek::form-field name="user" type="select" >
+    @foreach($users as $user)
+        <option value="{{$user->id}}">{{$user->name}}</option>
+    @endforeach
+</x-sleek::form-field>
+```

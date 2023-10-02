@@ -7,7 +7,7 @@
     @include('sleek::layouts.navbar')
   @endif
 
-  <div class="{{ $__data['sleek::fluid'] ?? true ? 'container-fluid' : 'container' }}">
+  <div class="{{ $__data['sleek::fluid'] ?? true ? 'container-fluid' : 'container' }} mt-2">
     @yield('body')
   </div>
 @overwrite

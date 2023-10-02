@@ -22,7 +22,7 @@ class SleekPageState
   }
 
   public function resolveLanguage(){
-      return $this->resolve($this->languageProvider, []);
+      return $this->resolve($this->languageProvider);
   }
 
   public function authentication(callable|array $data): static

@@ -39,7 +39,7 @@
                 @php($value = data_get($entity, $column['accessor']))
                 @php($columnSlotName = \Illuminate\Support\Str::camel("column-{$column['name']}"))
                 @isset(${$columnSlotName})
-                    <td {{ ${$columnSlotName}->attributes }}>
+                    <td {{ ${$columnSlotName}->attributes }} {{ ${$columnSlotName}->attributes }}>
                         {{ ${$columnSlotName}($value, $entity) }}
                     </td>
                 @else
@@ -51,3 +51,67 @@
     </tbody>
 
 </table>
+<style>
+    @media screen and (max-width: 600px) {
+        table {
+            border: 0;
+        }
+
+        table caption {
+            font-size: 1.3em;
+        }
+
+        table thead {
+            border: none;
+            clip: rect(0 0 0 0);
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            padding: 0;
+            position: absolute;
+            width: 1px;
+        }
+
+        table tr {
+            border-bottom: 3px solid #ddd;
+            display: block;
+            margin-bottom: .625em;
+        }
+
+        table td {
+            border-bottom: 1px solid #ddd;
+            display: block;
+            font-size: .8em;
+            text-align: right;
+        }
+
+        table td::before {
+            /*
+            * aria-label has no advantage, it won't be read inside a table
+            content: attr(aria-label);
+            */
+            content: attr(data-label);
+            float: left;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        table td:last-child {
+            border-bottom: 0;
+        }
+    }
+</style>
+<script>
+    $(document).ready(function() {
+        $("table tr").each(function() {
+            var thLabels = [];
+            $("thead th").each(function() {
+                thLabels.push($(this).text());
+            });
+
+            $(this).find("td").each(function(index) {
+                $(this).attr("data-label", thLabels[index]);
+            });
+        });
+    });
+</script>

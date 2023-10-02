@@ -1,6 +1,6 @@
 <nav class="d-flex justify-items-center justify-content-between">
-  <div class="d-flex justify-content-between flex-fill d-sm-none">
-    <ul class="pagination">
+  <div class="d-flex justify-content-between flex-fill d-sm-none" id="nextPreviousButton">
+    <ul class="pagination" >
       {{-- Previous Page Link --}}
       @if ($paginator->onFirstPage())
         <li class="page-item disabled" aria-disabled="true">
@@ -8,14 +8,14 @@
         </li>
       @else
         <li class="page-item">
-          <a class="page-link" href="{{ $paginator->previousPageUrl() }}" rel="prev">@lang('pagination.previous')</a>
+          <a id="nextButton" class="page-link" href="{{ $paginator->previousPageUrl() }}" rel="prev">@lang('pagination.previous')</a>
         </li>
       @endif
 
       {{-- Next Page Link --}}
       @if ($paginator->hasMorePages())
         <li class="page-item">
-          <a class="page-link" href="{{ $paginator->nextPageUrl() }}" rel="next">@lang('pagination.next')</a>
+          <a id="prevoiusButton" class="page-link" href="{{ $paginator->nextPageUrl() }}" rel="next">@lang('pagination.next')</a>
         </li>
       @else
         <li class="page-item disabled" aria-disabled="true">
@@ -26,7 +26,7 @@
   </div>
 
   <div class="flex-fill d-flex align-items-center gap-2 mb-2">
-    <span class="small text-muted">
+    <span class="small text-muted" id="showingResults">
       {!! __('pagination.showing') !!}
       <span class="fw-semibold">{{ $paginator->firstItem() }}</span>
       {!! __('pagination.to') !!}
@@ -36,7 +36,7 @@
       {!! __('pagination.results') !!}
     </span>
 
-    <div class="btn-group">
+    <div class="btn-group" id="pageLinkButtons">
       {{-- Previous Page Link --}}
       @if ($paginator->onFirstPage())
         <a class="btn btn-outline-primary disabled" aria-disabled="true" aria-label="@lang('pagination.previous')">&lsaquo;</a>
@@ -71,10 +71,10 @@
       @endif
     </div>
 
-    <span class="small text-muted ms-auto">
+    <span class="small text-muted ms-auto" id="text">
       @lang('pagination.items-per-page')
     </span>
-    <div class="btn-group">
+    <div class="btn-group" id="itemSelect">
 
       @foreach([10, 20, 50, 100] as $pageSize)
         <a
@@ -91,3 +91,28 @@
     </div>
   </div>
 </nav>
+<style>
+    @media screen and (max-width: 600px) {
+        #pageLinkButtons, #itemSelect, #text {
+            display: none !important;
+        }
+
+        #showingResults {
+            justify-content: flex-end !important;
+            align-items: flex-end !important;
+            width: 100%;
+        }
+
+        #nextPreviousButton {
+            justify-content: flex-start !important;
+            align-items: flex-start !important;
+            width: 100%;
+        }
+
+        .flex-fill.d-flex.align-items-center.gap-2.mb-2 {
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+    }
+</style>

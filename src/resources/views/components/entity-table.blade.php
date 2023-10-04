@@ -27,7 +27,6 @@
                     @else
                         {{ $column['label'] }}
                     @endif
-
                 </th>
             @endforeach
         </tr>
@@ -39,11 +38,11 @@
                 @php($value = data_get($entity, $column['accessor']))
                 @php($columnSlotName = \Illuminate\Support\Str::camel("column-{$column['name']}"))
                 @isset(${$columnSlotName})
-                    <td {{ ${$columnSlotName}->attributes }} {{ ${$columnSlotName}->attributes }}>
+                    <td data-label="{{$column['label'] ?? ''}}" {{ ${$columnSlotName}->attributes }} {{ ${$columnSlotName}->attributes }}>
                         {{ ${$columnSlotName}($value, $entity) }}
                     </td>
                 @else
-                    <td>{{ $value }}</td>
+                    <td data-label="{{$column['label'] ?? ''}}">{{ $value }}</td>
                 @endisset
             @endforeach
         </tr>
@@ -101,17 +100,3 @@
         }
     }
 </style>
-<script>
-    $(document).ready(function() {
-        $("table tr").each(function() {
-            var thLabels = [];
-            $("thead th").each(function() {
-                thLabels.push($(this).text());
-            });
-
-            $(this).find("td").each(function(index) {
-                $(this).attr("data-label", thLabels[index]);
-            });
-        });
-    });
-</script>

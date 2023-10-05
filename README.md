@@ -61,6 +61,31 @@ The package has a built-in language switcher. You only need to define the availa
 Sleek::language(['de' => 'Deutsch', 'en' => 'Englisch']);
 ```
 ## UI Components
+### Alert
+#### Usage
+If you use the Sleek layout, the alert is automatically included and ready to use. Otherwise you 
+can add it to your own layout or to an individual page.
+```html
+<x-sleek::alert />
+```
+After that you can use and trigger the alert in your controller.
+```php
+use Prometa\Sleek\Facades\Sleek;
+
+Sleek::raise('Your message goes here', 'danger');
+```
+The first parameter is the message and the second is the type.
+The icons displayed are dependent on the type. 
+
+The following types are supported:
+- `danger`
+- `warning`
+- `info`
+- `success`
+- `primary`
+- `secondary`
+- `light`
+- `dark`
 ### Entity-Table
 
 You can easily create a table with data using the `entity-table` component. The table also supports pagination out-of-the-box.

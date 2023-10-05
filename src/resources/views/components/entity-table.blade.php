@@ -1,7 +1,6 @@
 @if ($entities instanceof \Illuminate\Contracts\Pagination\Paginator)
     {{ $entities->withQueryString()->links() }}
 @endif
-
 <table {{ $attributes->class(['table', 'table-striped', 'table-hover', "table-$size" => !!$size]) }}>
     <thead>
         <tr>

@@ -9,6 +9,11 @@ class SleekPageState
   private $documentProvider = null;
   private $languageProvider = null;
 
+  public function raise($message, $type = 'info')
+  {
+      session()->flash('sleek_alert', ['message' => $message, 'type' => $type]);
+  }
+
   public function language(callable|array $data): static
   {
       $factory =

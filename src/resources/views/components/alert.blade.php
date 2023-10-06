@@ -25,37 +25,44 @@
             border-radius: 0.375rem 0.375rem 0rem  0rem;
             top: -.5px;
             left: 0;
-            transition: width 4s linear;
+            //transition: width 4s linear;
+            animation: progress-bar 4s linear;
+            width: 100%;
+        }
+
+        .alert-custom:hover .progress-bar {
+            animation-play-state: paused;
+        }
+
+        @keyframes progress-bar {
+            from {
+                width: 0;
+            }
         }
     </style>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const alert = document.getElementById("customAlert");
-            const progressBar = document.getElementById("progress-bar");
+            const alertNode = document.querySelector('#customAlert')
+            const alert = new bootstrap.Alert(alertNode)
+
             let timeout;
             let startTime;
             let remaining = 4000;
 
             function startTimeout(duration) {
                 startTime = Date.now();
-                progressBar.style.transition = `width ${duration}ms linear`;
-                progressBar.style.width = "100%";
 
                 timeout = setTimeout(() => {
-                    alert.style.display = "none";
+                    alert.close()
                 }, duration);
             }
 
-            alert.addEventListener("mouseenter", () => {
+            alertNode.addEventListener("mouseenter", () => {
                 clearTimeout(timeout);
                 remaining -= Date.now() - startTime;
-                const width = getComputedStyle(progressBar).width; //returns px value not percentage
-
-                progressBar.style.transition = "none";
-                progressBar.style.width = width;
             });
 
-            alert.addEventListener("mouseleave", () => {
+            alertNode.addEventListener("mouseleave", () => {
                 startTimeout(remaining);
             });
 

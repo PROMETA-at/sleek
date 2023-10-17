@@ -19,21 +19,25 @@
           </li>
         @endforeach
       </ul>
-      <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-        @if(Auth::check())
-          <li class="nav-item">
-            <a class="nav-link" href="{{ $__data['sleek::authentication']['logout'] ?? route('logout') }}">
-              <i class="bi bi-box-arrow-in-left"></i> Logout
-            </a>
-          </li>
-        @else
-          <li class="nav-item">
-            <a class="nav-link" href="{{ $__data['sleek::authentication']['login'] ?? route('login') }}">
-              <i class="bi bi-box-arrow-in-right"></i> Login
-            </a>
-          </li>
-        @endif
-      </ul>
+
+      @unless(($__data['sleek::authentication'] ?? null) === false)
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          @if(Auth::check())
+            <li class="nav-item">
+              <a class="nav-link" href="{{ $__data['sleek::authentication']['logout'] ?? route('logout') }}">
+                <i class="bi bi-box-arrow-in-left"></i> Logout
+              </a>
+            </li>
+          @else
+            <li class="nav-item">
+              <a class="nav-link" href="{{ $__data['sleek::authentication']['login'] ?? route('login') }}">
+                <i class="bi bi-box-arrow-in-right"></i> Login
+              </a>
+            </li>
+          @endif
+        </ul>
+      @endunless
+
       @if(isset($__data['sleek::language']))
         <select class="form-select w-auto" onchange="window.location.href=`/lang/${this.value}`">
           @foreach($__data['sleek::language'] as $key => $lang)

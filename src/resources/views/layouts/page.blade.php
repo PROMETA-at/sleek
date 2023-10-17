@@ -6,7 +6,7 @@
   @else
     @include('sleek::layouts.navbar')
   @endif
-  <x-sleek::alert></x-sleek::alert>
+  <x-sleek::alert :position="$__data['sleek::alert']['position'] ?? 'center'"></x-sleek::alert>
   <div class="{{ $__data['sleek::fluid'] ?? true ? 'container-fluid' : 'container' }} mt-2">
     @yield('body')
   </div>

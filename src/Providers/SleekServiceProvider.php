@@ -37,6 +37,7 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
       view()->share('sleek::authentication', $pageState->resolveAuthentication());
       view()->share('sleek::document', $pageState->resolveDocument());
       view()->share('sleek::language', $pageState->resolveLanguage());
+      view()->share('sleek::alert', $pageState->resolveAlert());
     });
 
 

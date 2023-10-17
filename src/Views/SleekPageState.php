@@ -8,6 +8,7 @@ class SleekPageState
   private $authenticationProvider = null;
   private $documentProvider = null;
   private $languageProvider = null;
+  private $alertProvider = null;
 
   public function raise($message, $type = 'info')
   {
@@ -30,7 +31,7 @@ class SleekPageState
       return $this->resolve($this->languageProvider);
   }
 
-  public function authentication(callable|array $data): static
+  public function authentication(callable|array|false $data): static
   {
       $factory =
           is_callable($data)
@@ -74,6 +75,20 @@ class SleekPageState
 
   public function resolveDocument() {
     return $this->resolve($this->documentProvider);
+  }
+
+  public function alert(callable|array $data): static {
+    $factory =
+      is_callable($data)
+        ? $data
+        : fn () => $data;
+
+    $this->alertProvider = $factory;
+    return $this;
+  }
+
+  public function resolveAlert() {
+    return $this->resolve($this->alertProvider, []);
   }
 
   private function resolve(callable|null $providerFn, mixed $defaultValue = null) {

@@ -16,10 +16,10 @@
         }
 
         .sleek--alert.center, .sleek--alert.top-left, .sleek--alert.top-right {
-            top: 3rem;
+            top: 4rem;
         }
         .sleek--alert.bottom, .sleek--alert.bottom-left, .sleek--alert.bottom-right {
-          bottom: 1rem;
+            bottom: 1rem;
         }
 
         .sleek--alert.center, .sleek--alert.bottom {

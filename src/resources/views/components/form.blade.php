@@ -6,7 +6,7 @@
     }
 @endphp
 
-<form method="{{ $method }}" action="{{ $action }}">
+<form method="{{ $method }}" action="{{ $action }}" {{ $attributes }}>
     @isset($formMethod) @method($formMethod) @endisset
     @if(strtolower($method) === 'post') @csrf @endif
     {{ $slot }}

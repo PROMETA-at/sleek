@@ -1,7 +1,7 @@
 @if ($entities instanceof \Illuminate\Contracts\Pagination\Paginator)
     {{ $entities->withQueryString()->links() }}
 @endif
-<table {{ $attributes->class(['table', 'table-striped', 'table-hover', "table-$size" => !!$size]) }}>
+<table {{ $attributes->class(['table', 'table-striped', 'table-hover', 'd-block', "table-$size" => !!$size]) }}>
     <thead>
         <tr>
             @foreach($columns as $column)
@@ -68,6 +68,10 @@
             padding: 0;
             position: absolute;
             width: 1px;
+        }
+
+        table tbody {
+            display: block;
         }
 
         table tr {

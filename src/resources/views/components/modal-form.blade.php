@@ -31,6 +31,7 @@
         display: none;
     }
 </style>
+@once
 <script>
     document.addEventListener('DOMContentLoaded', (event) => {
         if (typeof Alpine === 'undefined') {
@@ -43,3 +44,4 @@
         }
     });
 </script>
+@endonce

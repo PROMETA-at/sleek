@@ -279,3 +279,33 @@ It is also possible to create select fields.
 ```
 
 ### Modal Form
+This component can be used to create a form in a dialogue. The form also uses Alpine.js to deactivate the button after the submit and display a loading spinner.
+
+#### Usage
+```html
+<button data-bs-target="#add-user-modal" data-bs-toggle="modal">User Create</button>
+<x-sleek::modal-form
+    title="User"
+    :action="route('users.store')"
+    method="POST"
+    id="add-user-modal"
+>
+    <x-sleek::form-field type="text" name="name" label="Name"/>
+</x-sleek::modal-form>
+```
+The attributes in the modal form are required. The button to open the dialogue must be linked to the ID of the dialogue.
+To define fields, it is best to use the form-field component.
+#### Customization
+If you want to change the text of the buttons in the dialogue, you can do this as follows.
+```html
+<button data-bs-target="#add-user-modal" data-bs-toggle="modal">User Create</button>
+<x-sleek::modal-form
+    title="User"
+    :action="route('users.store')"
+    method="POST"
+    id="add-user-modal"
+>
+    <x-slot:submit label="Submit" ></x-slot:submit>
+    <x-slot:cancel label="Cancel" ></x-slot:cancel>
+</x-sleek::modal-form>
+```

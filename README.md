@@ -36,7 +36,7 @@ The following things are required to use all functions
 
 - Bootstrap 5
 - Bootstrap Icons
-- Alpine JS
+- Alpine.js
 - HTMX
 
 ## Page Layout
@@ -257,16 +257,8 @@ If you give the model attribute a user model, for example, then the fields are a
 
 The component helps to create a form. You can specify `PUT`, `POST`, `GET`, `DELETE` as mehtod and define an action. The CSRF token is set automatically.
 
-#### Usage
-
-You can either use the `form-field` components to create fields. The most common types are supported. It is also possible to create fields with normal HTML and use the form component only as a help for the CSRF token and the method
-
-```html
-<x-sleek::form method="PUT" action="{{route('user.update',$user->id)}}">
-    <x-sleek::form-field name="desc"></x-sleek::form-field>
-    <button type="submit" class="btn btn-primary">{{__('messages.assign_import')}}</button>
-</x-sleek::form>
-```
+#### Form-Field
+... more soon
 
 It is also possible to create select fields.
 
@@ -278,10 +270,34 @@ It is also possible to create select fields.
 </x-sleek::form-field>
 ```
 
+#### Form-Actions
+With this component you can easily insert a Submit and Cancel button into a form. When using the Sleek Form, the Submit button is deactivated by Alpine.js and the spinner is displayed.
+You can style the component as you wish and also change the label of the buttons.
+
+```html
+<x-sleek::form-actions class="text-end">
+    <x-slot:submit label="Submit" ></x-slot:submit>
+    <x-slot:cancel label="Cancel" ></x-slot:cancel>
+</x-sleek::form-actions>
+```
+
+#### Usage
+
+You can either use the `form-field` components to create fields. The most common types are supported. It is also possible to create fields with normal HTML and use the form component only as a help for the CSRF token and the method
+
+```html
+<x-sleek::form method="PUT" action="{{route('user.update',$user->id)}}">
+    <x-sleek::form-field name="desc"></x-sleek::form-field>
+    <button type="submit" class="btn btn-primary">{{__('messages.assign_import')}}</button>
+</x-sleek::form>
+```
+
 ### Modal Form
+
 This component can be used to create a form in a dialogue. The form also uses Alpine.js to deactivate the button after the submit and display a loading spinner.
 
 #### Usage
+
 ```html
 <button data-bs-target="#add-user-modal" data-bs-toggle="modal">User Create</button>
 <x-sleek::modal-form
@@ -293,10 +309,14 @@ This component can be used to create a form in a dialogue. The form also uses Al
     <x-sleek::form-field type="text" name="name" label="Name"/>
 </x-sleek::modal-form>
 ```
+
 The attributes in the modal form are required. The button to open the dialogue must be linked to the ID of the dialogue.
 To define fields, it is best to use the form-field component.
+
 #### Customization
+
 If you want to change the text of the buttons in the dialogue, you can do this as follows.
+
 ```html
 <button data-bs-target="#add-user-modal" data-bs-toggle="modal">User Create</button>
 <x-sleek::modal-form

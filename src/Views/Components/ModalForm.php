@@ -8,7 +8,11 @@ class ModalForm extends Component
     public function __construct(
         public $action,
         public $method,
-        public $title)
+        public $title,
+        public $formType = 'form',
+        public $model = null,
+        public $fields = null
+    )
     {
     }
 

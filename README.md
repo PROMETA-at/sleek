@@ -280,6 +280,19 @@ You can style the component as you wish and also change the label of the buttons
     <x-slot:cancel label="Cancel" ></x-slot:cancel>
 </x-sleek::form-actions>
 ```
+If you use the Sleek form, it depends on which method you use. Different buttons are displayed depending on the method. You can specify which buttons you want to see in the show array and access and change them via slots
+
+```html
+<x-sleek::form method="DELETE" action="{{route('users.destroy',compact('user'))}}">
+      <x-sleek::form-actions />
+</x-sleek::form>
+```
+The example above will create one Delete Button with a `confirm box`.
+
+```html
+<x-sleek::form-actions :show="['submit','reset','cancel']" />
+```
+The submit button is always displayed differently due to the method.
 
 #### Usage
 

@@ -15,6 +15,7 @@ Sleek is a Laravel package that provides a variety of useful features for your L
   - [Entity-Form](#entity-form)
   - [Form](#form)
   - [Modal-Form](#modal-form)
+- [Example](#example)
 
 ## Installation
 
@@ -342,3 +343,6 @@ If you want to change the text of the buttons in the dialogue, you can do this a
     <x-slot:cancel label="Cancel" ></x-slot:cancel>
 </x-sleek::modal-form>
 ```
+
+## Example
+Here you can find a full CRUD example [Show Code](./EXAMPLE.md)

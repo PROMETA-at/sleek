@@ -1,3 +1,4 @@
+@aware(['method','action'])
 @props(['show' => ['submit']])
 @php
     if (!isset($cancel)) $cancel = new \Illuminate\View\ComponentSlot();
@@ -18,10 +19,43 @@
     @endif
 
     @if(in_array('submit', $show))
-        <button type="submit" class="btn btn-success" :disabled="loading">
-            <span x-show="loading" class="spinner-border spinner-border-sm form-spinner" role="status" aria-hidden="true"></span>
-            {{ $submit->attributes->get('label') ?? __('common.actions.submit') }}
-        </button>
+        @if($method === 'POST')
+            <button type="submit" class="btn btn-success" :disabled="loading">
+                <span x-show="loading" class="spinner-border spinner-border-sm form-spinner" role="status" aria-hidden="true"></span>
+                {{ $submit->attributes->get('label') ?? __('common.actions.submit') }}
+            </button>
+        @elseif($method === 'PUT')
+            <button type="submit" class="btn btn-success" :disabled="loading">
+                <span x-show="loading" class="spinner-border spinner-border-sm form-spinner" role="status" aria-hidden="true"></span>
+                {{ $submit->attributes->get('label') ?? __('common.actions.update') }}
+            </button>
+        @elseif($method === 'DELETE')
+            <!-- TODO: Maybe change the modal ID to something else. the action in a DELETE form should be unique on the page, cause it contains Model ID -->
+            <button type="button" data-bs-target="#{{$action}}" data-bs-toggle="modal" class="btn btn-danger">
+                {{ $submit->attributes->get('label') ?? __('common.actions.delete') }}
+            </button>
+            <div class="modal fade" id="{{$action}}" tabindex="-1" aria-labelledby="confirmModal" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="exampleModalLabel">{{__('common.confirm.title')}}</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-center" style="padding-top: 0px;">
+                            <i class="bi bi-exclamation-octagon" style="color:#ff4141; font-size: 4rem; text-shadow: 2px 2px 4px #a0aec0;"></i>
+                            <div class="mt-2 fs-5">{{__('common.confirm.text')}}</div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{__('common.confirm.close')}}</button>
+                            <button type="submit" class="btn btn-success" :disabled="loading">
+                                <span x-show="loading" class="spinner-border spinner-border-sm form-spinner" role="status" aria-hidden="true"></span>
+                                {{ __('common.confirm.ok') }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endif
     @endif
 </div>
 <style>

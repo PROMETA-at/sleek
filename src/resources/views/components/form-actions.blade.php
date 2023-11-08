@@ -30,11 +30,11 @@
                 {{ $submit->attributes->get('label') ?? __('common.actions.update') }}
             </button>
         @elseif($method === 'DELETE')
-            <!-- TODO: Maybe change the modal ID to something else. the action in a DELETE form should be unique on the page, cause it contains Model ID -->
-            <button type="button" data-bs-target="#{{$action}}" data-bs-toggle="modal" class="btn btn-danger">
+            @php($id = \Illuminate\Support\Str::random(16))
+            <button type="button" data-bs-target="#{{$id}}" data-bs-toggle="modal" class="btn btn-danger">
                 {{ $submit->attributes->get('label') ?? __('common.actions.delete') }}
             </button>
-            <div class="modal fade" id="{{$action}}" tabindex="-1" aria-labelledby="confirmModal" aria-hidden="true">
+            <div class="modal fade" id="{{$id}}" tabindex="-1" aria-labelledby="confirmModal" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">

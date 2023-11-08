@@ -55,6 +55,11 @@
                     </div>
                 </div>
             </div>
+        @else
+            <button type="submit" class="btn btn-success" :disabled="loading">
+                <span x-show="loading" class="spinner-border spinner-border-sm form-spinner" role="status" aria-hidden="true"></span>
+                {{ $submit->attributes->get('label') ?? __('common.actions.submit') }}
+            </button>
         @endif
     @endif
 </div>

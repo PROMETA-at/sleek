@@ -30,7 +30,7 @@
                 {{ $submit->attributes->get('label') ?? __('common.actions.update') }}
             </button>
         @elseif($method === 'DELETE')
-            @php($id = 'sleek-' . \Illuminate\Support\Str::random(16))
+            @php($id = 'sleek-modal-' . \Illuminate\Support\Str::random(16))
             <button type="button" data-bs-target="#{{$id}}" data-bs-toggle="modal" class="btn btn-danger">
                 {{ $submit->attributes->get('label') ?? __('common.actions.delete') }}
             </button>

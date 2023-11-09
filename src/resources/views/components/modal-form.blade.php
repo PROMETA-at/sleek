@@ -5,14 +5,13 @@
     if (!isset($body)) $body = new \Illuminate\View\ComponentSlot();
 @endphp
 <div class="modal fade" {{ $attributes }}>
-    {{$formType}}
     <div {{ $dialog->attributes->class(['modal-dialog', 'modal-dialog-centered'])->style(['height: 90%']) }}>
         <div class="modal-content" style="max-height: 100%; overflow-y: auto">
             <div class="modal-header">
                 <h5 class="modal-title">{{ $title }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <x-dynamic-component component="sleek::{{$formType}}" class="modal-body" :action="$action" :method="$method" :model="$model" :fields="$fields">
+            <x-dynamic-component component="sleek::{{$formType}}" class="modal-body" :action="$action" :method="$method" :model="$model" :fields="$fields" :enctype="$enctype">
                 <div>
                     {{ $slot ?? $body }}
                 </div>

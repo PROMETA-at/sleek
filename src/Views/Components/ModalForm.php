@@ -11,7 +11,8 @@ class ModalForm extends Component
         public $title,
         public $formType = 'form',
         public $model = null,
-        public $fields = null
+        public $fields = null,
+        public $enctype = 'application/x-www-form-urlencoded'
     )
     {
     }

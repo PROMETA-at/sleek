@@ -19,7 +19,7 @@
                 <div class="modal-footer">
                     <button {{ $cancel->attributes->except(['label'])->class(['btn', 'btn-outline-secondary']) }} type="button" data-bs-dismiss="modal">{{ $cancel->attributes->get('label') ?? __('common.actions.cancel') }}</button>
                     <button type="submit" class="btn btn-success" :disabled="loading">
-                        <span x-show="loading" class="spinner-border spinner-border-sm modal-spinner" role="status" aria-hidden="true"></span>
+                        <span x-show="loading" class="spinner-border spinner-border-sm modal-spinner hidden-spinner" role="status" aria-hidden="true"></span>
                         {{ $submit->attributes->get('label') ?? __('common.actions.submit') }}
                     </button>
                 </div>
@@ -27,22 +27,18 @@
         </div>
     </div>
 </div>
+@once
 <style>
     .hidden-spinner{
         display: none;
     }
 </style>
-@once
 <script>
-    document.addEventListener('DOMContentLoaded', (event) => {
-        if (typeof Alpine === 'undefined') {
-            console.log('Alpine.js is not loaded.');
-            document.querySelectorAll('.modal-spinner').forEach(function(spinner) {
-                spinner.classList.add('hidden-spinner');
-            });
-        } else {
-            console.log('Alpine.js is loaded.');
-        }
+    document.addEventListener('alpine:init', () => {
+        console.log('modal-component: alpine.js loaded');
+        document.querySelectorAll('.modal-spinner').forEach(function(spinner) {
+            spinner.classList.remove('hidden-spinner');
+        });
     });
 </script>
 @endonce

@@ -48,7 +48,7 @@
                         <div class="modal-footer">
                             <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">{{__('common.confirm.close')}}</button>
                             <button type="submit" class="btn btn-success" :disabled="loading">
-                                <span x-show="loading" class="spinner-border spinner-border-sm form-spinner" role="status" aria-hidden="true"></span>
+                                <span x-show="loading" class="spinner-border spinner-border-sm form-spinner hidden-spinner" role="status" aria-hidden="true"></span>
                                 {{ __('common.confirm.ok') }}
                             </button>
                         </div>
@@ -57,28 +57,24 @@
             </div>
         @else
             <button type="submit" class="btn btn-success" :disabled="loading">
-                <span x-show="loading" class="spinner-border spinner-border-sm form-spinner" role="status" aria-hidden="true"></span>
+                <span x-show="loading" class="spinner-border spinner-border-sm form-spinner hidden-spinner" role="status" aria-hidden="true"></span>
                 {{ $submit->attributes->get('label') ?? __('common.actions.submit') }}
             </button>
         @endif
     @endif
 </div>
-<style>
-    .hidden-spinner{
-        display: none;
-    }
-</style>
 @once
+    <style>
+        .hidden-spinner{
+            display: none;
+        }
+    </style>
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-            if (typeof Alpine === 'undefined') {
-                console.log('Alpine.js is not loaded.');
-                document.querySelectorAll('.form-spinner').forEach(function(spinner) {
-                    spinner.classList.add('hidden-spinner');
-                });
-            } else {
-                console.log('Alpine.js is loaded.');
-            }
+        document.addEventListener('alpine:init', () => {
+            console.log('actions-component: alpine.js loaded');
+            document.querySelectorAll('.form-spinner').forEach(function(spinner) {
+                spinner.classList.remove('hidden-spinner');
+            });
         });
     </script>
 @endonce

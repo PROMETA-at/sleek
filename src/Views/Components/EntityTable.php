@@ -16,11 +16,13 @@ class EntityTable extends \Illuminate\View\Component
         public bool     $responsive = false,
         public bool|array $sortable = false
     ) {
+        if(isset($this->key)){
+            $this->i18nPrefix = $this->key;
+        }
         $this->resolvePrefixesFromContext($this->entities[0] ?? null);
 
         array_walk($this->columns, function (&$value, $key) {
             $originalIsArray = is_array($value);
-
             // If the value is a string, we treat it as a shorthand setting the field name.
             if (is_string($value)) {
                 $value = [

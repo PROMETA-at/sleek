@@ -22,6 +22,7 @@ trait ResolvesPrefixesFromContext
 
         $this->i18nPrefix =
             $this->i18nPrefix ??
+            $this->key ??
             resolveI18nPrefixFromModel($model) ??
             array_slice(explode('.', $this->key), -1)[0];
         $this->routePrefix =

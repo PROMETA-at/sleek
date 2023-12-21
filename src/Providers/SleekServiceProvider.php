@@ -1,6 +1,8 @@
 <?php namespace Prometa\Sleek\Providers;
 
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Blade;
+use Illuminate\View\DynamicComponent;
 use Prometa\Sleek\Blade\BladeCompiler;
 use Prometa\Sleek\HandleQueryParametersMixin;
 use prometa\Sleek\Middleware\SetLocale;
@@ -52,6 +54,7 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
 
   public function boot(\Illuminate\Contracts\Http\Kernel $kernel): void
   {
+    Blade::component('dynamic-component', DynamicComponent::class);
     $kernel->appendMiddlewareToGroup('web', \Prometa\Sleek\Middleware\LocaleMiddleware::class);
 
     $this->loadViewsFrom(__DIR__.'/../resources/views', 'sleek');

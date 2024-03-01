@@ -7,6 +7,7 @@
   <title>{{ env('APP_NAME') }}</title>
 
   @stack('assets')
+  @vite($__data['sleek::assets']['vite'] ?? [])
 </head>
 <body>
   @yield('body')

@@ -9,6 +9,7 @@ class SleekPageState
   private $documentProvider = null;
   private $languageProvider = null;
   private $alertProvider = null;
+  private $assetsProvider = null;
 
   public function raise($message, $type = 'info')
   {
@@ -89,6 +90,20 @@ class SleekPageState
 
   public function resolveAlert() {
     return $this->resolve($this->alertProvider, []);
+  }
+
+  public function assets(callable|array $data): static {
+    $factory =
+      is_callable($data)
+        ? $data
+        : fn () => $data;
+
+    $this->assetsProvider = $factory;
+    return $this;
+  }
+
+  public function resolveAssets() {
+    return $this->resolve($this->assetsProvider, []);
   }
 
   private function resolve(callable|null $providerFn, mixed $defaultValue = null) {

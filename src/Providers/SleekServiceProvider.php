@@ -40,6 +40,7 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
       view()->share('sleek::document', $pageState->resolveDocument());
       view()->share('sleek::language', $pageState->resolveLanguage());
       view()->share('sleek::alert', $pageState->resolveAlert());
+      view()->share('sleek::assets', $pageState->resolveAssets());
     });
 
 

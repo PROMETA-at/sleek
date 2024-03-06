@@ -25,4 +25,18 @@ class HandleQueryParametersMixin
       return $this->paginate($pageSize);
     };
   }
+
+  public function autoFilter(): \Closure {
+    return function (?array $filters = null): self {
+      $filters = $filters ?? $this->getModel()->filterConfiguration;
+
+      foreach ($filters as $fieldName => $pipeline) {
+        if (request()->has($fieldName)) {
+          FilterPipeline::from($pipeline)->apply($this, $fieldName, request($fieldName));
+        }
+      }
+
+      return $this;
+    };
+  }
 }

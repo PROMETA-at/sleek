@@ -54,7 +54,7 @@ class BladeCompiler extends \Illuminate\View\Compilers\BladeCompiler
         $slotMeta = array_pop(static::$slotStack);
 
         return $slotMeta['isScoped']
-            ? "<?php }, ${slotMeta['attributes']}); ?>"
+            ? "<?php }, {$slotMeta['attributes']}); ?>"
             : '<?php $__env->endSlot(); ?>';
     }
 }

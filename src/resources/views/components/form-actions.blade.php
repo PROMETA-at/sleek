@@ -8,13 +8,13 @@
 <div {{$attributes}}>
     @if(in_array('reset', $show))
         <button class="btn btn-outline-warning" type="button" x-on:dblclick="$el.closest('form').reset()" title="Double Click to perform">
-            {{ $reset->attributes->get('label') ?? __('common.actions.reset') }}
+            {{ $reset->attributes->get('label') ?? __('crud.reset') }}
         </button>
     @endif
 
     @if(in_array('cancel', $show))
         <a href="{{url()->previous()}}" {{ $cancel->attributes->except(['label'])->class(['btn', 'btn-outline-secondary']) }}>
-            {{ $cancel->attributes->get('label') ?? __('common.actions.cancel') }}
+            {{ $cancel->attributes->get('label') ?? __('crud.cancel') }}
         </a>
     @endif
 
@@ -22,17 +22,17 @@
         @if($method === 'POST')
             <button type="submit" class="btn btn-success" :disabled="loading">
                 <span x-show="loading" class="spinner-border spinner-border-sm form-spinner" role="status" aria-hidden="true"></span>
-                {{ $submit->attributes->get('label') ?? __('common.actions.submit') }}
+                {{ $submit->attributes->get('label') ?? __('crud.save') }}
             </button>
         @elseif($method === 'PUT')
             <button type="submit" class="btn btn-success" :disabled="loading">
                 <span x-show="loading" class="spinner-border spinner-border-sm form-spinner" role="status" aria-hidden="true"></span>
-                {{ $submit->attributes->get('label') ?? __('common.actions.update') }}
+                {{ $submit->attributes->get('label') ?? __('crud.edit') }}
             </button>
         @elseif($method === 'DELETE')
             @php($id = 'sleek-modal-' . \Illuminate\Support\Str::random(16))
             <button type="button" data-bs-target="#{{$id}}" data-bs-toggle="modal" class="btn btn-danger">
-                {{ $submit->attributes->get('label') ?? __('common.actions.delete') }}
+                {{ $submit->attributes->get('label') ?? __('crud.delete') }}
             </button>
             <div class="modal fade" id="{{$id}}" tabindex="-1" aria-labelledby="confirmModal" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">

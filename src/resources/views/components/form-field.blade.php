@@ -9,7 +9,7 @@
         <textarea id="{{ $name }}" name="{{ $name }}" {{ $attributes->class(['form-control', 'is-invalid' => $errors->has($name)]) }}>{{ $value }}</textarea>
     @elseif($type === 'checkbox')
         <div class="form-check">
-            <input class="form-check-input" type="checkbox" id="{{ $name }}" name="{{ $name }}" {{ $value ? 'checked' : '' }}>
+            <input {{ $attributes->class(['form-check-input']) }} class="" type="checkbox" id="{{ $name }}" name="{{ $name }}" {{ $value ? 'checked' : '' }}>
             <label class="form-check-label" for="{{ $name }}">
                 {{ $label }}
             </label>

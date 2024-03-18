@@ -1,6 +1,13 @@
 <nav class="navbar navbar-expand-lg">
   <div class="{{ $__data['sleek::fluid'] ?? true ? 'container-fluid' : 'container' }}">
-    <a class="navbar-brand" href="/">{{ env('APP_NAME') }}</a>
+
+    <a class="navbar-brand" href="{{$__data['sleek::logo']['route'] ?? '/'}}">
+        @if($__data['sleek::logo']['image'] ?? false)
+            <img src="{{ $__data['sleek::logo']['image'] }}" alt="{{ env('APP_NAME') }}" height="25">
+        @else
+            {{ env('APP_NAME') }}
+        @endif
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#sleek-navbar" aria-controls="sleek-navbar" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>

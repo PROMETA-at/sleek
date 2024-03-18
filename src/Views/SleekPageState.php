@@ -59,9 +59,15 @@ class SleekPageState
     return $this;
   }
 
-  public function resolveMenuStructure() {
-    return $this->resolve($this->menuDataProvider, []);
-  }
+    public function resolveMenuStructure() {
+        $structure = $this->resolve($this->menuDataProvider, []);
+        return array_filter($structure, fn($key) => is_numeric($key), ARRAY_FILTER_USE_KEY);
+    }
+
+    public function resolveLogo() {
+        $structure = $this->resolve($this->menuDataProvider, []);
+        return $structure['logo'] ?? null;
+    }
 
   public function document(callable|string $document): static {
     $factory =

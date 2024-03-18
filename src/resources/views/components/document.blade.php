@@ -9,6 +9,14 @@
 
   @stack('assets')
   @vite($__data['sleek::assets']['vite'] ?? [])
+  @foreach($__data['sleek::assets'] ?? [] as $key => $url)
+    @if(!is_numeric($key)) @continue @endif
+    @if(str_ends_with($url, '.css'))
+      <link rel="stylesheet" href="{{ $url }}">
+    @elseif(str_ends_with($url, '.js'))
+      <script type="module" src="{{ $url }}"></script>
+    @endif
+  @endforeach
   @if(isset($assets))
     {{ $assets }}
   @endif

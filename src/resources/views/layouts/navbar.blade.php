@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg">
   <div class="{{ $__data['sleek::fluid'] ?? true ? 'container-fluid' : 'container' }}">
 
-    <a class="navbar-brand" href="{{$__data['sleek::logo']['route'] ?? '/'}}">
+    <a class="navbar-brand d-flex" href="{{$__data['sleek::logo']['route'] ?? '/'}}">
         @if($__data['sleek::logo']['image'] ?? false)
             <img src="{{ $__data['sleek::logo']['image'] }}" alt="{{ env('APP_NAME') }}" height="25">
         @else

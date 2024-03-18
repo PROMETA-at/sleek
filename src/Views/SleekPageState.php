@@ -10,6 +10,7 @@ class SleekPageState
   private $languageProvider = null;
   private $alertProvider = null;
   private $assetsProvider = null;
+  private $themeProvider = null;
 
   public function raise($message, $type = 'info')
   {
@@ -60,13 +61,27 @@ class SleekPageState
   }
 
     public function resolveMenuStructure() {
-        $structure = $this->resolve($this->menuDataProvider, []);
-        return array_filter($structure, fn($key) => is_numeric($key), ARRAY_FILTER_USE_KEY);
+        return $this->resolve($this->menuDataProvider, []);
     }
 
     public function resolveLogo() {
-        $structure = $this->resolve($this->menuDataProvider, []);
+        $structure = $this->resolve($this->themeProvider, []);
         return $structure['logo'] ?? null;
+    }
+
+    public function theme(callable|array $theme): static {
+        $factory =
+            is_callable($theme)
+                ? $theme
+                : fn () => $theme;
+
+        $this->themeProvider = $factory;
+
+        return $this;
+    }
+
+    public function resolveTheme() {
+        return $this->resolve($this->themeProvider, []);
     }
 
   public function document(callable|string $document): static {

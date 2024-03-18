@@ -6,11 +6,22 @@
 
   <title>{{ env('APP_NAME') }}</title>
 
+
   @stack('assets')
   @vite($__data['sleek::assets']['vite'] ?? [])
   @if(isset($assets))
     {{ $assets }}
   @endif
+
+<style>
+    :root {
+        @isset($__data['sleek::theme']['colors'])
+            @foreach($__data['sleek::theme']['colors'] as $key => $color)
+                --bs-{{ $key }}: {{ $color }};
+            @endforeach
+         @endisset
+}
+</style>
 </head>
 <body>
   {{ $slot }}

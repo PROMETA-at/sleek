@@ -1,5 +1,10 @@
 @aware(['model'])
 
+@if($type === 'hidden')
+    <input type="hidden" id="{{ $id }}" name="{{ $name }}" value="{{ $value }}" {{ $attributes }} />
+    @php return @endphp
+@endif
+
 <div class="mb-2">
     @if($label && !$fieldHasInlineLabel())
         <label for="{{ $name }}" {{ ($label->attributes ?? new \Illuminate\View\ComponentAttributeBag())->class(['form-label']) }}>{{ $label }}</label>

@@ -1,5 +1,7 @@
-@if(is_string($__data['sleek::navbar'] ?? null))
-  @include($__data['sleek::navbar'])
+@if(isset($navbar))
+  {{ $navbar }}
+@elseif(is_string($__data['sleek::navItems'] ?? null))
+  @include($__data['sleek::navItems'])
 @else
   @include('sleek::layouts.navbar')
 @endif

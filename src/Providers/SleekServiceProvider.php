@@ -36,7 +36,7 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
             $pageState = app()->make('sleek');
 
 
-            view()->share('sleek::navbar', $pageState->resolveMenuStructure());
+            view()->share('sleek::navItems', $pageState->resolveMenuStructure());
             view()->share('sleek::logo', $pageState->resolveLogo());
             view()->share('sleek::theme', $pageState->resolveTheme());
             view()->share('sleek::particle', $pageState->resolveParticle());

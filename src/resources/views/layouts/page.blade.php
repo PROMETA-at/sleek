@@ -1,8 +1,8 @@
 @extends($__data['sleek::document'] ?? 'sleek::layouts.document')
 
 @section('body')
-  @if(is_string($__data['sleek::navbar'] ?? null))
-    @include($__data['sleek::navbar'])
+  @if(is_string($__data['sleek::navItems'] ?? null))
+    @include($__data['sleek::navItems'])
   @else
     @include('sleek::layouts.navbar')
   @endif

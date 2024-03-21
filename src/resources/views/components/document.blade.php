@@ -28,7 +28,7 @@
                 --bs-{{ $key }}: {{ $color }};
             @endforeach
          @endisset
-}
+    }
 </style>
 </head>
 <body>

@@ -14,20 +14,28 @@
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="sleek-navbar">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        @foreach($navItems ?? $__data['sleek::navItems'] ?? [] as $key => $navItem)
-          <li @class(['nav-item', 'dropdown' => array_key_exists('items', $navItem)])">
-            <a @class(['nav-link', 'active' => request()->url() === $navItem['route'] ?? '#']) aria-current="page" href="{{ $navItem['route'] ?? '#' }}" hx-boost="true">{{ $navItem['label'] }}</a>
-            @if(array_key_exists('items', $navItem))
-              <ul>
-                @foreach($navItem['items'] as $dropdownItem)
-                  <li><a class="dropdown-item" href="{{ $dropdownItem['route'] }}">{{ $dropdownItem['label'] }}</a></li>
-                @endforeach
-              </ul>
-            @endif
-          </li>
-        @endforeach
-      </ul>
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            @foreach($navItems ?? $__data['sleek::navItems'] ?? [] as $key => $navItem)
+                @if(array_key_exists('items', $navItem))
+                    <!-- Dropdown -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-{{ $key }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ $navItem['label'] }}
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown-{{ $key }}">
+                            @foreach($navItem['items'] as $dropdownItem)
+                                <li><a class="dropdown-item" href="{{ $dropdownItem['route'] }}">{{ $dropdownItem['label'] }}</a></li>
+                            @endforeach
+                        </ul>
+                    </li>
+                @else
+                    <!-- Normales Nav Item -->
+                    <li class="nav-item">
+                        <a class="nav-link {{ request()->url() === $navItem['route'] ? 'active' : '' }}" href="{{ $navItem['route'] }}">{{ $navItem['label'] }}</a>
+                    </li>
+                @endif
+            @endforeach
+        </ul>
 
       @if(empty($__data['sleek::particle']))
           @unless(($__data['sleek::authentication'] ?? null) === false)

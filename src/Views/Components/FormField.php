@@ -19,8 +19,10 @@ class FormField extends \Illuminate\View\Component
         public ?string $id = null,
     ) {
         $modelFromContext = static::factory()->getConsumableComponentData('model');
+        $nameFromContext = static::factory()->getConsumableComponentData('name');
         $this->resolvePrefixesFromContext($modelFromContext);
 
+        if ($nameFromContext) $this->name = implode('.', [$nameFromContext, $this->name]);
         if ($this->label === null) $this->label = __("$this->i18nPrefix.fields.$name");
 
         if (! $this->accessor) $this->accessor = $name;

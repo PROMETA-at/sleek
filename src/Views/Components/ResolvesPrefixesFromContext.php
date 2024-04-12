@@ -22,11 +22,13 @@ trait ResolvesPrefixesFromContext
 
         $this->i18nPrefix =
             $this->i18nPrefix ??
+            static::factory()->getConsumableComponentData('i18nPrefix') ??
             $this->key ??
             resolveI18nPrefixFromModel($model) ??
             array_slice(explode('.', $this->key), -1)[0];
         $this->routePrefix =
             $this->routePrefix ??
+            static::factory()->getConsumableComponentData('routePrefix') ??
             $this->key ??
             // If all else fails, falling back to the i18nPrefix for the routePrefix is an OK bet.
             resolveI18nPrefixFromModel($model);

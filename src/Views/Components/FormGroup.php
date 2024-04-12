@@ -8,6 +8,8 @@ class FormGroup extends Component
     public function __construct(
         public readonly bool $passthrough = false,
         public readonly ?string $name = null,
+        public readonly ?string $i18nPrefix = null,
+        public readonly ?string $routePrefix = null,
     ) { }
 
     /**

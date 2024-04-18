@@ -33,7 +33,8 @@ class FormField extends \Illuminate\View\Component
         $this->name = with(explode('.', $this->name), fn ($parts) => $parts[0] . implode('', array_map(fn ($part) => "[$part]", array_slice($parts, 1))));
         $this->id ??= $this->name;
 
-        $this->value = old($name, $value ?? optional($modelFromContext, fn ($x) => data_get($x, $this->accessor)) ?? '');
+        // FIXME: Idk if this is the solution provided by Flo because i didnt implement the changes correctly in the other files
+        $this->value = old($name, $value ?? optional($modelFromContext->configuration ?? $modelFromContext, fn ($x) => data_get($x, $this->accessor)) ?? '');
 
         // Y-m-d is the standard format expected by browsers for `date` or `datetime` input fields.
         // TODO: differentiate between time-less and time-ful formats.

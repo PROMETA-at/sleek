@@ -29,21 +29,26 @@
                 </label>
             </div>
         @endforeach
-    @elseif($type === 'select')
-        <select id="{{ $id }}"
-                name="{{ $name }}"
-            {{ $attributes->class(['form-select', 'is-invalid' => $errors->has($name)]) }}
-        >
-            @isset($options)
-                @php($selectedValue = $value)
-                @foreach($options as $value => $label)
-                    <option value="{{ $value }}" {{ $value == $selectedValue ? 'selected' : '' }}>{{ $label }}</option>
-                @endforeach
-            @else
-                {{ $slot }}
-            @endisset
-        </select>
-    @else
+        @elseif($type === 'select')
+            @php($value = is_array($value) ? $value : [$value])
+            <select id="{{ $id }}"
+                    name="{{ $name }}"
+                {{ $attributes->class(['form-select', 'is-invalid' => $errors->has($name)]) }}
+                {{ $multiple ? 'multiple' : '' }}
+            >
+
+                @isset($options)
+                    @foreach($options as $optionValue => $label)
+                        <option value="{{ $optionValue }}"
+                            {{ in_array($optionValue, $value) ? 'selected' : '' }}>
+                            {{ $label }}
+                        </option>
+                    @endforeach
+                @else
+                    {{ $slot }}
+                @endisset
+            </select>
+        @else
         <input type="{{ $type }}"
                id="{{ $id }}"
                name="{{ $name }}"

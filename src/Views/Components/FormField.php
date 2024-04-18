@@ -17,6 +17,7 @@ class FormField extends \Illuminate\View\Component
         public mixed   $value = null,
         public ?array  $options = null,
         public ?string $id = null,
+        public ?bool $multiple = false,
     ) {
         $modelFromContext = static::factory()->getConsumableComponentData('model');
         $nameFromContext = static::factory()->getConsumableComponentData('name');
@@ -37,6 +38,11 @@ class FormField extends \Illuminate\View\Component
         // Y-m-d is the standard format expected by browsers for `date` or `datetime` input fields.
         // TODO: differentiate between time-less and time-ful formats.
         if ($this->value instanceof DateTime) $this->value = $this->value->format('Y-m-d');
+
+        // If its a multi select we will append [] to the end of the name to get the values as array
+        if ($this->multiple && $this->type === 'select') {
+            $this->name .= '[]';
+        }
     }
 
     /**

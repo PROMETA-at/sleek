@@ -26,7 +26,7 @@ class FormField extends \Illuminate\View\Component
         if ($nameFromContext) $this->name = implode('.', [$nameFromContext, $this->name]);
         if ($this->label === null) $this->label = __("$this->i18nPrefix.fields.$name");
 
-        if (! $this->accessor) $this->accessor = $name;
+        if (! $this->accessor) $this->accessor = $this->name;
         // Sometimes, a field might need to reference nested data, as part of a JSON-field for example.
         // This data can be referenced using dot-notation, but the field name needs to follow the urlencoded structure,
         // like field[sub][subsub].

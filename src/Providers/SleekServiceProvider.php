@@ -26,6 +26,7 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
         });
 
         $this->callAfterResolving('blade.compiler', function (BladeCompiler $bladeCompiler) {
+            $bladeCompiler->component('dynamic-component', DynamicComponent::class);
             $bladeCompiler->componentNamespace('Prometa\\Sleek\\Views\\Components', 'sleek');
         });
 
@@ -59,7 +60,6 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
 
     public function boot(\Illuminate\Contracts\Http\Kernel $kernel): void
     {
-        Blade::component('dynamic-component', DynamicComponent::class);
         $kernel->appendMiddlewareToGroup('web', \Prometa\Sleek\Middleware\LocaleMiddleware::class);
 
         $this->loadViewsFrom(__DIR__ . '/../resources/views', 'sleek');

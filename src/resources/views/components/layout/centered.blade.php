@@ -1,5 +1,5 @@
-@props(['document' => null, 'page' => null])
-
-<x-sleek::layout :document="$document" :page="$page ?? $__data['sleek::page'] ?? 'sleek::page.centered'">
-  {{ $slot }}
-</x-sleek::layout>
+<div class="row justify-content-center">
+  <div style="max-width: {{ $size ?? '80ch' }}">
+    {{ $slot }}
+  </div>
+</div>

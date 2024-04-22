@@ -2,6 +2,7 @@
 
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\View\ComponentAttributeBag;
 use Illuminate\View\DynamicComponent;
 use Prometa\Sleek\Blade\BladeCompiler;
 use Prometa\Sleek\HandleQueryParametersMixin;
@@ -52,6 +53,15 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
         \Illuminate\Database\Eloquent\Builder::mixin(new HandleQueryParametersMixin);
         \Illuminate\Database\Query\Builder::mixin(new HandleQueryParametersMixin);
         \Illuminate\Database\Eloquent\Relations\Relation::mixin(new HandleQueryParametersMixin);
+
+        ComponentAttributeBag::macro('trimPrefix', function ($prefix) {
+          /** @var $this ComponentAttributeBag */
+          return new static(
+            collect($this->getAttributes())
+              ->filter(fn ($_, $key) => str_starts_with($key, $prefix))
+              ->mapWithKeys(fn ($v, $k) => [ substr($k, strlen($prefix)) => $v])
+              ->toArray());
+        });
 
         $this->booted(function () {
             Route::middleware('web')->group(__DIR__ . '/../routes/web.php');

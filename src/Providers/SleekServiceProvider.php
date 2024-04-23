@@ -63,6 +63,13 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
               ->toArray());
         });
 
+        Blade::directive('forwardSlots', function () {
+          return '<?php foreach ($__laravel_slots as $slotName => $slotContent) {
+            if ($slotName === "__default") continue;
+            $__env->slot($slotName, $slotContent, $slotContent->attributes);
+          } ?>';
+        });
+
         $this->booted(function () {
             Route::middleware('web')->group(__DIR__ . '/../routes/web.php');
         });

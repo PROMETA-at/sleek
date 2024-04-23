@@ -1,4 +1,5 @@
 <x-sleek::form-field.wrapper>
+  @forwardSlots
   <input type="{{ $type }}"
          id="{{ $id }}"
          name="{{ $name }}"

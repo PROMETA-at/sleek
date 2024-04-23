@@ -4,6 +4,7 @@
 @endphp
 
 <x-sleek::form-field.wrapper>
+  @forwardSlots
   <select id="{{ $id }}"
           name="{{ $name }}{{ $multiple ? '[]' : '' }}"
     {{ $attributes->class(['form-select', 'is-invalid' => $errors->has($name)]) }}

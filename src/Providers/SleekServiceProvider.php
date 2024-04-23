@@ -29,6 +29,12 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->callAfterResolving('blade.compiler', function (BladeCompiler $bladeCompiler) {
             $bladeCompiler->component('dynamic-component', DynamicComponent::class);
             $bladeCompiler->componentNamespace('Prometa\\Sleek\\Views\\Components', 'sleek');
+            $bladeCompiler->directive('forwardSlots', function () {
+              return '<?php foreach ($__laravel_slots as $slotName => $slotContent) {
+                if ($slotName === "__default") continue;
+                $__env->slot($slotName, $slotContent, $slotContent->attributes);
+              } ?>';
+            });
         });
 
         $this->app->scoped('sleek', fn() => new SleekPageState);
@@ -61,13 +67,6 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
               ->filter(fn ($_, $key) => str_starts_with($key, $prefix))
               ->mapWithKeys(fn ($v, $k) => [ substr($k, strlen($prefix)) => $v])
               ->toArray());
-        });
-
-        Blade::directive('forwardSlots', function () {
-          return '<?php foreach ($__laravel_slots as $slotName => $slotContent) {
-            if ($slotName === "__default") continue;
-            $__env->slot($slotName, $slotContent, $slotContent->attributes);
-          } ?>';
         });
 
         $this->booted(function () {

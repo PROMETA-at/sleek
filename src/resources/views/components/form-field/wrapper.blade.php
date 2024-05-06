@@ -1,7 +1,7 @@
-@aware(['name', 'label'])
+@aware(['name', 'label', 'type'])
 
 <div class="mb-2">
-  @if($label)
+  @if($label && $type !== 'hidden')
     <label for="{{ $name ?? $label->attributes->get('for') ?? '' }}" {{ ($label->attributes ?? new \Illuminate\View\ComponentAttributeBag())->class(['form-label']) }}>{{ $label }}</label>
   @endif
 

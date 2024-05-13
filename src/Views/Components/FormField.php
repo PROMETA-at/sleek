@@ -48,6 +48,7 @@ class FormField extends \Illuminate\View\Component
         'select' => view('sleek::components.form-field.select'),
         'checkbox' => view('sleek::components.form-field.checkbox'),
         'radio-group' => view('sleek::components.form-field.radio-group'),
+        'hidden' => view('sleek::components.form-field.hidden'),
         default => view('sleek::components.form-field.input')
       };
     }

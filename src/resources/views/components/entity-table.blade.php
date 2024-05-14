@@ -1,4 +1,4 @@
-@if ($entities instanceof \Illuminate\Contracts\Pagination\Paginator)
+@if ($entities instanceof \Illuminate\Contracts\Pagination\Paginator && ($navigation === true || $navigation === 'top'))
     {{ $entities->withQueryString()->links() }}
 @endif
 <table {{ $attributes->class(['table', 'table-striped', 'table-hover', "table-$size" => !!$size]) }}>
@@ -49,6 +49,9 @@
     </tbody>
 
 </table>
+@if ($entities instanceof \Illuminate\Contracts\Pagination\Paginator && ($navigation === true || $navigation === 'bottom'))
+  {{ $entities->withQueryString()->links() }}
+@endif
 <style>
     @media screen and (max-width: 600px) {
         table {

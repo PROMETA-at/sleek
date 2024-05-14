@@ -14,7 +14,8 @@ class EntityTable extends \Illuminate\View\Component
         public iterable $columns = [],
         public ?string  $size = null,
         public bool     $responsive = false,
-        public bool|array $sortable = false
+        public bool|array  $sortable = false,
+        public bool|string $navigation = true
     ) {
         $this->resolvePrefixesFromContext($this->entities[0] ?? null);
 

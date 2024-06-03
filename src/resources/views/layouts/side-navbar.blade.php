@@ -30,7 +30,7 @@
                 @else
                     <!-- Normales Nav Item -->
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->url() === $navItem['route'] ? 'active' : '' }}" href="{{ $navItem['route'] }}">{{ $navItem['label'] }}</a>
+                        <a class="nav-link {{ Str::startsWith(Request::url(), $navItem['route']) ? 'active' : '' }}" href="{{ $navItem['route'] }}">{{ $navItem['label'] }}</a>
                     </li>
                 @endif
             @endforeach

@@ -17,15 +17,19 @@
             @foreach($navItems ?? $__data['sleek::navItems'] ?? [] as $key => $navItem)
                 @if(array_key_exists('items', $navItem))
                     <!-- Dropdown -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown-{{ $key }}" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            {{ $navItem['label'] }}
+                    <li class="nav-item">
+                        <a class="nav-link {{ Str::startsWith(Request::url(), collect($navItem['items'])->pluck('route')->toArray()) ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#nav-collapse-{{ $key }}" aria-expanded="false" aria-controls="nav-collapse-{{ $key }}">
+                            {{ $navItem['label'] }} &#x25BC;
                         </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown-{{ $key }}">
-                            @foreach($navItem['items'] as $dropdownItem)
-                                <li><a class="dropdown-item" href="{{ $dropdownItem['route'] }}">{{ $dropdownItem['label'] }}</a></li>
-                            @endforeach
-                        </ul>
+                        <div id="nav-collapse-{{ $key }}" class="collapse {{ Str::startsWith(Request::url(), collect($navItem['items'])->pluck('route')->toArray()) ? 'show' : '' }}" style="padding-left: 1rem">
+                            <ul class="nav flex-column">
+                                @foreach($navItem['items'] as $subItem)
+                                    <li class="nav-item">
+                                        <a class="nav-link {{ Str::startsWith(Request::url(), $subItem['route']) ? 'active' : '' }}" href="{{ $subItem['route'] }}">{{ $subItem['label'] }}</a>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
                     </li>
                 @else
                     <!-- Normales Nav Item -->

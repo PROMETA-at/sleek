@@ -119,16 +119,48 @@
             width: 100%;
             flex-direction: row;
         }
-        #sidebarMenu ul.nav {
-            /* flex-direction: row; */
-        }
     }
 
     #sidebarMenu :is(.nav-item > .nav-link, .dropdown-toggle) {
-        color: {{ $__data['sleek::theme']['colors']['primary-font-color'] ??  'black'}};
+        color: {{ $__data['sleek::theme']['colors']['primary-font-color'] ??  'white'}};
 
-        &hover {
-            color: color-mix(in srgb, {{ $__data['sleek::theme']['colors']['primary-font-color'] ??  'black' }}, black 12.5%)
+        &:hover {
+            background-color: color-mix(in srgb, var(--bs-primary), black 12.5%);
+            transition: background-color .35s ease;
         }
     }
+
+    #sidebarMenu .nav-link:not(.dropdown-toggle) {
+        position: relative;
+    }
+
+    #sidebarMenu .nav-link:not(.dropdown-toggle)::after {
+        content: '';
+        position: absolute;
+        width: 0;
+        height: 3px;
+        display: block;
+        margin-top: 5px;
+        right: 0;
+        background: var(--bs-info);
+        transition: width .35s ease;
+        -webkit-transition: width .35s ease;
+    }
+
+    #sidebarMenu .nav-link:not(.dropdown-toggle):hover::after {
+        width: 100%;
+        left: 0;
+        background: var(--bs-info);
+    }
+
+    #sidebarMenu .nav-link.active:not(.dropdown-toggle)::after {
+        width: 100%;
+        left: 0;
+        background: var(--bs-info);
+    }
+
+    .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        background-color: color-mix(in srgb, {{ $__data['sleek::theme']['colors']['primary'] ?? 'var(--bs-primary)' }}, black 12.5%);
+    }
+
 </style>

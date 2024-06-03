@@ -1,6 +1,6 @@
 @props(['navItems' => null])
 
-<nav id="sidebarMenu" class="navbar navbar-expand-lg bg-white shadow-lg p-3 d-flex">
+<nav id="sidebarMenu" class="navbar navbar-expand-lg bg-white shadow-lg p-3 d-flex" style="background-color: var(--bs-primary);">
     <a class="navbar-brand text-center" href="{{$__data['sleek::logo']['route'] ?? '/'}}">
         @if($__data['sleek::logo']['image'] ?? false)
             <img src="{{ $__data['sleek::logo']['image'] }}" alt="{{ env('APP_NAME') }}" height="40">
@@ -121,6 +121,14 @@
         }
         #sidebarMenu ul.nav {
             /* flex-direction: row; */
+        }
+    }
+
+    #sidebarMenu :is(.nav-item > .nav-link, .dropdown-toggle) {
+        color: {{ $__data['sleek::theme']['colors']['primary-font-color'] ??  'black'}};
+
+        &hover {
+            color: color-mix(in srgb, {{ $__data['sleek::theme']['colors']['primary-font-color'] ??  'black' }}, black 12.5%)
         }
     }
 </style>

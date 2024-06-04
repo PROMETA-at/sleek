@@ -44,7 +44,7 @@
                     <div class="mt-auto d-flex justify-content-between align-items-center w-100">
                         @if(isset($__data['sleek::language']))
                             <div class="dropup">
-                                <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                <button class="nav-link dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
                                     <i class="bi bi-translate"></i>
                                 </button>
                                 <ul class="dropdown-menu" aria-labelledby="languageDropdown">

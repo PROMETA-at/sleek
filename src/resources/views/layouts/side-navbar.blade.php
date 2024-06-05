@@ -95,6 +95,10 @@
     }
     .layout > #sidebarMenu {
         flex-direction: column;
+        position: sticky;
+        top: 0;
+        max-height: 100vh;
+        z-index: 500;
     }
     #sidebarMenu ul.nav {
         flex-direction: column;

@@ -5,7 +5,7 @@
     if (!isset($body)) $body = new \Illuminate\View\ComponentSlot();
 @endphp
 <div class="modal fade" {{ $attributes }}>
-    <div {{ $dialog->attributes->class(['modal-dialog', 'modal-dialog-centered'])->style(['height: 90%']) }}>
+    <div {{ $dialog->attributes->class(['modal-dialog'])->style(['height: 90%']) }}>
         <div class="modal-content" style="max-height: 100%; overflow-y: auto">
             <div class="modal-header">
                 <h5 class="modal-title">{{ $title }}</h5>

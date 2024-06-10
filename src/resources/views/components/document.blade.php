@@ -9,6 +9,9 @@
 
   @stack('assets')
   @vite($__data['sleek::assets']['vite'] ?? [])
+  @foreach($__data['sleek::assets']['favicon'] ?? [] as $faviconLink)
+      <link rel="{{ $faviconLink['rel'] ?? 'icon' }}" href="{{ $faviconLink['href'] }}" type="{{ $faviconLink['type'] }}"/>
+  @endforeach
   @foreach($__data['sleek::assets'] ?? [] as $key => $url)
     @if(!is_numeric($key)) @continue @endif
     @if(str_ends_with($url, '.css'))

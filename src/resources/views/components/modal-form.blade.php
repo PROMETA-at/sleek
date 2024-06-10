@@ -11,24 +11,24 @@
                 <h5 class="modal-title">{{ $title }}</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <x-dynamic-component component="sleek::{{$formType}}" :action="$action" :method="$method" :model="$model" :fields="$fields" :enctype="$enctype">
-                <div class="modal-body">
+            <div class="modal-body">
+                <x-dynamic-component component="sleek::{{$formType}}" :action="$action" :method="$method" :model="$model" :fields="$fields" :enctype="$enctype">
                     {{ $slot ?? $body }}
+                </x-dynamic-component>
+            </div>
+            @if (!isset($footer))
+                <div class="modal-footer">
+                    <button {{ $cancel->attributes->except(['label'])->class(['btn', 'btn-outline-secondary']) }} type="button" data-bs-dismiss="modal">{{ $cancel->attributes->get('label') ?? __('common.actions.cancel') }}</button>
+                    <button type="submit" class="btn btn-success" :disabled="loading">
+                        <span x-show="loading" class="spinner-border spinner-border-sm modal-spinner hidden-spinner" role="status" aria-hidden="true"></span>
+                        {{ $submit->attributes->get('label') ?? __('common.actions.submit') }}
+                    </button>
                 </div>
-                @if (!isset($footer))
-                    <div class="modal-footer">
-                        <button {{ $cancel->attributes->except(['label'])->class(['btn', 'btn-outline-secondary']) }} type="button" data-bs-dismiss="modal">{{ $cancel->attributes->get('label') ?? __('common.actions.cancel') }}</button>
-                        <button type="submit" class="btn btn-success" :disabled="loading">
-                            <span x-show="loading" class="spinner-border spinner-border-sm modal-spinner hidden-spinner" role="status" aria-hidden="true"></span>
-                            {{ $submit->attributes->get('label') ?? __('common.actions.submit') }}
-                        </button>
-                    </div>
-                @else
-                    <div class="modal-footer">
-                        {{ $footer }}
-                    </div>
-                @endif
-            </x-dynamic-component>
+            @else
+                <div class="modal-footer">
+                    {{ $footer }}
+                </div>
+            @endif
         </div>
     </div>
 </div>

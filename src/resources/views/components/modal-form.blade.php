@@ -15,7 +15,7 @@
                 <div class="modal-body">
                     {{ $slot ?? $body }}
                 </div>
-                @if ($footer->isEmpty())
+                @if (!isset($footer))
                     <div class="modal-footer">
                         <button {{ $cancel->attributes->except(['label'])->class(['btn', 'btn-outline-secondary']) }} type="button" data-bs-dismiss="modal">{{ $cancel->attributes->get('label') ?? __('common.actions.cancel') }}</button>
                         <button type="submit" class="btn btn-success" :disabled="loading">

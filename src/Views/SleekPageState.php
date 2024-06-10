@@ -69,6 +69,12 @@ class SleekPageState
         return array_filter($structure, fn($key) => is_numeric($key), ARRAY_FILTER_USE_KEY);
     }
 
+    public function resolveMenuPosition()
+    {
+        $structure = $this->resolve($this->menuDataProvider, []);
+        return $structure['position'] ?? 'side';
+    }
+
     public function resolveParticle(){
         $structure = $this->resolve($this->menuDataProvider, []);
         return $structure['particle'] ?? null;

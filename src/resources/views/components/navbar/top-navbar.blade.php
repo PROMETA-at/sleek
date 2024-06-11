@@ -4,7 +4,7 @@
     <div class="{{ $__data['sleek::fluid'] ?? true ? 'container-fluid' : 'container' }}">
         <a class="navbar-brand d-flex" href="{{$__data['sleek::logo']['route'] ?? '/'}}">
             @if($__data['sleek::logo']['image'] ?? false)
-                <img src="{{ $__data['sleek::logo']['image'] }}" alt="{{ env('APP_NAME') }}" height="25">
+                <img src="{{ $__data['sleek::logo']['image'] }}" alt="{{ env('APP_NAME') }}" height="35">
             @else
                 {{ env('APP_NAME') }}
             @endif

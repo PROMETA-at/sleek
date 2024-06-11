@@ -1,6 +1,6 @@
 @props(['navItems' => null])
 
-<nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg" style="background-color: var(--bs-primary);">
   <div class="{{ $__data['sleek::fluid'] ?? true ? 'container-fluid' : 'container' }}">
 
     <a class="navbar-brand d-flex" href="{{$__data['sleek::logo']['route'] ?? '/'}}">

@@ -49,6 +49,7 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
             view()->share('sleek::logo', $pageState->resolveLogo());
             view()->share('sleek::theme', $pageState->resolveTheme());
             view()->share('sleek::particle', $pageState->resolveParticle());
+            view()->share('sleek::mid-particle', $pageState->resolveMenuMidParticle());
             view()->share('sleek::authentication', $pageState->resolveAuthentication());
             view()->share('sleek::document', $pageState->resolveDocument());
             view()->share('sleek::language', $pageState->resolveLanguage());

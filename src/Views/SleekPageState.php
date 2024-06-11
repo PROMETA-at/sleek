@@ -75,6 +75,12 @@ class SleekPageState
         return $structure['position'] ?? 'side';
     }
 
+    public function resolveMenuMidParticle()
+    {
+        $structure = $this->resolve($this->menuDataProvider, []);
+        return $structure['mid-particle'] ?? null;
+    }
+
     public function resolveParticle(){
         $structure = $this->resolve($this->menuDataProvider, []);
         return $structure['particle'] ?? null;

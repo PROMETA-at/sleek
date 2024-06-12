@@ -9,6 +9,10 @@
         @endif
     </a>
     <hr>
+    @if(!empty($__data['sleek::mid-particle']))
+        @include($__data['sleek::mid-particle'])
+        <hr>
+    @endif
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavbar" aria-controls="mobileNavbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
@@ -86,7 +90,6 @@
     </div>
 </nav>
 <style>
-
     .layout {
         display: grid;
         grid-template-columns: auto 1fr;

@@ -6,7 +6,6 @@ use Illuminate\View\ComponentAttributeBag;
 use Illuminate\View\DynamicComponent;
 use Prometa\Sleek\Blade\BladeCompiler;
 use Prometa\Sleek\HandleQueryParametersMixin;
-use prometa\Sleek\Middleware\SetLocale;
 use Prometa\Sleek\Views\Factory;
 use Prometa\Sleek\Views\SleekPageState;
 use Illuminate\Support\Facades\Route;
@@ -74,6 +73,10 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
         $this->booted(function () {
             Route::middleware('web')->group(__DIR__ . '/../routes/web.php');
         });
+
+        $this->commands([
+            \Prometa\Sleek\Console\Commands\SleekSetupCommand::class,
+        ]);
     }
 
     public function boot(\Illuminate\Contracts\Http\Kernel $kernel): void

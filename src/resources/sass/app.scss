@@ -1,0 +1,45 @@
+@import "bootstrap-icons/font/bootstrap-icons.css";
+@import "bootstrap/scss/functions";
+@import "bootstrap/scss/variables";
+@import "bootstrap/scss/mixins";
+
+$enable-negative-margins: true;
+
+@import "bootstrap/scss/bootstrap";
+
+@each $color, $value in $theme-colors {
+    .btn-#{$color} {
+        --bs-btn-color: var(--bs-btn-text-color, white);
+        --bs-btn-bg: var(--bs-#{$color});
+        --bs-btn-border-color: var(--bs-#{$color});
+
+        --bs-btn-hover-color: var(--bs-btn-text-color, white);
+        --bs-btn-hover-bg: color-mix(in srgb, var(--bs-#{$color}), black 7.5%);
+        --bs-btn-hover-border-color: color-mix(in srgb, var(--bs-#{$color}), black 10%);
+
+        --bs-btn-active-color: var(--bs-btn-text-color, white);
+        --bs-btn-active-bg: color-mix(in srgb, var(--bs-#{$color}), black 10%);
+        --bs-btn-active-border-color: color-mix(in srgb, var(--bs-#{$color}), black 12.5%);
+
+        --bs-btn-disabled-color: var(--bs-btn-text-color, white);
+        --bs-btn-disabled-bg: color-mix(in srgb, var(--bs-#{$color}), black 10%);
+        --bs-btn-disabled-border-color: color-mix(in srgb, var(--bs-#{$color}), black 12.5%);
+    }
+
+    .btn-outline-#{$color} {
+        --bs-btn-color: var(--bs-#{$color});
+        --bs-btn-border-color: var(--bs-#{$color});
+
+        --bs-btn-hover-color: var(--bs-btn-text-color, white);
+        --bs-btn-hover-bg: var(--bs-#{$color});
+        --bs-btn-hover-border-color: color-mix(in srgb, var(--bs-#{$color}), black 10%);
+
+        --bs-btn-active-color: var(--bs-btn-text-color, white);
+        --bs-btn-active-bg: var(--bs-#{$color});
+        --bs-btn-active-border-color: var(--bs-#{$color});
+
+        --bs-btn-disabled-color: var(--bs-#{$color});
+        --bs-btn-disabled-border-color: var(--bs-#{$color});
+    }
+}
+

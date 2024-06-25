@@ -47,6 +47,7 @@ class FormField extends \Illuminate\View\Component
       return match ($this->type) {
         'select' => view('sleek::components.form-field.select'),
         'checkbox' => view('sleek::components.form-field.checkbox'),
+        'textarea' => view('sleek::components.form-field.textarea'),
         'radio-group' => view('sleek::components.form-field.radio-group'),
         'hidden' => view('sleek::components.form-field.hidden'),
         'custom' => view('sleek::components.form-field.wrapper'),

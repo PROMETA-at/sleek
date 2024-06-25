@@ -5,15 +5,11 @@
     <label for="{{ $name ?? $label->attributes->get('for') ?? '' }}" {{ ($label->attributes ?? new \Illuminate\View\ComponentAttributeBag())->class(['form-label']) }}>{{ $label }}</label>
   @endif
 
-  @if(isset($before) || isset($after))
-    <div class="input-group">
-      {{ $before ?? null }}
-      {{ $slot }}
-      {{ $after ?? null }}
-    </div>
-  @else
+  <div class="input-group @error($name) is-invalid @enderror">
+    {{ $before ?? null }}
     {{ $slot }}
-  @endif
+    {{ $after ?? null }}
+  </div>
 
   @error($name)
     <div class="invalid-feedback">

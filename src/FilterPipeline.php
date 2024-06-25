@@ -29,6 +29,7 @@ class FilterPipeline
   public function apply($query, $field, $value) {
     $applyPipeline = function ($pipeline, $value) use (&$applyPipeline, $query, $field) {
       if (empty($pipeline)) return $query;
+      if ($value === null) return $query;
 
       list($filter) = $pipeline;
       $filter($query, $field, $value, fn ($value) => $applyPipeline(array_slice($pipeline, 1), $value));
@@ -71,5 +72,9 @@ class FilterPipeline
     foreach ($values as $value) {
       $next($value);
     }
+  }
+
+  private function boolean($query, $field, $value, $next) {
+    $next((boolean) $value);
   }
 }

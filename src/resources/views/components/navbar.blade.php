@@ -1,6 +1,6 @@
 @props(['navItems' => null])
 
-<nav id="sidebarMenu" class="navbar navbar-expand-lg shadow-lg p-3 d-flex" style="background-color: var(--bs-primary);">
+<nav id="sidebarMenu" class="navbar navbar-expand-lg shadow-lg p-3 d-flex">
     <a class="navbar-brand text-center" href="{{$__data['sleek::logo']['route'] ?? '/'}}">
         @if($__data['sleek::logo']['image'] ?? false)
             <img src="{{ $__data['sleek::logo']['image'] }}" alt="{{ env('APP_NAME') }}" height="40">
@@ -8,16 +8,21 @@
             {{ env('APP_NAME') }}
         @endif
     </a>
-    <hr>
-    @if(!empty($__data['sleek::mid-particle']))
-        @include($__data['sleek::mid-particle'])
-        <hr>
-    @endif
+    <hr class="divider">
+
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mobileNavbar" aria-controls="mobileNavbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="mobileNavbar">
-        <ul class="nav nav-pills flex-grow-1">
+        <ul class="nav navbar-nav nav-pills flex-grow-1">
+            @if(isset($extra) || isset($__data['sleek::nav:extra']))
+                <li class="extra">
+                    {{ $extra ?? view($__data['sleek::nav:extra']) }}
+                </li>
+                <li>
+                    <hr>
+                </li>
+            @endif
             @foreach($navItems ?? $__data['sleek::navItems'] ?? [] as $key => $navItem)
                 @if(array_key_exists('items', $navItem))
                     <!-- Dropdown -->
@@ -92,21 +97,28 @@
 <style>
     .layout {
         display: grid;
-        grid-template-columns: auto 1fr;
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
         min-height: 100vh;
-
     }
     .layout > #sidebarMenu {
-        flex-direction: column;
-        position: sticky;
-        top: 0;
-        max-height: 100vh;
         z-index: 500;
+        width: 100%;
+        flex-direction: row;
     }
+    /* :is for low priority, so it can be easily overridden */
+    :is(#sidebarMenu) {
+      background-color: var(--bs-primary);
+    }
+
+    #sidebarMenu > .divider {
+      display: none;
+    }
+
+    @if($__data['sleek::navPosition'] === 'side')
     #sidebarMenu ul.nav {
         flex-direction: column;
     }
-
     @media only screen and (min-width: 799px) {
         #sidebarMenu.navbar {
             justify-content: initial;
@@ -116,21 +128,30 @@
             flex-basis: initial;
             align-items: initial;
         }
-        .layout > #sidebarMenu {
-            width: 250px;
+        #sidebarMenu > .divider {
+          display: initial;
         }
-    }
-    @media only screen and (max-width: 800px) {
         .layout {
-            grid-template-columns: 1fr;
-            grid-template-rows: auto 1fr;
-        }
+            grid-template-columns: auto 1fr;
+            grid-template-rows: initial;
 
+            position: sticky;
+            top: 0;
+            max-height: 100vh;
+        }
         .layout > #sidebarMenu {
-            width: 100%;
-            flex-direction: row;
+            min-width: 20ch;
+            flex-direction: column;
         }
     }
+    @else
+        @media only screen and (min-width: 799px) {
+            #sidebarMenu .extra {
+                order: 3;
+                margin-left: auto;
+            }
+        }
+    @endif
 
     #sidebarMenu :is(.nav-item > .nav-link, .dropdown-toggle) {
         color: {{ $__data['sleek::theme']['colors']['primary-font-color'] ??  'white'}};

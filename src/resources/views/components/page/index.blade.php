@@ -1,15 +1,19 @@
-@if($__data['sleek::navPosition'] === 'side')
-    <div class="layout"> @endif
-        @if(isset($navbar))
-            {{ $navbar }}
-        @elseif(is_string($__data['sleek::navItems'] ?? null))
-            @include($__data['sleek::navItems'])
-        @elseif($__data['sleek::navPosition'] === 'side')
-            @include('sleek::components.navbar.side-navbar')
-        @elseif($__data['sleek::navPosition'] === 'top')
-            @include('sleek::components.navbar.top-navbar')
-        @endif
+<div class="layout">
+    @if(isset($navbar))
+        {{ $navbar }}
+    @elseif(is_string($__data['sleek::navItems'] ?? null))
+        @include($__data['sleek::navItems'])
+    @else
+        <x-sleek::navbar>
+          @foreach($__laravel_slots as $slotName => $s)
+            @if(str_starts_with($slotName, 'nav:'))
+              @slot(substr($slotName, strlen('nav:')), $s, $s->attributes)
+            @endif
+          @endforeach
+        </x-sleek::navbar>
+    @endif
 
-        {{ $slot }}
-        @if($__data['sleek::navPosition'] === 'side') </div>
-@endif
+
+
+    {{ $slot }}
+</div>

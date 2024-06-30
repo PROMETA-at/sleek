@@ -48,8 +48,10 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
             view()->share('sleek::navPosition', $pageState->resolveMenuPosition());
             view()->share('sleek::logo', $pageState->resolveLogo());
             view()->share('sleek::theme', $pageState->resolveTheme());
-            view()->share('sleek::particle', $pageState->resolveParticle());
+
             view()->share('sleek::nav:extra', $pageState->resolveNavbarExtra());
+            view()->share('sleek::nav:account', $pageState->resolveNavbarAccount());
+
             view()->share('sleek::authentication', $pageState->resolveAuthentication());
             view()->share('sleek::document', $pageState->resolveDocument());
             view()->share('sleek::language', $pageState->resolveLanguage());

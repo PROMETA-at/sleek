@@ -81,9 +81,10 @@ class SleekPageState
         return $structure['extra'] ?? null;
     }
 
-    public function resolveParticle(){
+    public function resolveNavbarAccount()
+    {
         $structure = $this->resolve($this->menuDataProvider, []);
-        return $structure['particle'] ?? null;
+        return $structure['account'] ?? null;
     }
 
     public function resolveLogo()

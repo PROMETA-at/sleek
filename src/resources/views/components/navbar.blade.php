@@ -14,18 +14,17 @@
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="mobileNavbar">
-        <ul class="nav navbar-nav nav-pills flex-grow-1">
-            @if(isset($extra) || isset($__data['sleek::nav:extra']))
-                <li class="extra">
-                    {{ $extra ?? view($__data['sleek::nav:extra']) }}
-                </li>
-                <li>
-                    <hr>
-                </li>
-            @endif
+        @if(isset($extra) || isset($__data['sleek::nav:extra']))
+            <div class="extra">
+                {{ $extra ?? view($__data['sleek::nav:extra']) }}
+            </div>
+            <hr class="divider">
+        @endif
+
+
+        <ul class="navbar-nav">
             @foreach($navItems ?? $__data['sleek::navItems'] ?? [] as $key => $navItem)
                 @if(array_key_exists('items', $navItem))
-                    <!-- Dropdown -->
                     <li class="nav-item">
                         <a class="nav-link {{ Str::startsWith(Request::url(), collect($navItem['items'])->pluck('route')->toArray()) ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#nav-collapse-{{ $key }}" aria-expanded="false" aria-controls="nav-collapse-{{ $key }}">
                             {{ $navItem['label'] }} &#x25BC;
@@ -41,57 +40,61 @@
                         </div>
                     </li>
                 @else
-                    <!-- Normales Nav Item -->
                     <li class="nav-item">
                         <a class="nav-link {{ Str::startsWith(Request::url(), $navItem['route']) ? 'active' : '' }}" href="{{ $navItem['route'] }}">{{ $navItem['label'] }}</a>
                     </li>
                 @endif
             @endforeach
-
-            @if(empty($__data['sleek::particle']))
-                @unless(($__data['sleek::authentication'] ?? null) === false)
-                    <div class="mt-auto d-flex justify-content-between align-items-center w-100">
-                        @if(isset($__data['sleek::language']))
-                            <div class="dropup">
-                                <button class="nav-link dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                                    <i class="bi bi-translate"></i>
-                                </button>
-                                <ul class="dropdown-menu" aria-labelledby="languageDropdown">
-                                    @foreach($__data['sleek::language'] as $key => $lang)
-                                        <li>
-                                            <a class="dropdown-item" href="/lang/{{ $key }}" {{ App::getLocale() == $key ? 'selected' : '' }}>
-                                                {{ $lang }}
-                                            </a>
-                                        </li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif
-
-                        <ul class="navbar-nav">
-                            @if(Auth::check())
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ $__data['sleek::authentication']['logout'] ?? route('logout') }}">
-                                        <i class="bi bi-box-arrow-in-left"></i> Logout
-                                    </a>
-                                </li>
-                            @else
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ $__data['sleek::authentication']['login'] ?? route('login') }}">
-                                        <i class="bi bi-box-arrow-in-right"></i> Login
-                                    </a>
-                                </li>
-                            @endif
-                        </ul>
-                    </div>
-                @endunless
-            @else
-                <div class="mt-auto">
-                    @include($__data['sleek::particle'])
-                </div>
-            @endif
-
         </ul>
+
+        <div class="account">
+            @if(isset($account) || isset($__data['sleek::nav:account']))
+                <hr class="divider">
+                <div>
+                    {{ $account ?? view($__data['sleek::nav:account']) }}
+                </div>
+            @else
+                @unless(($__data['sleek::authentication'] ?? null) === false)
+                    <hr class="divider">
+                    <ul class="navbar-nav">
+                        <li>
+                            @if(isset($__data['sleek::language']))
+                                <div class="dropup">
+                                    <button class="nav-link dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                                        <i class="bi bi-translate"></i>
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                                        @foreach($__data['sleek::language'] as $key => $lang)
+                                            <li>
+                                                <a class="dropdown-item" href="/lang/{{ $key }}" {{ App::getLocale() == $key ? 'selected' : '' }}>
+                                                    {{ $lang }}
+                                                </a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                            @endif
+
+                            <ul class="navbar-nav">
+                                @if(Auth::check())
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ $__data['sleek::authentication']['logout'] ?? route('logout') }}">
+                                            <i class="bi bi-box-arrow-in-left"></i> Logout
+                                        </a>
+                                    </li>
+                                @else
+                                    <li class="nav-item">
+                                        <a class="nav-link" href="{{ $__data['sleek::authentication']['login'] ?? route('login') }}">
+                                            <i class="bi bi-box-arrow-in-right"></i> Login
+                                        </a>
+                                    </li>
+                                @endif
+                            </ul>
+                        </li>
+                    </ul>
+                @endunless
+            @endif
+        </div>
     </div>
 </nav>
 <style>
@@ -111,41 +114,48 @@
       background-color: var(--bs-primary);
     }
 
-    #sidebarMenu > .divider {
-      display: none;
-    }
+
 
     @if($__data['sleek::navPosition'] === 'side')
-    #sidebarMenu ul.nav {
-        flex-direction: column;
-    }
-    @media only screen and (min-width: 799px) {
-        #sidebarMenu.navbar {
-            justify-content: initial;
-            align-items: initial;
-        }
-        #sidebarMenu.navbar .navbar-collapse {
-            flex-basis: initial;
-            align-items: initial;
-        }
-        #sidebarMenu > .divider {
-          display: initial;
-        }
-        .layout {
-            grid-template-columns: auto 1fr;
-            grid-template-rows: initial;
-
-            position: sticky;
-            top: 0;
-            max-height: 100vh;
-        }
-        .layout > #sidebarMenu {
-            min-width: 20ch;
+        #mobileNavbar, #sidebarMenu ul.navbar-nav {
             flex-direction: column;
         }
-    }
-    @else
         @media only screen and (min-width: 799px) {
+            #sidebarMenu .account {
+                margin-top: auto;
+            }
+            #sidebarMenu.navbar {
+                justify-content: initial;
+                align-items: initial;
+            }
+            #sidebarMenu.navbar .navbar-collapse {
+                flex-basis: initial;
+                align-items: initial;
+            }
+
+            .layout {
+                grid-template-columns: auto 1fr;
+                grid-template-rows: initial;
+
+                position: sticky;
+                top: 0;
+                max-height: 100vh;
+            }
+            .layout > #sidebarMenu {
+                min-width: 20ch;
+                flex-direction: column;
+            }
+        }
+    @else
+
+
+        #sidebarMenu .account {
+            order: 10;
+        }
+        @media only screen and (min-width: 799px) {
+            #sidebarMenu .divider {
+                display: none;
+            }
             #sidebarMenu .extra {
                 order: 3;
                 margin-left: auto;

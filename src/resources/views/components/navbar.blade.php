@@ -136,14 +136,13 @@
         .layout {
             grid-template-columns: auto 1fr;
             grid-template-rows: initial;
-
-            position: sticky;
-            top: 0;
-            max-height: 100vh;
         }
         .layout > #sidebarMenu {
             min-width: 20ch;
             flex-direction: column;
+            position: sticky;
+            top: 0;
+            max-height: 100vh;
         }
     }
     @else

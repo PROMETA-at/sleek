@@ -1,4 +1,4 @@
-@props(['navItems' => null])
+@props(['items' => null])
 
 <nav id="sidebarMenu" class="navbar navbar-expand-lg shadow-lg p-3 d-flex">
     <a class="navbar-brand text-center" href="{{$__data['sleek::logo']['route'] ?? '/'}}">
@@ -23,7 +23,7 @@
 
 
         <ul class="navbar-nav">
-            @foreach($navItems ?? $__data['sleek::navItems'] ?? [] as $key => $navItem)
+            @foreach($items ?? $__data['sleek::navItems'] ?? [] as $key => $navItem)
                 @if(array_key_exists('items', $navItem))
                     <li class="nav-item">
                         <a class="nav-link {{ Str::startsWith(Request::url(), collect($navItem['items'])->pluck('route')->toArray()) ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#nav-collapse-{{ $key }}" aria-expanded="false" aria-controls="nav-collapse-{{ $key }}">
@@ -111,56 +111,56 @@
     }
     /* :is for low priority, so it can be easily overridden */
     :is(#sidebarMenu) {
-      background-color: var(--bs-primary);
+        background-color: var(--bs-primary);
     }
 
 
 
     @if($__data['sleek::navPosition'] === 'side')
         #mobileNavbar, #sidebarMenu ul.navbar-nav {
+        flex-direction: column;
+    }
+    @media only screen and (min-width: 799px) {
+        #sidebarMenu .account {
+            margin-top: auto;
+        }
+        #sidebarMenu.navbar {
+            justify-content: initial;
+            align-items: initial;
+        }
+        #sidebarMenu.navbar .navbar-collapse {
+            flex-basis: initial;
+            align-items: initial;
+        }
+
+        .layout {
+            grid-template-columns: auto 1fr;
+            grid-template-rows: initial;
+
+            position: sticky;
+            top: 0;
+            max-height: 100vh;
+        }
+        .layout > #sidebarMenu {
+            min-width: 20ch;
             flex-direction: column;
         }
-        @media only screen and (min-width: 799px) {
-            #sidebarMenu .account {
-                margin-top: auto;
-            }
-            #sidebarMenu.navbar {
-                justify-content: initial;
-                align-items: initial;
-            }
-            #sidebarMenu.navbar .navbar-collapse {
-                flex-basis: initial;
-                align-items: initial;
-            }
-
-            .layout {
-                grid-template-columns: auto 1fr;
-                grid-template-rows: initial;
-
-                position: sticky;
-                top: 0;
-                max-height: 100vh;
-            }
-            .layout > #sidebarMenu {
-                min-width: 20ch;
-                flex-direction: column;
-            }
-        }
+    }
     @else
 
 
         #sidebarMenu .account {
-            order: 10;
+        order: 10;
+    }
+    @media only screen and (min-width: 799px) {
+        #sidebarMenu .divider {
+            display: none;
         }
-        @media only screen and (min-width: 799px) {
-            #sidebarMenu .divider {
-                display: none;
-            }
-            #sidebarMenu .extra {
-                order: 3;
-                margin-left: auto;
-            }
+        #sidebarMenu .extra {
+            order: 3;
+            margin-left: auto;
         }
+    }
     @endif
 
     #sidebarMenu :is(.nav-item > .nav-link, .dropdown-toggle) {

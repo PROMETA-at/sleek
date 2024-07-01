@@ -109,24 +109,26 @@ class SleekSetupCommand extends Command
     protected function parseScssImport() : void
     {
         $appScssPath = resource_path('sass/app.scss');
-
-        if (!File::exists($appScssPath)) {
-            $this->error('app.scss file not found');
-            return;
-        }
-
-        $appScssContent = File::get($appScssPath);
         $sleekScssImport = "@import '../../vendor/prometa/sleek/src/resources/sass/app.scss';";
 
-        if (!str_contains($appScssContent, $sleekScssImport)) {
-            $this->warn('The SCSS path is not included in app.scss');
-            if ($this->confirm('Do you want to add the correct SCSS path?')) {
-                File::append($appScssPath, "\n// This import was added by sleek:setup. It imports the entire CSS of bootstrap & bootstrap-icons.");
-                File::append($appScssPath, "\n" . $sleekScssImport);
-                $this->info('SCSS path has been added');
+        if (!File::exists($appScssPath)) {
+            $this->warn('app.scss file not found');
+            if ($this->confirm('The app.scss file does not exist. Do you want to create it and add the SCSS import?')) {
+                File::put($appScssPath, "// This import was added by sleek:setup. It imports the entire CSS of bootstrap & bootstrap-icons.\n" . $sleekScssImport);
+                $this->info('app.scss file has been created and SCSS path has been added');
             }
         } else {
-            $this->info('The correct SCSS path is already included in app.scss');
+            $appScssContent = File::get($appScssPath);
+
+            if (!str_contains($appScssContent, $sleekScssImport)) {
+                $this->warn('The SCSS path is not included in app.scss');
+                if ($this->confirm('Do you want to add the correct SCSS path?')) {
+                    File::append($appScssPath, "\n// This import was added by sleek:setup. It imports the entire CSS of bootstrap & bootstrap-icons.\n" . $sleekScssImport);
+                    $this->info('SCSS path has been added');
+                }
+            } else {
+                $this->info('The correct SCSS path is already included in app.scss');
+            }
         }
     }
 }

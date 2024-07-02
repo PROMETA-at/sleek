@@ -98,84 +98,62 @@
     </div>
 </nav>
 <style>
-    .layout {
-        display: grid;
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
-        min-height: 100vh;
-    }
-    .layout > #sidebarMenu {
-        z-index: 500;
-        width: 100%;
-        flex-direction: row;
-    }
     /* :is for low priority, so it can be easily overridden */
     :is(#sidebarMenu) {
-        background-color: var(--bs-primary);
+      background-color: var(--bs-primary);
     }
 
-
+    #sidebarMenu {
+      container-type: inline-size;
+    }
 
     @if($__data['sleek::navPosition'] === 'side')
         #mobileNavbar, #sidebarMenu ul.navbar-nav {
-        flex-direction: column;
-    }
-    @media only screen and (min-width: 799px) {
-        #sidebarMenu .account {
-            margin-top: auto;
+          flex-direction: column;
         }
-        #sidebarMenu.navbar {
+        @media only screen and (min-width: 799px) {
+          #sidebarMenu {
+            flex-direction: column;
+
             justify-content: initial;
             align-items: initial;
-        }
-        #sidebarMenu.navbar .navbar-collapse {
-            flex-basis: initial;
-            align-items: initial;
-        }
+            & .navbar-collapse {
+              flex-basis: initial;
+              align-items: initial;
+            }
 
-        .layout {
-            grid-template-columns: auto 1fr;
-            grid-template-rows: initial;
+            & .account {
+              margin-top: auto;
+            }
+          }
         }
-        .layout > #sidebarMenu {
-            min-width: 20ch;
-            flex-direction: column;
-            position: sticky;
-            top: 0;
-            max-height: 100vh;
-        }
-    }
     @else
-
-
         #sidebarMenu .account {
-        order: 10;
-    }
-    @media only screen and (min-width: 799px) {
-        #sidebarMenu .divider {
-            display: none;
+          order: 10;
         }
-        #sidebarMenu .extra {
+        @media only screen and (min-width: 799px) {
+          #sidebarMenu .divider {
+            display: none;
+          }
+          #sidebarMenu .extra {
             order: 3;
             margin-left: auto;
+          }
         }
-    }
     @endif
 
     #sidebarMenu :is(.nav-item > .nav-link, .dropdown-toggle) {
-        color: {{ $__data['sleek::theme']['colors']['primary-font-color'] ??  'white'}};
+      color: {{ $__data['sleek::theme']['colors']['primary-font-color'] ??  'white'}};
 
-        &:hover {
-            background-color: color-mix(in srgb, var(--bs-primary), black 12.5%);
-            transition: background-color .35s ease;
-        }
+      &:hover {
+        background-color: color-mix(in srgb, var(--bs-primary), black 12.5%);
+        transition: background-color .35s ease;
+      }
     }
 
     #sidebarMenu .nav-link:not(.dropdown-toggle) {
-        position: relative;
-    }
-
-    #sidebarMenu .nav-link:not(.dropdown-toggle)::after {
+      position: relative;
+      &::after {
         content: '';
         position: absolute;
         width: 0;
@@ -186,22 +164,22 @@
         background: var(--bs-info);
         transition: width .35s ease;
         -webkit-transition: width .35s ease;
-    }
+      }
 
-    #sidebarMenu .nav-link:not(.dropdown-toggle):hover::after {
+      &:hover::after {
         width: 100%;
         left: 0;
         background: var(--bs-info);
+      }
     }
 
     #sidebarMenu .nav-link.active:not(.dropdown-toggle)::after {
-        width: 100%;
-        left: 0;
-        background: var(--bs-info);
+      width: 100%;
+      left: 0;
+      background: var(--bs-info);
     }
 
     .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
-        background-color: color-mix(in srgb, {{ $__data['sleek::theme']['colors']['primary'] ?? 'var(--bs-primary)' }}, black 12.5%);
+      background-color: color-mix(in srgb, {{ $__data['sleek::theme']['colors']['primary'] ?? 'var(--bs-primary)' }}, black 12.5%);
     }
-
 </style>

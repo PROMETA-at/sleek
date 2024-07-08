@@ -15,7 +15,7 @@ class FormField extends \Illuminate\View\Component
         public ?string $label = null,
         public ?string $accessor = null,
         public mixed   $value = null,
-        public array  $options = [],
+        public array   $options = [],
         public ?string $id = null,
     ) {
         $modelFromContext = static::factory()->getConsumableComponentData('model');

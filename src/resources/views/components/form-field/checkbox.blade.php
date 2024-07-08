@@ -1,6 +1,7 @@
-<div class="form-check mb-2">
-  <input {{ $attributes->class(['form-check-input']) }} class="" type="checkbox" id="{{ $id }}" name="{{ $name }}" {{ $value ? 'checked' : '' }}>
-  <label class="form-check-label" for="{{ $name }}">
-    {{ $label }}
-  </label>
-</div>
+@php
+  if (is_string($label)) $label = new \Illuminate\View\ComponentSlot($label);
+@endphp
+
+<x-bs::form-check {{ $attributes->merge(compact('id', 'name', 'value')) }}>
+  @slot('label', $label, $label->attributes)
+</x-bs::form-check>

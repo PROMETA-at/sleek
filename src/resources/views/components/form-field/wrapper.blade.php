@@ -1,15 +1,33 @@
 @aware(['name', 'label', 'type'])
+@props(['floating' => false])
 
-<div class="mb-2">
-  @if($label)
-    <label for="{{ $name ?? $label->attributes->get('for') ?? '' }}" {{ ($label->attributes ?? new \Illuminate\View\ComponentAttributeBag())->class(['form-label']) }}>{{ $label }}</label>
-  @endif
+@php
+  $inputGroup ??= new \Illuminate\View\ComponentSlot();
+  if (is_string($label)) $label = new \Illuminate\View\ComponentSlot($label);
+@endphp
 
-  <div class="input-group @error($name) is-invalid @enderror">
-    {{ $before ?? null }}
+@if(!$floating && isset($label))
+  <label
+    for="{{ $name ?? $label->attributes->get('for') ?? '' }}"
+    {{ $label->attributes->class('form-label') }}
+  >
+    {{ $label }}
+  </label>
+@endif
+
+<div class="input-group @error($name) has-validation @enderror" {{ $inputGroup->attributes }}>
+  {{ $before ?? null }}
+  @if($floating)
+    <x-bs::form-floating>
+      @isset($label)
+        @slot('label', $label, ['for' => $name ?? $label->attributes->get('for') ?? '', ...$label->attributes])
+      @endisset
+      {{ $slot }}
+    </x-bs::form-floating>
+  @else
     {{ $slot }}
-    {{ $after ?? null }}
-  </div>
+  @endif
+  {{ $after ?? null }}
 
   @error($name)
     <div class="invalid-feedback">

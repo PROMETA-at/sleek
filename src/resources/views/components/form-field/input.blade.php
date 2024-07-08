@@ -1,9 +1,10 @@
-<x-sleek::form-field.wrapper>
+<x-sleek::form-field.wrapper floating>
   @forwardSlots
-  <input type="{{ $type }}"
+  <x-bs::form-control type="{{ $type }}"
          id="{{ $id }}"
          name="{{ $name }}"
          value="{{ $value }}"
-    {{ $attributes->class(['form-control', 'is-invalid' => $errors->has($name)]) }}
+         placeholder="{{ $placeholder ?? $name }}"
+    {{ $attributes->class(['is-invalid' => $errors->has($name)]) }}
   />
 </x-sleek::form-field.wrapper>

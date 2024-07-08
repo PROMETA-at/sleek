@@ -1,7 +1,7 @@
 @if ($entities instanceof \Illuminate\Contracts\Pagination\Paginator && ($navigation === true || $navigation === 'top'))
     {{ $entities->withQueryString()->links() }}
 @endif
-<table {{ $attributes->class(['table', 'table-striped', 'table-hover', "table-$size" => !!$size]) }}>
+<x-bs::table striped hover :size="$size" {{ $attributes }}>
     <thead>
         <tr>
             @foreach($columns as $column)
@@ -48,7 +48,7 @@
         @endforeach
     </tbody>
 
-</table>
+</x-bs::table>
 @if ($entities instanceof \Illuminate\Contracts\Pagination\Paginator && ($navigation === true || $navigation === 'bottom'))
   {{ $entities->withQueryString()->links() }}
 @endif

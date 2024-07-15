@@ -15,7 +15,7 @@
   </label>
 @endif
 
-<div class="input-group @error($name) has-validation @enderror" {{ $inputGroup->attributes }}>
+<div class="input-group mb-2 @error($name) has-validation @enderror" {{ $inputGroup->attributes }}>
   {{ $before ?? null }}
   @if($floating)
     <x-bs::form-floating>

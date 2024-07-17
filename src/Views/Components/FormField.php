@@ -16,6 +16,7 @@ class FormField extends \Illuminate\View\Component
         public ?string $accessor = null,
         public mixed   $value = null,
         public array   $options = [],
+        public bool    $multiple = false,
         public ?string $id = null,
     ) {
         $modelFromContext = static::factory()->getConsumableComponentData('model');
@@ -30,6 +31,7 @@ class FormField extends \Illuminate\View\Component
         // This data can be referenced using dot-notation, but the field name needs to follow the urlencoded structure,
         // like field[sub][subsub].
         $this->name = with(explode('.', $this->name), fn ($parts) => $parts[0] . implode('', array_map(fn ($part) => "[$part]", array_slice($parts, 1))));
+        if ($this->multiple) $this->name .= '[]';
         $this->id ??= $this->name;
 
         $this->value = old($name, $value ?? optional($modelFromContext, fn ($x) => data_get($x, $this->accessor)) ?? '');

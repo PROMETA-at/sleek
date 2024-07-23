@@ -1,5 +1,5 @@
 @if(session('sleek_alert'))
-    <div id="customAlert" class="alert alert-{{ $type }} alert-dismissible fade show sleek--alert {{ $position ?? 'center' }} mt-2" role="alert">
+    <div id="customAlert" class="alert alert-{{ $type }} alert-dismissible fade show sleek--alert {{ $__data['sleek::alert']['position'] ?? 'top-right' }} mt-2" role="alert">
         <i class="bi {{ $iconType }} me-2"></i>
         {{ $message }}
         <div class="progress-bar"></div>
@@ -15,10 +15,10 @@
             box-shadow: 0 4px 7px rgba(0,0,0,0.6);
         }
 
-        .sleek--alert.center, .sleek--alert.top-left, .sleek--alert.top-right {
-            top: 4rem;
+        .sleek--alert.center, .sleek--alert.top-right {
+            top: 0.75rem;
         }
-        .sleek--alert.bottom, .sleek--alert.bottom-left, .sleek--alert.bottom-right {
+        .sleek--alert.bottom, .sleek--alert.bottom-right {
             bottom: 1rem;
         }
 
@@ -26,11 +26,8 @@
             left: 50%;
             transform: translateX(-50%);
         }
-        .sleek--alert.top-left, .sleek--alert.bottom-left {
-            left: 1rem;
-        }
         .sleek--alert.top-right, .sleek--alert.bottom-right {
-            right: 1rem;
+            right: 1.5rem;
         }
 
         .progress-bar {

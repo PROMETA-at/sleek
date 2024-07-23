@@ -1,4 +1,5 @@
 <div class="layout">
+  <x-sleek::alert/>
   @if(isset($navbar))
     {{ $navbar }}
   @elseif(is_string($__data['sleek::navItems'] ?? null))

@@ -1,9 +1,9 @@
 @props(['items' => null])
 
 <nav id="sidebarMenu" class="navbar navbar-expand-lg shadow-lg p-3 d-flex">
-    <a class="navbar-brand text-center" href="{{$__data['sleek::logo']['route'] ?? '/'}}">
+    <a class="navbar-brand text-center" style="margin-right: 0" href="{{$__data['sleek::logo']['route'] ?? '/'}}">
         @if($__data['sleek::logo']['image'] ?? false)
-            <img src="{{ $__data['sleek::logo']['image'] }}" alt="{{ env('APP_NAME') }}" height="40">
+            <img src="{{ $__data['sleek::logo']['image'] }}" alt="{{ env('APP_NAME') }}" style="height: 2rem; max-width: 100%">
         @else
             {{ env('APP_NAME') }}
         @endif

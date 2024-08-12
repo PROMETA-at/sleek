@@ -10,14 +10,17 @@ class FormGroup extends Component
         public ?string $name = null,
         public ?string $i18nPrefix = null,
         public ?string $routePrefix = null,
+        public ?\Closure $mkLabel = null,
     )
     {
         $nameFromContext = static::factory()->getConsumableComponentData('name');
         if ($nameFromContext) $this->name = implode('.', [$nameFromContext, $this->name]);
         $i18nFromContext = static::factory()->getConsumableComponentData('i18nPrefix');
-        if ($i18nFromContext) $this->i18nPrefix = $i18nFromContext;
+        if ($i18nFromContext !== null) $this->i18nPrefix = implode('.', [$i18nFromContext, $this->i18nPrefix]);
         $routeFromContext = static::factory()->getConsumableComponentData('routePrefix');
-        if ($routeFromContext) $this->routePrefix = $routeFromContext;
+        if ($routeFromContext) $this->routePrefix = implode('.', [$routeFromContext, $this->routePrefix]);
+
+        $this->mkLabel ??= static::factory()->getConsumableComponentData('mkLabel');
     }
 
     /**

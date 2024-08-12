@@ -7,6 +7,8 @@ class FormField extends \Illuminate\View\Component
 {
     use ResolvesPrefixesFromContext;
 
+    public string $originalName;
+
     public function __construct(
         public string  $name,
         public ?string $key = null,
@@ -19,12 +21,18 @@ class FormField extends \Illuminate\View\Component
         public bool    $multiple = false,
         public ?string $id = null,
     ) {
+        $this->originalName = $name;
+
         $modelFromContext = static::factory()->getConsumableComponentData('model');
         $nameFromContext = static::factory()->getConsumableComponentData('name');
+        $labelFactory = static::factory()->getConsumableComponentData('mkLabel');
         $this->resolvePrefixesFromContext($modelFromContext);
 
         if ($nameFromContext) $this->name = $name = implode('.', [$nameFromContext, $this->name]);
-        if ($this->label === null) $this->label = __("$this->i18nPrefix.fields.$name");
+        if ($this->label === null) {
+            if ($labelFactory) $this->label = $labelFactory($this);
+            else $this->label = __("$this->i18nPrefix.fields.$name");
+        }
 
         if (! $this->accessor) $this->accessor = $this->name;
         // Sometimes, a field might need to reference nested data, as part of a JSON-field for example.

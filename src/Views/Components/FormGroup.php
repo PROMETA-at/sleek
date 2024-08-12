@@ -7,10 +7,18 @@ class FormGroup extends Component
 {
     public function __construct(
         public readonly bool $passthrough = false,
-        public readonly ?string $name = null,
-        public readonly ?string $i18nPrefix = null,
-        public readonly ?string $routePrefix = null,
-    ) { }
+        public ?string $name = null,
+        public ?string $i18nPrefix = null,
+        public ?string $routePrefix = null,
+    )
+    {
+        $nameFromContext = static::factory()->getConsumableComponentData('name');
+        if ($nameFromContext) $this->name = implode('.', [$nameFromContext, $this->name]);
+        $i18nFromContext = static::factory()->getConsumableComponentData('i18nPrefix');
+        if ($i18nFromContext) $this->i18nPrefix = $i18nFromContext;
+        $routeFromContext = static::factory()->getConsumableComponentData('routePrefix');
+        if ($routeFromContext) $this->routePrefix = $routeFromContext;
+    }
 
     /**
      * @inheritDoc

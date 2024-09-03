@@ -36,6 +36,7 @@
 </head>
 <body>
   {{ $slot }}
+  @stack('body-end')
 </body>
 </html>
 

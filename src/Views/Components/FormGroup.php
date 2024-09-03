@@ -15,8 +15,14 @@ class FormGroup extends Component
     {
         $nameFromContext = static::factory()->getConsumableComponentData('name');
         if ($nameFromContext) $this->name = implode('.', [$nameFromContext, $this->name]);
-        $i18nFromContext = static::factory()->getConsumableComponentData('i18nPrefix');
-        if ($i18nFromContext !== null) $this->i18nPrefix = implode('.', [$i18nFromContext, $this->i18nPrefix]);
+
+        if (str_starts_with($this->i18nPrefix, 'isolate:')) {
+          $this->i18nPrefix = substr($this->i18nPrefix, 8);
+        } else {
+          $i18nFromContext = static::factory()->getConsumableComponentData('i18nPrefix');
+          if ($i18nFromContext !== null) $this->i18nPrefix = implode('.', [$i18nFromContext, $this->i18nPrefix]);
+        }
+
         $routeFromContext = static::factory()->getConsumableComponentData('routePrefix');
         if ($routeFromContext) $this->routePrefix = implode('.', [$routeFromContext, $this->routePrefix]);
 

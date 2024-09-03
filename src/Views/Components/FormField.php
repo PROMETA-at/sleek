@@ -13,6 +13,7 @@ class FormField extends \Illuminate\View\Component
         public string  $name,
         public ?string $key = null,
         public ?string $i18nPrefix = null,
+        public ?string $i18nResolutionStrategy = null,
         public string  $type = 'text',
         public ?string $label = null,
         public ?string $accessor = null,
@@ -28,10 +29,13 @@ class FormField extends \Illuminate\View\Component
         $labelFactory = static::factory()->getConsumableComponentData('mkLabel');
         $this->resolvePrefixesFromContext($modelFromContext);
 
-        if ($nameFromContext) $this->name = $name = implode('.', [$nameFromContext, $this->name]);
+        $this->i18nResolutionStrategy ??= static::factory()->getConsumableComponentData('i18nResolutionStrategy', 'inherit-name');
+
+        if ($nameFromContext) $this->name = implode('.', [$nameFromContext, $this->name]);
         if ($this->label === null) {
             if ($labelFactory) $this->label = $labelFactory($this);
-            else $this->label = __("$this->i18nPrefix.fields.$name");
+            else if ($this->i18nResolutionStrategy === 'isolate-name') $this->label = __("$this->i18nPrefix.fields.{$this->originalName}");
+            else $this->label = __("$this->i18nPrefix.fields.{$this->name}");
         }
 
         if (! $this->accessor) $this->accessor = $this->name;
@@ -42,7 +46,7 @@ class FormField extends \Illuminate\View\Component
         if ($this->multiple) $this->name .= '[]';
         $this->id ??= $this->name;
 
-        $this->value = old($name, $value ?? optional($modelFromContext, fn ($x) => data_get($x, $this->accessor)) ?? null);
+        $this->value = old($this->name, $value ?? optional($modelFromContext, fn ($x) => data_get($x, $this->accessor)) ?? null);
 
         // Y-m-d is the standard format expected by browsers for `date` or `datetime` input fields.
         // TODO: differentiate between time-less and time-ful formats.

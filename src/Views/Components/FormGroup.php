@@ -10,6 +10,7 @@ class FormGroup extends Component
         public ?string $name = null,
         public ?string $i18nPrefix = null,
         public ?string $routePrefix = null,
+        public ?string $i18nResolutionStrategy = null,
         public ?\Closure $mkLabel = null,
     )
     {
@@ -26,6 +27,7 @@ class FormGroup extends Component
         $routeFromContext = static::factory()->getConsumableComponentData('routePrefix');
         if ($routeFromContext) $this->routePrefix = implode('.', [$routeFromContext, $this->routePrefix]);
 
+        $this->i18nResolutionStrategy ??= static::factory()->getConsumableComponentData('i18nResolutionStrategy');
         $this->mkLabel ??= static::factory()->getConsumableComponentData('mkLabel');
     }
 

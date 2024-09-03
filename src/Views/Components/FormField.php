@@ -25,13 +25,13 @@ class FormField extends \Illuminate\View\Component
         $this->originalName = $name;
 
         $modelFromContext = static::factory()->getConsumableComponentData('model');
-        $nameFromContext = static::factory()->getConsumableComponentData('name');
         $labelFactory = static::factory()->getConsumableComponentData('mkLabel');
         $this->resolvePrefixesFromContext($modelFromContext);
 
         $this->i18nResolutionStrategy ??= static::factory()->getConsumableComponentData('i18nResolutionStrategy', 'inherit-name');
 
-        if ($nameFromContext) $this->name = implode('.', [$nameFromContext, $this->name]);
+        $nameFromContext = static::factory()->getConsumableComponentData('name');
+        $this->name = implode('.', array_filter([$nameFromContext, $this->name]));
         if ($this->label === null) {
             if ($labelFactory) $this->label = $labelFactory($this);
             else if ($this->i18nResolutionStrategy === 'isolate-name') $this->label = __("$this->i18nPrefix.fields.{$this->originalName}");

@@ -33,7 +33,12 @@
                             <ul class="nav flex-column">
                                 @foreach($navItem['items'] as $subItem)
                                     <li class="nav-item">
-                                        <a class="nav-link {{ Str::startsWith(Request::url(), $subItem['route']) ? 'active' : '' }}" href="{{ $subItem['route'] }}">{{ $subItem['label'] }}</a>
+                                        <a class="nav-link {{ Str::startsWith(Request::url(), $subItem['route']) ? 'active' : '' }}" href="{{ $subItem['route'] }}">
+                                            @if(isset($subItem['icon']))
+                                                <x-sleek::nav-icon :icon="$subItem['icon']" />&nbsp;
+                                            @endif
+                                            {{ $subItem['label'] }}
+                                        </a>
                                     </li>
                                 @endforeach
                             </ul>
@@ -41,7 +46,12 @@
                     </li>
                 @else
                     <li class="nav-item">
-                        <a class="nav-link {{ Str::startsWith(Request::url(), $navItem['route']) ? 'active' : '' }}" href="{{ $navItem['route'] }}">{{ $navItem['label'] }}</a>
+                        <a class="nav-link {{ Str::startsWith(Request::url(), $navItem['route']) ? 'active' : '' }}" href="{{ $navItem['route'] }}">
+                            @if(isset($navItem['icon']))
+                                <x-sleek::nav-icon :icon="$navItem['icon']" />&nbsp;
+                            @endif
+                            {{ $navItem['label'] }}
+                        </a>
                     </li>
                 @endif
             @endforeach

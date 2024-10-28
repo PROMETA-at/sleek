@@ -116,10 +116,6 @@
       background-color: var(--bs-primary);
     }
 
-    #sidebarMenu {
-      container-type: inline-size;
-    }
-
     @if($__data['sleek::navPosition'] === 'side')
         #mobileNavbar, #sidebarMenu ul.navbar-nav {
           flex-direction: column;

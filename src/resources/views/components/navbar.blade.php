@@ -27,6 +27,9 @@
                 @if(array_key_exists('items', $navItem))
                     <li class="nav-item">
                         <a class="nav-link {{ Str::startsWith(Request::url(), collect($navItem['items'])->pluck('route')->toArray()) ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#nav-collapse-{{ $key }}" aria-expanded="false" aria-controls="nav-collapse-{{ $key }}">
+                            @if(isset($navItem['icon']))
+                                <x-sleek::nav-icon :icon="$navItem['icon']" />&nbsp;
+                            @endif
                             {{ $navItem['label'] }} &#x25BC;
                         </a>
                         <div id="nav-collapse-{{ $key }}" class="collapse {{ Str::startsWith(Request::url(), collect($navItem['items'])->pluck('route')->toArray()) ? 'show' : '' }}" style="padding-left: 1rem">

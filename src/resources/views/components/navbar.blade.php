@@ -26,7 +26,7 @@
             @foreach($items ?? $__data['sleek::navItems'] ?? [] as $key => $navItem)
                 @if(array_key_exists('items', $navItem))
                     <li class="nav-item">
-                        <a class="nav-link {{ Str::startsWith(Request::url(), collect($navItem['items'])->pluck('route')->toArray()) ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#nav-collapse-{{ $key }}" aria-expanded="false" aria-controls="nav-collapse-{{ $key }}">
+                        <a class="nav-link text-nowrap {{ Str::startsWith(Request::url(), collect($navItem['items'])->pluck('route')->toArray()) ? 'active' : '' }}" href="#" data-bs-toggle="collapse" data-bs-target="#nav-collapse-{{ $key }}" aria-expanded="false" aria-controls="nav-collapse-{{ $key }}">
                             @if(isset($navItem['icon']))
                                 <x-sleek::nav-icon :icon="$navItem['icon']" />&nbsp;
                             @endif
@@ -36,7 +36,7 @@
                             <ul class="nav flex-column">
                                 @foreach($navItem['items'] as $subItem)
                                     <li class="nav-item">
-                                        <a class="nav-link {{ Str::startsWith(Request::url(), $subItem['route']) ? 'active' : '' }}" href="{{ $subItem['route'] }}">
+                                        <a class="nav-link text-nowrap {{ Str::startsWith(Request::url(), $subItem['route']) ? 'active' : '' }}" href="{{ $subItem['route'] }}">
                                             @if(isset($subItem['icon']))
                                                 <x-sleek::nav-icon :icon="$subItem['icon']" />&nbsp;
                                             @endif
@@ -49,7 +49,7 @@
                     </li>
                 @else
                     <li class="nav-item">
-                        <a class="nav-link {{ Str::startsWith(Request::url(), $navItem['route']) ? 'active' : '' }}" href="{{ $navItem['route'] }}">
+                        <a class="nav-link text-nowrap {{ Str::startsWith(Request::url(), $navItem['route']) ? 'active' : '' }}" href="{{ $navItem['route'] }}">
                             @if(isset($navItem['icon']))
                                 <x-sleek::nav-icon :icon="$navItem['icon']" />&nbsp;
                             @endif

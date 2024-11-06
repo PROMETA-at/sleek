@@ -1,31 +1,33 @@
 @props(['reactivity' => false])
-<div {{$attributes->class(['card', 'sleek-reactivity' => $reactivity])}} {{$attributes}}>
+<x-bs::card {{ $attributes->class(['sleek-reactivity' => $reactivity]) }}>
     @isset($header)
-    <div class="card-header">
-        {{$header}}
-    </div>
+        @php($attributes = $header->attributes->getAttributes())
+        @slot('header', null, $attributes)
+            {{$header}}
+        @endslot
     @endisset
 
-    <div class="card-body">
+    <x-slot:body>
         {{$slot}}
-    </div>
+    </x-slot:body>
 
     @isset($footer)
-        <div class="card-footer">
-            {{$footer}}
-        </div>
+        @php($attributes = $footer->attributes->getAttributes())
+        @slot('footer', null, $attributes)
+        {{$footer}}
+        @endslot
     @endisset
-</div>
+</x-bs::card>
 @once
     @if($reactivity)
         <style>
             .sleek-reactivity {
-            box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
-            transition: 0.3s;
+                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+                transition: 0.3s;
             }
 
             .sleek-reactivity:hover {
-            box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3);
+                box-shadow: 0 8px 16px 0 rgba(0,0,0,0.3);
             }
         </style>
     @endif

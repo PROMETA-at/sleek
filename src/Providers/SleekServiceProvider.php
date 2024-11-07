@@ -35,6 +35,57 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
                 $__env->slot($slotName, $slotContent, $slotContent->attributes);
               } ?>';
             });
+
+            $bladeCompiler->directive('ensureSlotFor', function ($arguments) use ($bladeCompiler) {
+                $parameters = explode(',', $arguments);
+                [$var] = $parameters;
+
+                $forceCreation = count($parameters) > 1
+                    ? "if (!isset($var)) $var = new Illuminate\View\ComponentSlot();"
+                    : '';
+
+                // This mean hack creates a props statement for the given variable.
+                //  Since the code is protected, and we don't want to duplicate it, we just call it via reflection!
+                $varName = substr($var, 1);
+                $propsCode = tap(new \ReflectionMethod(BladeCompiler::class, 'compileProps'))
+                    ->setAccessible(true)
+                    ->invoke($bladeCompiler, "(['$varName' => null])");
+
+                return $propsCode . "\n<?php
+                    $forceCreation
+                    if (isset($var) && is_string($var)) $var = new Illuminate\View\ComponentSlot($var);
+                ?>";
+            });
+
+            $bladeCompiler->directive('flags', function ($arguments) use ($bladeCompiler) {
+                $array = eval('return '.$arguments.';');
+                $flagPropsString = '[' . collect($array)
+                    ->flatMap(function ($value, $key) {
+                        $name = is_numeric($key) ? $value : $key;
+                        $value = is_numeric($key) ? true : $value;
+
+                        return [$name => $value, 'no' . ucfirst($name) => null];
+                    })
+                    ->map(fn ($value, $key) => "'$key' => " . ($value !== null ? json_encode($value) : 'null'))
+                    ->join(', ') . ']';
+
+                $propsCode = tap(new \ReflectionMethod(BladeCompiler::class, 'compileProps'))
+                    ->setAccessible(true)
+                    ->invoke($bladeCompiler, "($flagPropsString)");
+
+                return $propsCode;
+            });
+            $bladeCompiler->directive('flag', function ($arguments) {
+                $flagName = trim($arguments, '\'"');
+                $negFlagName = 'no'.ucfirst($flagName);
+                return "<?php if (
+                    !(isset(\${$negFlagName}) && (\${$negFlagName} === true || \${$negFlagName} === 'true')) &&
+                    (isset(\${$flagName}) && (\${$flagName} === true || \${$flagName} === 'true'))
+                ): ?>";
+            });
+            $bladeCompiler->directive('endflag', function () {
+                return '<?php endif; ?>';
+            });
         });
 
         $this->app->scoped('sleek', fn() => new SleekPageState);

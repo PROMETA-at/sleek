@@ -1,3 +1,7 @@
+@ensureSlotFor($header)
+@ensureSlotFor($body)
+@ensureSlotFor($footer)
+
 <div {{ $attributes->class(['card']) }}>
   @isset($headerImage)
     <img {{ $headerImage->attributes->class(['card-img-top']) }}>

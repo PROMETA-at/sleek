@@ -17,7 +17,7 @@ class ModalForm extends Component
         public $enctype = 'application/x-www-form-urlencoded'
     )
     {
-        $this->formId = uniqid();
+        $this->formId = uniqid('form-');
     }
 
     public function render()

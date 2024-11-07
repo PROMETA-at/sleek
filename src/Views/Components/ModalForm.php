@@ -2,22 +2,22 @@
 
 namespace Prometa\Sleek\Views\Components;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\View\Component;
+
 class ModalForm extends Component
 {
     public function __construct(
         public $id,
-        public $action,
-        public $method,
         public $title,
         public $formId = null,
         public $formType = 'form',
-        public $model = null,
-        public $fields = null,
-        public $enctype = 'application/x-www-form-urlencoded'
+        // Need to define the model as an explicit parameter,
+        //  to make it available to the form fields as a consumable.
+        public ?Model $model = null,
     )
     {
-        $this->formId = uniqid('form-');
+        $this->formId ??= uniqid('form-');
     }
 
     public function render()

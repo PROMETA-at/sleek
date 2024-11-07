@@ -2,13 +2,13 @@
 @ensureSlotFor($submit, true)
 @ensureSlotFor($body, true)
 
-<x-sleek::modal id="{{$id}}" {{ $attributes }}>
+<x-sleek::modal id="{{$id}}" {{ $attributes->except(['action', 'method', 'model', 'fields', 'enctype']) }}>
     <x-slot:header>
         {{ $title }}
     </x-slot:header>
 
     <x-slot:extra>
-        <x-dynamic-component :id="$formId" component="sleek::{{$formType}}" :action="$action" :method="$method" :model="$model" :fields="$fields" :enctype="$enctype" style="display: contents">
+        <x-dynamic-component :id="$formId" component="sleek::{{$formType}}" :model="$model" {{ $attributes->only(['action', 'method', 'fields', 'enctype']) }} style="display: contents">
             <x-bs::modal.body>
                 {{ $slot ?? $body }}
             </x-bs::modal.body>

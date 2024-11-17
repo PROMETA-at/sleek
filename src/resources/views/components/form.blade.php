@@ -1,4 +1,4 @@
-@props(['method' => 'post', 'action'])
+@props(['method' => 'post', 'action' => ''])
 @php
     if (! in_array(strtolower($method), ['get', 'post'])) {
         $formMethod = $method;

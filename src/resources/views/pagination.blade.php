@@ -75,11 +75,21 @@
       @lang('pagination.items-per-page')
     </span>
     <div class="btn-group itemSelect">
-
+      @php
+          $pageSizeName ??= 'page-size'
+      @endphp
       @foreach([10, 20, 50, 100] as $pageSize)
+        @php
+            $queryParams = [];
+            Arr::set($queryParams, $pageSizeName, $pageSize);
+
+            $query = request()->query();
+            $query = array_merge_recursive_distinct($query, $queryParams);
+            Arr::forget($query, $pageName ?? 'page');
+        @endphp
         <a
           @if($pageSize !== $paginator->perPage())
-            href="{{ request()->fullUrlWithQuery(['page-size' => $pageSize, 'page' => null]) }}"
+            href="{{ request()->fullUrlWithQuery($query) }}"
           @else
             aria-current="page"
           @endif

@@ -1,5 +1,8 @@
 @if ($entities instanceof \Illuminate\Contracts\Pagination\Paginator && ($navigation === true || $navigation === 'top'))
-    {{ $entities->withQueryString()->links() }}
+    {{ $entities->withQueryString()->links(data: [
+        'pageSizeName' => $pageSizeName,
+        'pageName' => $pageName,
+    ]) }}
 @endif
 <x-bs::table striped hover :size="$size" {{ $attributes }}>
     <thead>
@@ -8,18 +11,15 @@
                 <th>
                     @if($column['sortable'])
                         <a
-                            href="{{ $currentRoute([
-                                'sort-by' => $column['name'],
-                                'sort-direction' => (!request('sort-direction') || request('sort-by') !== $column['name'] || request('sort-direction') === 'desc') ? 'asc' : 'desc'
-                            ]) }}"
+                            href="{{ $sortedRoute($column['name']) }}"
                             hx-boost="true"
                         >
                             {{ $column['label'] }}
-                            @if(!(request('sort-direction') && request('sort-by') === $column['name']))
+                            @if(!(request($sortDirectionName) && request($sortByName) === $column['name']))
                                 <i class="bi bi-chevron-expand"></i>
-                            @elseif(request('sort-direction') === 'asc')
+                            @elseif(request($sortDirectionName) === 'asc')
                                 <i class="bi bi-sort-up"></i>
-                            @elseif(request('sort-direction') === 'desc')
+                            @elseif(request($sortDirectionName) === 'desc')
                                 <i class="bi bi-sort-down"></i>
                             @endif
                         </a>
@@ -50,7 +50,10 @@
 
 </x-bs::table>
 @if ($entities instanceof \Illuminate\Contracts\Pagination\Paginator && ($navigation === true || $navigation === 'bottom'))
-  {{ $entities->withQueryString()->links() }}
+    {{ $entities->withQueryString()->links(data: [
+        'pageSizeName' => $pageSizeName,
+        'pageName' => $pageName,
+    ]) }}
 @endif
 <style>
     @media screen and (max-width: 600px) {

@@ -1,14 +1,16 @@
 <?php namespace Prometa\Sleek;
 
 use Illuminate\Contracts\Pagination\Paginator;
+use function Prometa\Sleek\as_parameter_name;
 
 class HandleQueryParametersMixin
 {
   public function autoSort(): \Closure
   {
-    return function () {
-      $sortBy = request('sort-by');
-      $sortDirection = request('sort-direction', 'desc');
+    return function ($prefix = null) {
+      if ($prefix) $prefix .= '.';
+      $sortBy = request($prefix.'sort-by');
+      $sortDirection = request($prefix.'sort-direction', 'desc');
 
       if ($sortBy) {
         $this->orderBy($sortBy, $sortDirection);
@@ -19,10 +21,11 @@ class HandleQueryParametersMixin
   }
 
   public function autoPaginate(): \Closure {
-    return function (int $defaultPageSize): Paginator {
-      $pageSize = request('page-size', $defaultPageSize);
+    return function (int $defaultPageSize, $prefix = null): Paginator {
+      if ($prefix) $prefix .= '.';
+      $pageSize = request($prefix.'page-size', $defaultPageSize);
 
-      return $this->paginate($pageSize);
+      return $this->paginate($pageSize, pageName: as_parameter_name($prefix.'page'));
     };
   }
 

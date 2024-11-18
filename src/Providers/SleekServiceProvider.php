@@ -1,11 +1,13 @@
 <?php namespace Prometa\Sleek\Providers;
 
+use Illuminate\Pagination\LengthAwarePaginator as BaseLengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\ComponentAttributeBag;
 use Illuminate\View\DynamicComponent;
 use Prometa\Sleek\Blade\BladeCompiler;
 use Prometa\Sleek\HandleQueryParametersMixin;
+use Prometa\Sleek\Pagination\LengthAwarePaginator;
 use Prometa\Sleek\Views\Factory;
 use Prometa\Sleek\Views\SleekPageState;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +26,8 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
             $factory->share('app', $app);
             return $factory;
         });
+
+        $this->app->bind(BaseLengthAwarePaginator::class , LengthAwarePaginator::class);
 
         $this->callAfterResolving('blade.compiler', function (BladeCompiler $bladeCompiler) {
             $bladeCompiler->component('dynamic-component', DynamicComponent::class);

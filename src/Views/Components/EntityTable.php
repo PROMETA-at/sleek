@@ -1,11 +1,17 @@
 <?php namespace Prometa\Sleek\Views\Components;
 
-use Illuminate\Routing\UrlGenerator;
-use Illuminate\Support\Facades\Route;
+use Illuminate\Pagination\AbstractPaginator;
+use Illuminate\Support\Arr;
+use function Prometa\Sleek\as_parameter_name;
 
 class EntityTable extends \Illuminate\View\Component
 {
     use ResolvesPrefixesFromContext;
+
+    public string $pageSizeName;
+    public string $sortByName;
+    public string $sortDirectionName;
+    public string $pageName;
 
     public function __construct(
         public ?string  $key = null,
@@ -15,7 +21,8 @@ class EntityTable extends \Illuminate\View\Component
         public ?string  $size = null,
         public bool     $responsive = false,
         public bool|array  $sortable = false,
-        public bool|string $navigation = true
+        public bool|string $navigation = true,
+        public ?string  $scoped = null,
     ) {
         $this->resolvePrefixesFromContext($this->entities[0] ?? null);
 
@@ -59,13 +66,36 @@ class EntityTable extends \Illuminate\View\Component
             $value['sortable'] = $this->sortable === true || (is_array($this->sortable) && in_array($value['name'], $this->sortable));
         });
         $this->columns = array_values($this->columns);
+
+        $prefix = $this->scoped ? $this->scoped.'.' : '';
+        $this->pageSizeName = $prefix.'page-size';
+        $this->sortByName = $prefix.'sort-by';
+        $this->sortDirectionName = $prefix.'sort-direction';
+        $this->pageName = $prefix.'page';
     }
 
-    public function currentRoute($extra = []) {
-        /** @var UrlGenerator $urlGenerator */
-        $urlGenerator = app(UrlGenerator::class);
-        $currentRoute = Route::getCurrentRoute();
-        return $urlGenerator->toRoute($currentRoute, array_merge($currentRoute->parameters(), request()->query(), $extra), false);
+    public function currentRoute(array $extra = []): string {
+        $query = request()->query();
+        $query = array_merge_recursive_distinct($query, $extra);
+        return request()->fullUrlWithQuery($query);
+    }
+
+    public function sortedRoute(string $column): string {
+        $prefix = $this->scoped ? $this->scoped.'.' : '';
+
+        $params = [];
+        Arr::set($params, $this->sortByName, $column);
+        Arr::set($params, $this->sortDirectionName,
+            (
+                !request($this->sortDirectionName) || 
+                request($this->sortByName) !== $column || 
+                request($this->sortDirectionName) === 'desc'
+            ) 
+            ? 'asc' 
+            : 'desc' 
+        );
+
+        return $this->currentRoute($params);
     }
 
     public function render()

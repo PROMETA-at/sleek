@@ -25,7 +25,7 @@ class HandleQueryParametersMixin
       if ($prefix) $prefix .= '.';
       $pageSize = request($prefix.'page-size', $defaultPageSize);
 
-      return $this->paginate($pageSize, pageName: as_parameter_name($prefix.'page'));
+      return $this->paginate($pageSize, pageName: $prefix.'page');
     };
   }
 

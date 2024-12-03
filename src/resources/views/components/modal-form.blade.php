@@ -16,15 +16,15 @@
             </x-bs::modal.body>
 
             <x-bs::modal.footer>
-                @if (!isset($footer))
+                @isset($footer)
+                    {{ $footer }}
+                @else
                     <button {{ $cancel->attributes->except(['label'])->class(['btn', 'btn-outline-secondary']) }} type="button" data-bs-dismiss="modal">{{ $cancel->attributes->get('label') ?? __('common.actions.cancel') }}</button>
                     <button type="submit" class="btn btn-success" :disabled="loading" form="{{ $formId }}">
                         <span x-show="loading" class="spinner-border spinner-border-sm modal-spinner hidden-spinner" role="status" aria-hidden="true"></span>
                         {{ $submit->attributes->get('label') ?? __('common.actions.submit') }}
                     </button>
-                @else
-                    @slot('footer', $footer, $footer->attributes->getAttributes())
-                @endif
+                @endisset
             </x-bs::modal.footer>
         </x-dynamic-component>
     </x-slot:extra>

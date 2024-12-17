@@ -6,7 +6,11 @@
 
 <x-sleek::modal id="{{$id}}" {{ $attributes->except($formAttributes) }}>
     <x-slot:header>
-        {{ $title }}
+        @isset($header)
+            {{ $header }}
+        @else
+            <h5 class="modal-title">{{ $title }}</h5>
+        @endisset
     </x-slot:header>
 
     <x-slot:extra>

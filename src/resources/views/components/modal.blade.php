@@ -7,7 +7,7 @@
 
     @isset($header)
         @slot('header', null, $header->attributes->getAttributes())
-            <h5>{{ $header }}</h5>
+            {{ $header }}
             @flag('close') <x-bs::btn.close modal /> @endflag
         @endslot
     @endisset

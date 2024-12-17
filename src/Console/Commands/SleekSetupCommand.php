@@ -108,26 +108,42 @@ class SleekSetupCommand extends Command
      */
     protected function parseScssImport() : void
     {
-        $appScssPath = resource_path('sass/app.scss');
+        $sassDirPath = resource_path('sass');
+        $appScssPath = $sassDirPath . DIRECTORY_SEPARATOR . 'app.scss';
         $sleekScssImport = "@import '../../vendor/prometa/sleek/src/resources/sass/app.scss';";
 
+        if (!File::isDirectory($sassDirPath)) {
+            $this->warn('The resources/sass directory does not exist.');
+            if ($this->confirm('Do you want to create the sass directory?')) {
+                File::makeDirectory($sassDirPath, 0755, true);
+                $this->info('sass directory has been created.');
+            } else {
+                $this->info('Skipping SCSS setup since sass directory does not exist.');
+                return;
+            }
+        }
+
         if (!File::exists($appScssPath)) {
-            $this->warn('app.scss file not found');
+            $this->warn('app.scss file not found in the sass directory.');
             if ($this->confirm('The app.scss file does not exist. Do you want to create it and add the SCSS import?')) {
                 File::put($appScssPath, "// This import was added by sleek:setup. It imports the entire CSS of bootstrap & bootstrap-icons.\n" . $sleekScssImport);
-                $this->info('app.scss file has been created and SCSS path has been added');
+                $this->info('app.scss file has been created and SCSS path has been added.');
+            } else {
+                $this->info('Skipping SCSS setup since app.scss file was not created.');
             }
         } else {
             $appScssContent = File::get($appScssPath);
 
             if (!str_contains($appScssContent, $sleekScssImport)) {
-                $this->warn('The SCSS path is not included in app.scss');
+                $this->warn('The SCSS import path is not included in app.scss.');
                 if ($this->confirm('Do you want to add the correct SCSS path?')) {
                     File::append($appScssPath, "\n// This import was added by sleek:setup. It imports the entire CSS of bootstrap & bootstrap-icons.\n" . $sleekScssImport);
-                    $this->info('SCSS path has been added');
+                    $this->info('SCSS path has been added.');
+                } else {
+                    $this->info('Skipping SCSS path addition.');
                 }
             } else {
-                $this->info('The correct SCSS path is already included in app.scss');
+                $this->info('The correct SCSS path is already included in app.scss.');
             }
         }
     }

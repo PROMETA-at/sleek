@@ -2,7 +2,7 @@
 
 @ensureSlotFor($header)
 
-<x-bs::modal {{ $attributes->merge(['fade' => 'true', 'scrollable' => true, 'centered' => true]) }}>
+<x-bs::modal {{ $attributes->merge(['fade' => 'true', 'centered' => true]) }}>
     @forwardSlots
 
     @isset($header)

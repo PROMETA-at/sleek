@@ -3,7 +3,7 @@
     'backdrop' => 'true',
     'keyboard' => 'true',
     'focus' => 'true',
-    'scrollable' => false,
+    'scrollable' => true,
     'centered' => false,
     'fade' => false,
 ])

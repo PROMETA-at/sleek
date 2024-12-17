@@ -29,6 +29,9 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
 
         $this->app->bind(BaseLengthAwarePaginator::class , LengthAwarePaginator::class);
 
+        // Set the alias for the icon component to use x-icon instead of x-sleek::icon
+        Blade::component('sleek::components.icon', 'icon');
+
         $this->callAfterResolving('blade.compiler', function (BladeCompiler $bladeCompiler) {
             $bladeCompiler->component('dynamic-component', DynamicComponent::class);
             $bladeCompiler->componentNamespace('Prometa\\Sleek\\Views\\Components', 'sleek');

@@ -2,7 +2,7 @@
 @ensureSlotFor($submit, true)
 @ensureSlotFor($body, true)
 
-@php($formAttributes = ['action', 'method', 'fields', 'enctype'])
+@php($formAttributes = ['action', 'method', 'fields', 'enctype', 'target'])
 
 <x-sleek::modal id="{{$id}}" {{ $attributes->except($formAttributes) }}>
     <x-slot:header>

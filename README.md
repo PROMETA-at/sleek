@@ -289,56 +289,221 @@ If you give the model attribute a user model, for example, then the fields are a
 </x-sleek::entity-form>
 ```
 
-### Form
+## Forms
 
-The component helps to create a form. You can specify `PUT`, `POST`, `GET`, `DELETE` as mehtod and define an action. The CSRF token is set automatically.
+Sleek attempts to make writing forms as easy as possible. Beyond components for defining and managing forms, sleek
+also provides natural shortcuts for defining forms upon model instances.
 
-#### Form-Field
-... more soon
+### Defining a Form
 
-It is also possible to create select fields.
+Sleek provides the `sleek::form` component to define a standard HTML-Form. Beyond being a normal form element, this
+form will automatically handling the methods for 'PUT', 'PATCH' and 'DELETE' and automatically insert the CSRF-Token
+when applicable:
 
-```html
-<x-sleek::form-field name="user" type="select" >
-    @foreach($users as $user)
-        <option value="{{$user->id}}">{{$user->name}}</option>
-    @endforeach
+```blade
+{{-- This form uses method="POST" by default, as it's way more useful than a method="GET" default --}}
+<x-sleek::form :action="route('some.route')"></x-sleek::form>
+
+{{-- This form will automatically transform to use method="POST" 
+     and inject @method('PUT') and @csrf into it's body. --}}
+<x-sleek::form method="PUT" :action="route('some.put.route')"></x-sleek::form>
+
+{{-- If you still need a method="GET" form, you just need to explicitly say so --}}
+<x-sleek::form method="GET" :action="route('some.get.route')"></x-sleek::form>
+```
+
+### Defining Form Fields
+
+To define a form field, sleek provides the `sleek::form-field` component. This component wraps the standard HTML-Input,
+-Select and -Textarea fields (an does a whole lot more magic behind the scenes), allowing you to define form fields
+with one unified component:
+
+```blade
+{{-- Will use the standard <input type="text"> --}}
+<x-sleek::form-field name="first-field" />
+
+{{-- Will use the standard <textarea></textarea> --}}
+<x-sleek::form-field type="textarea" name="textarea-fields" />
+
+{{-- All of them will forward their type to <input>-Element --}}
+<x-sleek::form-field type="checkbox" />
+<x-sleek::form-field type="number" />
+<x-sleek::form-field type="date" />
+<x-sleek::form-field type="datetime" />
+<x-sleek::form-field type="hidden" />
+
+{{-- Will render a <select>-Element --}}
+<x-sleek::form-field type="select">
+    <option value="1">One</option>
+    <option value="2">Two</option>
+    <option value="3">Three</option>
+</select>
+<x-sleek::form-field type="select" :options="['1' => 'One', '2', => 'Two', 3 => 'Three']" />
+
+{{-- Will render a list of radio buttons --}}
+<x-sleek::form-field type="radio-group" :options="['1' => 'One', '2', => 'Two', 3 => 'Three']" />
+```
+
+### Field Names
+
+Like normal form fields, every field needs a name. Beyond just setting a name, `sleek::form-field` will automagically
+convert dot-notation to nested field names and automatically append `[]` for multi-selects.
+
+```blade
+<x-sleek::form-field name="the-name" />
+
+{{-- name will be "nested[name]" --}}
+<x-sleek::form-field name="nested.name" />
+
+{{-- name will be "multi-select[]" --}}
+<x-sleek::form-field type="select" multiple name="multi-select">{{-- ... --}}</x-sleek::form-field>
+```
+
+### Field Labels
+
+Form fields include labels in their rendered output.
+By default, it will try to be smart and guess an appropriate translation key for the label, 
+based on the current route's name.
+
+For example, if the current route is named 'users.show' (standard naming convention when using Resource-Controllers),
+the translation key will be set to 'users.fields.<name>'.
+
+Generally, the form field takes the route, strips the last segment from it and uses the rest as a prefix for the
+translation key: '<prefix>.fields.<name>'.
+
+As long as you adhere to standard naming and framework conventions, you should generally have no need to set the
+label explicitly. However, if you need to, there are several ways override the standard guessing logic, depending
+on the needed granularity.
+
+#### Setting an Explicit Label
+
+Of course you can just set an explicit label. `sleek::form-field` both accepts the label as an attribute and slot:
+```blade
+<x-sleek::form-field label="Custom Label" />
+
+<x-sleek::form-field>
+    <x-slot:label>
+        Custom Label
+    </x-slot:label>
 </x-sleek::form-field>
 ```
 
-#### Form-Actions
-With this component you can easily insert a Submit and Cancel button into a form. When using the Sleek Form, the Submit button is deactivated by Alpine.js and the spinner is displayed.
-You can style the component as you wish and also change the label of the buttons.
+#### Setting a Custom Prefix
 
-```html
-<x-sleek::form-actions class="text-end">
-    <x-slot:submit label="Submit" ></x-slot:submit>
-    <x-slot:cancel label="Cancel" ></x-slot:cancel>
-</x-sleek::form-actions>
+If you only need a custom prefix to find the correct translation file, you can use the `i18nPrefix` property:
+
+```blade
+{{-- will resolve the label from 'custom.prefix.fields.the-field' --}}
+<x-sleek::form-field i18nPrefix="custom.prefix" name="the-field" />
 ```
-If you use the Sleek form, it depends on which method you use. Different buttons are displayed depending on the method. You can specify which buttons you want to see in the show array and access and change them via slots
 
-```html
-<x-sleek::form method="DELETE" action="{{route('users.destroy',compact('user'))}}">
-      <x-sleek::form-actions />
+This property is also checked on any parent component, making it especially useful to define on form components,
+meaning all containing fields will use the custom prefix:
+
+```blade
+<x-sleek::form :action="route('some.route')" i18nPrefix="custom.prefix">
+    {{-- translation key: 'custom.prefix.first-field' --}}
+    <x-sleek::form-field name="first-field" />
+    {{-- translation key: 'custom.prefix.second-field' --}}
+    <x-sleek::form-field name="second-field" />
 </x-sleek::form>
 ```
-The example above will create one Delete Button with a `confirm box`.
 
-```html
-<x-sleek::form-actions :show="['submit','reset','cancel']" />
+### Field values
+
+Beyond setting a value directly, `sleek::form-field` will automatically resolve the old input value from the session 
+upon re-render (for example when validation fails).
+
+The value will be used appropriately depending on the input type, so you don't have to manage "checked" or "selected"
+attributes manually.
+
+```blade
+<x-sleek::form-field name="field-name" value="the value" />
+{{-- Renders as: --}}
+<input name="field-name" value="the value">
+
+<x-sleek::form-field name="checkbox-field" type="checkbox" :value="true" />
+{{-- Renders as: --}}
+<input type="checkbox" name="checkbox-field" checked>
+
+<x-sleek::form-field name="select-field" type="select" value="1" :options="['1' => 'One', '2' => 'Two']" />
+{{-- Renders as: --}}
+<select name="select-field">
+    <option value="1" selected>One</option>
+    <option value="2">One</option>
+</select>
 ```
-The submit button is always displayed differently due to the method.
 
-#### Usage
+## Entity Forms
 
-You can either use the `form-field` components to create fields. The most common types are supported. It is also possible to create fields with normal HTML and use the form component only as a help for the CSRF token and the method
+While the form and field components are already useful by themselves, Sleek also provides a `sleek::entity-form`
+component, which can automatically build a form from a model!
 
-```html
-<x-sleek::form method="PUT" action="{{route('user.update',$user->id)}}">
-    <x-sleek::form-field name="desc"></x-sleek::form-field>
-    <button type="submit" class="btn btn-primary">{{__('messages.assign_import')}}</button>
-</x-sleek::form>
+```blade
+<x-sleek::entity-form 
+    :model="$user"
+    :fields="[
+        /* Assumed type="text" */
+        'name',
+        /* Explicit name => type combination */
+        'is_admin' => 'checkbox',
+        /* Verbose definition */
+        'roles' => [
+            'type' => 'select',
+            'attributes' => ['multiple'],
+        ],
+    ]"
+/>
+```
+
+The above declaration autmagically sets up a few things:
+
+- Since we pass in a model the form assumes an update operation and sets the method to 'PUT'
+- The form automatically assumes an "action" property based on the current route.
+- The form creates form fields from the "fields" attribute.
+- The form pulls out the field values from the given model.
+
+Lets go through them one by one:
+
+### Form method Guessing
+
+Depending on if you provide a model or not, the method of the form will be set to 'POST' or 'PUT' respectively.
+This aligns with standard assumptions about the routes for creating and updating resources in RESTful APIs.
+
+```blade
+{{-- Will set method="POST" --}}
+<x-sleek::entity-form />
+
+{{-- Will set method="PUT" --}}
+<x-sleek::entity-form :model="$user" />
+
+{{-- Explicitly setting the method overrides automatic guessing, so method="PATCH" --}}
+<x-sleek::entity-form :model="$user" method="PATCH" />
+```
+
+### Form Action Guessing
+
+Depending on the resolved form method, an appropriate form action will be set. Sleek assumes standard form names for
+ResourceControllers and tries to resolve the route based on those route names. 
+
+As with translation keys for form fields, the current route name is used as a basis for constructing the route name.
+For example, if the current route is named `users.edit` and the method="PUT", the action will be resolved to the route
+named `users.update`.
+Alternatively, if the current route is named `users.create` and the method="POST", the action will be resolved to the
+route named `users.store`.
+
+Generally, as before, the form takes the route, strips the last segment from it and uses the rest as a prefix for the
+route name: '<prefix>.update' or '<prefix>.store'.
+
+```blade
+{{-- --}}
+<x-sleek::entity-form method="POST" />
+
+{{-- Will set method="PUT" --}}
+<x-sleek::entity-form method="PUT" />
+
+{{-- Explicitly setting an action overridese automatic guessing --}}
+<x-sleek::entity-form :action="route('custom.action')" />
 ```
 
 ### Modal Form

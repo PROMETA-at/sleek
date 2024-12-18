@@ -31,62 +31,114 @@ After installation, the service provider must be registered. To do this, the fol
 \Prometa\Sleek\Providers\SleekServiceProvider::class,
 ```
 
-## Requirements
+Sleek offers a setup command to automatically install and set up the necessary dependencies. The `sleek:setup` command
+will check your bootstrap and bootstrap-icons installations and inject an import to sleek's sass into your app.scss:
 
-The following things are required to use all functions
-
-- Bootstrap 5
-- Bootstrap Icons
-- Alpine.js
-- HTMX
+```bash
+php artisan sleek:setup
+```
 
 ## Page Layout
 
-### Layout
-
-#### Creating a Simple Layout
-
-With this package, you can easily create a simple layout for your application. First, create your own layout file and include the following code:
+Sleek features a dynamic page layout system, offering a strong default while staying configurable. Simply use the
+`sleek::view` component to get a complete html-page, assets, menu and scaffolding included!
 
 ```blade
-@extends('sleek::layouts.page')
-
-@push('assets')
-    //You can use this as a quickstart template
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.bundle.min.js" integrity="sha384-HwwvtgBNo3bZJJLYd8oVXjrBZt8cqVSpeBNS5n7C8IVInixGAoxmnlMuBnhbgrkm" crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <script src="https://unpkg.com/htmx.org@1.9.6" integrity="sha384-FhXw7b6AlE/jyjlZH5iHa/tTe9EpJ1Y55RjcgPbjeWMskSxZt1v9qkxLJWNJaGni" crossorigin="anonymous"></script>
-@endpush
+<x-sleek::view>
+    <div>Your page goes here</div>
+</x-sleek::view>
 ```
 
-#### Including Assets
+### Defining Assets
 
-The `assets` section allows you to include any required assets for your layout.
-
-#### Using Your Custom Layout
-
-Once your custom layout is created, you can use it in all of your Blade files like so:
-
-```html
-@extends('layouts.app')
-
-@section('body')
-    //your html/blade
-@endsection
-```
-
-### Navbar Configuration
-
-The package comes with a simple, yet configurable, navbar that supports features like Login/Logout and a language selector. You can configure it to better suit the needs of your application.
-
-#### Login/Lougut
-
-By default, the routes named Login and Logout are used. You can define the routes in the `AppServiceProvider` as follows.
+Assets are defined via the Sleek-Facade in your ServiceProvider:
 
 ```php
-Sleek::authentication(['login' => '/login', 'logout' => '/logout']);
+Sleek::assets([
+    'vite' => [ /* Your vite bundles go here */ ],
+    /* additional dependencies go here */
+]);
+```
+
+### Defining the Menu Structure
+
+Menu items can be defined on 2 levels. On the one hand, you can define menu items via the Sleek-Facade:
+
+```php
+Sleek::menu([
+    [
+        'route' => route('index'),
+        'label' => __('navbar.index'),
+    ],
+    [
+        /* Icon names are assumed to be bootstrap icon classes. For example,
+         * 'people' will use the 'bi-people' class on the icon tag.
+         */
+        'icon' => 'people',
+        'route' => 'routes('customers'),
+        'label' => __('navbar.customers'),
+    ],
+    [
+        'label' => __('navbar.settings'),
+        /* Navigation items can be nested. Items have the same structure as top-level items.
+         * As of now, only one level of nesting is supported.
+         */
+        'items' => [
+            'route' => route('settings.general'),
+            'label' => __('navbar.general'),
+        ]
+    ],
+])
+```
+
+Since the service provider is executed outside of a request-context, authentication information an the like are not
+available. To circumvent this problem, all methods on the Sleek-Facade also accept a callback. Sleek will use the
+DI-Container for the callback's parameters and will execute it when the view is rendered.
+
+```php
+Sleek::menu(fn () => [
+    [
+        'route' => route('index'),
+        'label' => __('navbar.index'),
+    ],
+])
+```
+
+For one-off changes to the navigation structure, items can also be defined on the `sleek::view` component:
+
+```blade
+<x-sleek::view :page:nav:items="[
+    /* The same structure as above is valid here */
+]">
+</x-sleek::view>
+```
+
+This is especially powerful if you need to define sub-sections of your applications which need a different
+navigation structure. You can do this by defining your own view component, based on `sleek::view`:
+
+```blade
+{{-- resources/components/custom-view.blade.php --}}
+<x-sleek::view {{ $attributes->merge([
+    'page:nav:items' => [
+        /* Menu structure goes here */
+    ]
+], false) }}>
+    {{ $slot }}
+</x-sleek::view>
+
+{{-- resources/components/nested/page.blade.php --}}
+<x-custom-view>
+    Neseted page comes here
+</x-custom-view>
+```
+
+### Authentication
+
+By default, the navbar shows Login/Logout actions for the user, using the standard `login` and `logout` route names.
+You can customize these routes using the Sleek-Facade:
+
+```php
+Sleek::authentication(['login' => '/custom-login', 'logout' => '/custom-logout']);
 ```
 
 If you do not need authentication routes, you can deactivate it as follows.
@@ -95,24 +147,7 @@ If you do not need authentication routes, you can deactivate it as follows.
 Sleek::authentication(false);
 ```
 
-#### Navbar Elements
-
-To insert elements in the menu bar, this can also be done in the `AppServiceProvider`.
-
-```php
-Sleek::menu([['route' => '/users', 'label' => 'Benutzer']]);
-```
-
-It is also possible to pass a clousre, for example
-
-```php
-Sleek::menu(function () {
-    if (Auth::check()) return [['route' => '/users', 'label' => 'Benutzer'], ['route' => '/tags', 'label' => 'Tags']];
-    return [];
-});
-```
-
-#### Language Switcher
+### Language Switcher
 
 The package has a built-in language switcher. You only need to define the available languages in the AppServiceProvider. For example:
 

@@ -26,6 +26,7 @@ Sleek is a Laravel package that provides a variety of useful features for your L
   - [Table Header Generation](#table-header-generation)
   - [Sorting Controls](#sorting-controls)
   - [Pagination Controls](#pagination-controls)
+  - [Scoping Parameter Names](#scoping-parameter-names)
   - [Value Extraction](#value-extraction)
   - [Custom Columns](#custom-columns)
   - [Styling Columns](#styling-columns)

@@ -746,7 +746,7 @@ This allows us to render the slot multiple times and pass parameters to it, the 
 via the value to the `bind` property - so in our example, the first parameter to the callback will be called `name`.
 You can then use the parameter in your slot as it will be in scope when the slot is rendered.
 
-For each column of each row, `sleek::entity-table` will look for a slot called `column-<name>', where name is the name
+For each column of each row, `sleek::entity-table` will look for a slot called `column-<name>`, where name is the name
 of the column to be rendered. If found, it will then call this callable slot, passing the extracted value of that column
 and the full row value as the first and second parameter respectively.
 
@@ -808,7 +808,7 @@ If you want to append attributes to the `<tr>`-element, you can do that via the 
 > Passing attributes is currently limited and cannot be evaluated conditionally based on the current row value.
 
 > [!NOTE]
-> Note that the content of this slot is always ignored and can only be used to pass attributes.
+> The content of this slot is always ignored and can only be used to pass attributes.
 
 ## UI Components
 

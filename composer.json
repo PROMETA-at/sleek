@@ -52,5 +52,12 @@
         "test": [
             "@php vendor/bin/phpunit"
         ]
+    },
+    "extra" : {
+        "laravel": {
+            "providers": [
+                "Prometa\\Sleek\\Providers\\SleekServiceProvider"
+            ]
+        }
     }
 }

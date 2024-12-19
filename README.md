@@ -92,8 +92,12 @@ Sleek::menu([
         'label' => __('navbar.index'),
     ],
     [
-        /* Icon names are assumed to be bootstrap icon classes. For example,
-         * 'people' will use the 'bi-people' class on the icon tag.
+        /* Enables flexible icon usage via the `icon` attribute:
+         * 
+         * - Simple Bootstrap icon (e.g., 'people'): 'people' will use the 'bi-people' class on the icon tag.
+         * - Explicit Bootstrap icon with 'bi:' prefix (e.g., 'bi:people'): 'bi-people' class on the icon tag.
+         * - Blade component with 'component:' prefix (e.g., 'component:my-icon'): will use the component 'my-icon'.
+         *   It's also possible to use namespaced components (e.g., 'my-icons::my-icon')
          */
         'icon' => 'people',
         'route' => 'routes('customers'),

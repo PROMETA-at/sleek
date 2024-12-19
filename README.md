@@ -24,6 +24,7 @@ Sleek is a Laravel package that provides a variety of useful features for your L
   - [Using Form Groups in Entity-Forms](#using-form-groups-in-entity-forms)
 - [Entit Tables](#entity-tables)
   - [Table Header Generation](#table-header-generation)
+  - [Sorting Controls](#sorting-controls)
   - [Pagination Controls](#pagination-controls)
   - [Value Extraction](#value-extraction)
   - [Custom Columns](#custom-columns)

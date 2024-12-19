@@ -709,6 +709,26 @@ User::query()
 > [!NOTE]
 > We do not supply the "page" since Laravel takes care of that internally.
 
+### Scoping Parameter Names
+
+Sometimes you might want to render multiple tables on the same page. While this can get complicated pretty quickly, with
+multiple sets of sorting and pagination parameters, `sleek::entity-table` tries to simplify this as much as possible.
+
+You can provide a `scoped` property to the component which will prefix all parameters this component appends to links:
+```blade
+<x-slot::entity-table
+    :entities="[...]"
+    :sortable="true"
+    scoped="users"
+/>
+```
+
+In this example, the above discussed parameters will instead be named:
+- `users[sort-by]`
+- `users[sort-direction]`
+- `users[page]`
+- `users[page-size]`
+
 ### Value Extraction
 
 Just like `sleek::form-field`, `sleek::entity-table` will use the column name to automagically extract values from each

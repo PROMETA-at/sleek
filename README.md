@@ -651,8 +651,10 @@ If you need to set a custom label for a single column, you can switch to the lon
 ### Sorting Controls
 
 Setting the `sortable` property will append sorting controls to column headers. These controls are really just links to
-the current page with additional parameters, so you still need to handle them on the server side (but check out our 
-[auto sort helpers](#auto-sort) to make that really simple).
+the current page with additional parameters, so you still need to handle them on the server side.
+
+> ![TIP]
+> Check out our [auto sort helpers](#auto-sort) to automate handling of sorting parameters!
 
 The `sortable` property either accepts a boolean, where `true` indicates all columns are sortable, or an array of field
 names specifying the columns that are sortable.
@@ -686,8 +688,10 @@ pagination links by specifying the `navigation` property:
 - `:navigation="false"` will disable pagination links
 
 As with sorting links, pagination links are just links to the same page with additional parameters, so you need to
-handle those on the server yourself (buut check out our [auto paginate helpers](#auto-paginate) to make *that* really
-simple).
+handle those on the server yourself.
+
+> ![TIP]
+> Check out our [auto paginate helpers](#auto-paginate) to automate handling of pagination parameters!
 
 Again, there are 2 relevant attributes:
 - `page` indicates the page that needs to be rendered

@@ -21,6 +21,7 @@ class FormField extends \Illuminate\View\Component
         public array   $options = [],
         public bool    $multiple = false,
         public ?string $id = null,
+        public string $mode = 'radio',
     ) {
         $this->originalName = $name;
 
@@ -63,6 +64,7 @@ class FormField extends \Illuminate\View\Component
         'checkbox' => view('sleek::components.form-field.checkbox'),
         'textarea' => view('sleek::components.form-field.textarea'),
         'radio-group' => view('sleek::components.form-field.radio-group'),
+        'button-group' => view('sleek::components.form-field.button-group'),
         'hidden' => view('sleek::components.form-field.hidden'),
         'custom' => fn ($data) => $data['slot']->toHtml(),
         default => view('sleek::components.form-field.input'),

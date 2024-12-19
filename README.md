@@ -529,8 +529,8 @@ form control.
 <x-sleek::entity-form 
     :model="new User(['name' => 'James Bond', 'active' => true, 'role' => 'special-agent'])"
 >
-    {{-- will have the property value="James" --}}
-    <x-sleek::form-field name="first_name" />
+    {{-- will have the property value="James Bond" --}}
+    <x-sleek::form-field name="name" />
 
     {{-- will have the property "checked" --}}
     <x-sleek::form-field name="active" type="checkbox" />

@@ -46,7 +46,10 @@ To get started, install Sleek via the Composer package manager:
 composer require prometa/sleek
 ```
 
-After installation, the service provider must be registered. To do this, the following must be entered in the `providers` array at `config/app.php`
+
+By default, the service provider is automatically registered via [Laravel's package auto-discovery](https://laravel.com/docs/master/packages#package-discovery). No additional steps are required.
+
+However, if auto-discovery is disabled or does not work as expected, you can register the service provider manually. To do this, add the following line to the `providers` array in your `config/app.php` file:
 
 ```bash
 \Prometa\Sleek\Providers\SleekServiceProvider::class,

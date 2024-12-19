@@ -713,7 +713,7 @@ keys. In this case, only the first section of the name is used for guessing the 
 />
 ```
 Here, the key for translating the column header will only be `users.fields.tenant`, while the value for the row will
-correctly resolve to 'FBI'. This logic is more intuitive when dotting into nested data, as usually, your looking for
+correctly resolve to 'FBI'. This logic is more intuitive when dotting into nested data, as usually, you're looking for
 a displayable value inside a nested structure, that describes this structure. In this specific example, we want to
 display the 'tenant' by using it's name, so only using the first section of a dotted name feels more correct.
 

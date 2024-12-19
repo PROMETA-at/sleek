@@ -653,7 +653,7 @@ If you need to set a custom label for a single column, you can switch to the lon
 Setting the `sortable` property will append sorting controls to column headers. These controls are really just links to
 the current page with additional parameters, so you still need to handle them on the server side.
 
-> ![TIP]
+> [!TIP]
 > Check out our [auto sort helpers](#auto-sort) to automate handling of sorting parameters!
 
 The `sortable` property either accepts a boolean, where `true` indicates all columns are sortable, or an array of field
@@ -690,7 +690,7 @@ pagination links by specifying the `navigation` property:
 As with sorting links, pagination links are just links to the same page with additional parameters, so you need to
 handle those on the server yourself.
 
-> ![TIP]
+> [!TIP]
 > Check out our [auto paginate helpers](#auto-paginate) to automate handling of pagination parameters!
 
 Again, there are 2 relevant attributes:
@@ -703,7 +703,7 @@ User::query()
     ->paginate(request('page-size'));
 ```
 
-> ![NOTE]
+> [!NOTE]
 > We do not supply the "page" since Laravel takes care of that internally.
 
 ### Value Extraction

@@ -694,7 +694,9 @@ For example, here's how you could use those in your Controller:
 User::query()
     ->paginate(request('page-size'));
 ```
-Note that we do not supply the "page", since Laravel takes care of that internally
+
+> ![NOTE]
+> We do not supply the "page" since Laravel takes care of that internally.
 
 ### Value Extraction
 
@@ -714,7 +716,7 @@ keys. In this case, only the first section of the name is used for guessing the 
 ```
 Here, the key for translating the column header will only be `users.fields.tenant`, while the value for the row will
 correctly resolve to 'FBI'. This logic is more intuitive when dotting into nested data, as usually, you're looking for
-a displayable value inside a nested structure, that describes this structure. In this specific example, we want to
+a displayable value inside a nested structure that describes this structure. In this specific example, we want to
 display the 'tenant' by using it's name, so only using the first section of a dotted name feels more correct.
 
 As usual, if this doesn't work for you, you can explicitly specify an accessor. Since a custom accessor is a common

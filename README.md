@@ -5,10 +5,23 @@ Sleek is a Laravel package that provides a variety of useful features for your L
 ## Table of Contents
 
 - [Installation](#installation)
-- [Requirements](#requirements)
 - [Page Layout](#page-layout)
-  - [Layout](#layout)
-  - [Navbar-Config](#navbar-configuration)
+  - [Defining Assets](#defining-assets)
+  - [Defining the Menu Structure](#defining-the-menu-structure)
+  - [Authentication](#authentication)
+  - [Language Switcher](#language-switcher)
+- [Forms](#forms)
+  - [Defining a Form](#defining-a-form)
+  - [Defining Form Fields](#defining-form-fields)
+  - [Field Names](#field-names)
+  - [Field Labels](#field-labels)
+  - [Grouping Form Fields](#grouping-form-fields)
+- [Entity Forms](#entity-forms)
+  - [Form Method Guessing](#form-method-guessing)
+  - [Form Action Guessing](#form-action-guessing)
+  - [Form Field Generation](#form-field-generation)
+  - [Value Extraction](#value-extraction)
+  - [Using Form Groups in Entity-Forms](#using-form-groups-in-entity-forms)
 - [UI Components](#ui-components)
   - [Alert](#alert)
   - [Entity-Table](#entity-table)
@@ -153,140 +166,6 @@ The package has a built-in language switcher. You only need to define the availa
 
 ```php
 Sleek::language(['de' => 'Deutsch', 'en' => 'Englisch']);
-```
-
-## UI Components
-
-### Alert
-
-#### Usage
-
-If you use the Sleek layout, the alert is automatically included and ready to use. Otherwise you
-can add it to your own layout or to an individual page.
-
-```html
-<x-sleek::alert />
-```
-
-After that you can use and trigger the alert in your controller.
-
-```php
-use Prometa\Sleek\Facades\Sleek;
-
-Sleek::raise('Your message goes here', 'danger');
-```
-
-The first parameter is the message and the second is the type.
-The icons displayed are dependent on the type.
-
-The following types are supported:
-
-- `danger`
-- `warning`
-- `info`
-- `success`
-- `primary`
-- `secondary`
-- `light`
-- `dark`
-
-You can set the position of the alert in the `AppServiceProvider`.
-
-```php
-Sleek::alert([
-    'position' => 'top-right'
-]);
-```
-
-Available positions: `center`, `top-left`, `top-right`, `bottom`, `bottom-left`, `bottom-right`
-
-### Entity-Table
-
-You can easily create a table with data using the `entity-table` component. The table also supports pagination out-of-the-box.
-
-Here's a basic example:
-
-```html
-<x-sleek::entity-table
-    :entities="$users"
-    :columns="['name', 'email', 'actions']"
-/ >
-```
-
-#### Parameters
-
-- `entities`: Specifies the collection that should be displayed in the table.
-- `columns`: Defines which fields from the collection should be displayed in the table. Note that you can include fields that are not in the entities collection, such as `actions`, to customize your table further.
-
-In the above example, the `entities` parameter is set to `$users`, which means the table will display data from the `$users` collection. The `columns` parameter specifies that the fields `'name', 'email', 'actions'` will be shown.
-
-#### Customize the Table
-
-You can further customise each field of the table, e.g. by adjusting the formatting in each table cell using slots, or you can display other fields.
-
-#### Customizing Cell Format
-
-It is important that the name of the column is used in the slot.
-`<x-slot:column-<columnName> />`
-
-To customize the format of a specific column, you can use the slot with the column name. This is very useful for date fields to display in the format of your region. Here's an example that customizes the `name` column:
-
-```html
-<x-slot:column-name bind="$name">
-    User: {$name}
-</x-slot:column-name>
-```
-
-This changes the way names are displayed in the `name` column
-
-#### Accessing Full Model Data
-
-You can also pass the entire model as an argument to the slot to have access to all of its fields. This can be especially useful for incorporating model IDs into routes for actions like deleting an entry. Here's how you can do it:
-
-```html
-<x-slot:column-actions bind="$_,$user">
-    {$user->name} {$user->id}
-    <a href="{{route('users.show',$user->id)}}">Details</a>
-</x-slot:column-actions>
-```
-
-As you can see, this allows you to access fields that may not even be displayed in the table, such as the model's ID.
-
-### Entity-Form
-
-The Entity Form feature allows you to easily create forms for editing existing entities and create forms. Instead of manually specifying each field and its value, you can simply pass the entity and the list of fields to display. The CSRF Token will be set automatically. You can also set the Method to `PUT`, `POST`, `DELETE`, `GET`
-
-```html
-<x-sleek::entity-form :fields="['name' , 'email']">
-    <button type="submit" class="btn btn-primary">Submit</button>
-</x-sleek::entity-form>
-```
-
-This example would create a form with two field name and email.
-
-#### Customize Route
-
-You can easily change the route of the form by defining the action.
-
-```html
-<x-sleek::entity-form action="{{route('profil.update',$user)}}"
-    :fields="['name','email']"
->
-    <button type="submit" class="btn btn-primary">Submit</button>
-</x-sleek::entity-form>
-```
-
-#### Use a model
-
-If you give the model attribute a user model, for example, then the fields are automatically filled with the existing data. This way you can easily develop e.g. a user edit page.
-
-```html
-<x-sleek::entity-form action="{{route('profil.update',$user)}}"
-    :model="$user"
-    :fields="['name','email']"
->
-    <button type="submit" class="btn btn-primary">Submit</button>
-</x-sleek::entity-form>
 ```
 
 ## Forms
@@ -434,6 +313,104 @@ attributes manually.
 </select>
 ```
 
+### Grouping Form Fields
+
+Sometimes, you want to group fields together, so they form a nested attribute in the submit payload. For example, 
+the following form would group otherwise redundant names into a nested attribute:
+
+```blade
+<x-sleek::form>
+    <x-sleek::form-field name="name" />
+    <x-sleek::form-field name="address" />
+
+    <x-sleek::form-field name="contact.name" />
+    <x-sleek::form-field name="contact.address" />
+</x-sleek::form>
+```
+
+When laravel parses the payload from submitting the above form, it would look like this:
+```php
+[
+    'name' => '...',
+    'address' => '...',
+    'contact' => [
+        'name' => '...',
+        'address' => '...'
+    ],
+]
+```
+
+However, having to specify the group key each time can be redundant and increase the complexity of composite forms. To
+combat this problem, you can simply wrap fields in a `sleek::form-group`:
+
+```blade
+<x-sleek::form-group name="contact">
+    {{-- Will have name="contact[name]" --}}
+    <x-sleek::form-field name="name" />
+    {{-- Will have name="contact[address]" --}}
+    <x-sleek::form-field name="address" />
+</x-sleek::form-group>
+```
+
+The form group is also a nice place to set a custom `i18nPrefix` if you need to change the lookup for a subset of
+form fields:
+
+```blade
+<x-sleek::form-group i18nPrefix="contacts">
+    {{-- Will use the translation key "contacts.fields.name" --}}
+    <x-sleek::form-field name="name" />
+    {{-- Will use the translation key "contacts.fields.address" --}}
+    <x-sleek::form-field name="address" />
+</x-sleek::form-group>
+```
+
+#### Nesting Form Groups
+
+Form groups nest properly! So you can do crazy stuff like the following when you find the need to:
+
+```blade
+<x-sleek::form-group name="contact">
+    <x-sleek::form-group name="address">
+        {{-- Will have name="contact[address][street]" --}}
+        <x-sleek::form-field name="street" />
+    </x-sleek::form-group>
+</x-sleek::form-group>
+```
+
+While the above example is pretty contrived, this behavior allows you to compose forms from multiple specialized
+components without thinking about it too much. Imagine the following component:
+
+```blade
+{{-- contacts/form.blade.php --}}
+@props(['name' => null])
+
+<x-sleek::form-group :name="$name">
+    <x-sleek::form-field name="name" />
+    <x-sleek::form-field name="address" />
+</x-sleek::form-group>
+```
+
+We can now use this component in other forms and ensure the data nests properly, allowing for easy reuse:
+```blade
+{{-- users/create.blade.php --}}
+<x-sleek::form>
+    <x-sleek::form-field name="name" />
+    <x-contacts.form name="contact" />
+</x-sleek::form>
+```
+
+#### A Note on From Group Markup
+
+Currently, the Form Group simply renders it's slot, not adding any Markup in the process. We're keeping the option open
+to add sensible markup to actually *group* form elements visibly, but if you want to be absolutely sure that
+`sleek::form-group` only groups logically and does not add markup, add the `passthrough` property to the component:
+
+```blade
+<x-sleek::form-group passthrough>
+    I will <strong>never</strong> be wrapped in markup!
+</x-sleek::form-group>
+```
+
 ## Entity Forms
 
 While the form and field components are already useful by themselves, Sleek also provides a `sleek::entity-form`
@@ -450,7 +427,8 @@ component, which can automatically build a form from a model!
         /* Verbose definition */
         'roles' => [
             'type' => 'select',
-            'attributes' => ['multiple'],
+            /* additional properties */
+            'multiple',
         ],
     ]"
 />
@@ -465,7 +443,7 @@ The above declaration autmagically sets up a few things:
 
 Lets go through them one by one:
 
-### Form method Guessing
+### Form Method Guessing
 
 Depending on if you provide a model or not, the method of the form will be set to 'POST' or 'PUT' respectively.
 This aligns with standard assumptions about the routes for creating and updating resources in RESTful APIs.
@@ -506,11 +484,242 @@ route name: '<prefix>.update' or '<prefix>.store'.
 <x-sleek::entity-form :action="route('custom.action')" />
 ```
 
-### Modal Form
+### Form Field Generation
+
+Under the hood, `sleek::entity-form` will use `sleek::form-field`s under the hood to convert the `fields` property
+into form elements, so the same magic for it's properties apply here. The array accepts a few forms, depending on
+your required level of detail:
+
+```blade
+<x-sleek::entity-form
+    :fields="[
+        '<name>',
+        '<name>' => '<type>',
+        '<name>' => [
+            'type' => '<type>',
+            /* additional properties for the form-field go here */
+        ],
+    ]"
+/>
+```
+
+The form fields generated through these methods are simply rendered in a straight down without any complex styling, so
+this method is ideal for quick and simple forms. For more complex layouts you can still use `sleek::form-field` inside
+of `sleek::entity-form` without any problem:
+
+```blade
+<x-sleek::entity-form :model="$user">
+    <div style="display: grid; grid-template-columns: repeat(2, 1fr);">
+        <x-sleek::form-field name="first-name" />
+        <x-sleek::form-field name="last-name" />
+    </div>
+</x-sleek::entity-form>
+```
+
+These form fields will automagically be aware of the model passed to `sleek::entity-form`, which brings us to the last
+part:
+
+### Value extraction
+
+Not strictly a feature of `sleek::entity-form` (the implementation actually lives in `sleek::form-field`), when a model
+is passed to the form component, the current value for each form field will be extracted from the model and set on the
+form control.
+
+```blade
+<x-sleek::entity-form 
+    :model="new User(['name' => 'James Bond', 'active' => true, 'role' => 'special-agent'])"
+>
+    {{-- will have the property value="James" --}}
+    <x-sleek::form-field name="first_name" />
+
+    {{-- will have the property "checked" --}}
+    <x-sleek::form-field name="active" type="checkbox" />
+
+    {{-- option with value "special-agent" will have property "selected" --}}
+    <x-sleek::form-field name="role" type="select" :options="[/* ... */]" />
+</x-sleek::entity-form>
+```
+
+When the data on your model is nested for any reason (relations, json columns, complex casts that create nested fields),
+you can use dot-notation to access these nested values:
+
+```blade
+<x-sleek::entity-form :model="new User(['tenant' => ['name' => 'FBI']])">
+    {{-- will have the properties name="tenant[name]" and value="FBI" --}}
+    <x-sleek::form-field name="tenant.name" />
+</x-sleek::entity-form>
+```
+
+As you can see, the name property is used both for setting the input's name and fetching the value from the model. If
+you need a different way to access the value, you can also set the `accessor` property on `sleek::form-field` resolve
+the value. The same dot-notation syntax is supported here:
+
+
+```blade
+<x-sleek::entity-form :model="new User(['tenant' => ['name' => 'FBI']])">
+    {{-- will have the properties name="tenant-name" and value="FBI" --}}
+    <x-sleek::form-field name="tenant-name" accessor="tenant.name" />
+</x-sleek::entity-form>
+```
+
+### Using Form Groups in Entity-Forms
+
+Form groups are especially powerful in Entity-Forms! As discussed previously, `sleek::form-group` can set common
+prefixes for multiple field names and as discussed just above, field names are by default used to extract current
+values from models.
+
+This synergy makes form groups very convenient when you need form fields for nested data:
+```blade
+<x-sleek::entity-form :model="new User(['tenant' => 'name' => 'FBI'])">
+    <x-sleek::form-group name="tenant">
+        {{-- will have the properties name="tenant[name]" and value="FBI" --}}
+        <x-sleek::form-field name="name" />
+    </x-sleek::form-group>
+</x-sleek::entity-form>
+```
+
+This means that it's often a good idea to let your form structure mirror your model's data structure, which also helps
+when filling the submitted form values back into the model on update.
+
+## UI Components
+
+### Alert
+
+#### Usage
+
+If you use the Sleek layout, the alert is automatically included and ready to use. Otherwise you
+can add it to your own layout or to an individual page.
+
+```html
+<x-sleek::alert />
+```
+
+After that you can use and trigger the alert in your controller.
+
+```php
+use Prometa\Sleek\Facades\Sleek;
+
+Sleek::raise('Your message goes here', 'danger');
+```
+
+The first parameter is the message and the second is the type.
+The icons displayed are dependent on the type.
+
+The following types are supported:
+
+- `danger`
+- `warning`
+- `info`
+- `success`
+- `primary`
+- `secondary`
+- `light`
+- `dark`
+
+You can set the position of the alert in the `AppServiceProvider`.
+
+```php
+Sleek::alert([
+    'position' => 'top-right'
+]);
+```
+
+Available positions: `center`, `top-left`, `top-right`, `bottom`, `bottom-left`, `bottom-right`
+
+### Entity-Table
+
+You can easily create a table with data using the `entity-table` component. The table also supports pagination out-of-the-box.
+
+Here's a basic example:
+
+```html
+<x-sleek::entity-table
+    :entities="$users"
+    :columns="['name', 'email', 'actions']"
+/ >
+```
+
+#### Parameters
+
+- `entities`: Specifies the collection that should be displayed in the table.
+- `columns`: Defines which fields from the collection should be displayed in the table. Note that you can include fields that are not in the entities collection, such as `actions`, to customize your table further.
+
+In the above example, the `entities` parameter is set to `$users`, which means the table will display data from the `$users` collection. The `columns` parameter specifies that the fields `'name', 'email', 'actions'` will be shown.
+
+#### Customize the Table
+
+You can further customise each field of the table, e.g. by adjusting the formatting in each table cell using slots, or you can display other fields.
+
+#### Customizing Cell Format
+
+It is important that the name of the column is used in the slot.
+`<x-slot:column-<columnName> />`
+
+To customize the format of a specific column, you can use the slot with the column name. This is very useful for date fields to display in the format of your region. Here's an example that customizes the `name` column:
+
+```html
+<x-slot:column-name bind="$name">
+    User: {$name}
+</x-slot:column-name>
+```
+
+This changes the way names are displayed in the `name` column
+
+#### Accessing Full Model Data
+
+You can also pass the entire model as an argument to the slot to have access to all of its fields. This can be especially useful for incorporating model IDs into routes for actions like deleting an entry. Here's how you can do it:
+
+```html
+<x-slot:column-actions bind="$_,$user">
+    {$user->name} {$user->id}
+    <a href="{{route('users.show',$user->id)}}">Details</a>
+</x-slot:column-actions>
+```
+
+As you can see, this allows you to access fields that may not even be displayed in the table, such as the model's ID.
+
+### Entity-Form
+
+The Entity Form feature allows you to easily create forms for editing existing entities and create forms. Instead of manually specifying each field and its value, you can simply pass the entity and the list of fields to display. The CSRF Token will be set automatically. You can also set the Method to `PUT`, `POST`, `DELETE`, `GET`
+
+```html
+<x-sleek::entity-form :fields="['name' , 'email']">
+    <button type="submit" class="btn btn-primary">Submit</button>
+</x-sleek::entity-form>
+```
+
+This example would create a form with two field name and email.
+
+#### Customize Route
+
+You can easily change the route of the form by defining the action.
+
+```html
+<x-sleek::entity-form action="{{route('profil.update',$user)}}"
+    :fields="['name','email']"
+>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</x-sleek::entity-form>
+```
+
+#### Use a model
+
+If you give the model attribute a user model, for example, then the fields are automatically filled with the existing data. This way you can easily develop e.g. a user edit page.
+
+```html
+<x-sleek::entity-form action="{{route('profil.update',$user)}}"
+    :model="$user"
+    :fields="['name','email']"
+>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</x-sleek::entity-form>
+```
+
+## Modal Form
 
 This component can be used to create a form in a dialogue. The form also uses Alpine.js to deactivate the button after the submit and display a loading spinner.
 
-#### Usage
+### Usage
 
 ```html
 <button data-bs-target="#add-user-modal" data-bs-toggle="modal">User Create</button>
@@ -527,7 +736,7 @@ This component can be used to create a form in a dialogue. The form also uses Al
 The attributes in the modal form are required. The button to open the dialogue must be linked to the ID of the dialogue.
 To define fields, it is best to use the form-field component.
 
-#### Customization
+### Customization
 
 If you want to change the text of the buttons in the dialogue, you can do this as follows.
 

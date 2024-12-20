@@ -490,10 +490,10 @@ Generally, as before, the form takes the route, strips the last segment from it 
 route name: '<prefix>.update' or '<prefix>.store'.
 
 ```blade
-{{-- --}}
+{{-- Will use route named 'users.store' --}}
 <x-sleek::entity-form method="POST" />
 
-{{-- Will set method="PUT" --}}
+{{-- Will use route named 'users.update' --}}
 <x-sleek::entity-form method="PUT" />
 
 {{-- Explicitly setting an action overridese automatic guessing --}}

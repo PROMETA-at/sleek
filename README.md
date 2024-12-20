@@ -616,7 +616,7 @@ Here's a simple example:
     :sortable="true"
 />
 ```
-(paginators are usually suprised by eloquents query builder, we instantiate one directly in this example for clarity)
+(paginators are usually proveded by eloquent's query builder, we instantiate one directly in this example for clarity)
 
 With this simple definition we get for free:
 

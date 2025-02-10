@@ -6,6 +6,7 @@
     'scrollable' => true,
     'centered' => false,
     'fade' => false,
+    'showOnLoad' => false,
 ])
 
 @ensureSlotFor($header)
@@ -20,6 +21,20 @@
      data-bs-backdrop="{{ $backdrop }}"
      data-bs-keyboard="{{ $keyboard }}"
      data-bs-focus="{{ $focus }}"
+     _="
+        init
+        @if($showOnLoad)
+            {{--
+                To make sure the above block opens the modal without fade-in animation, we remove the `fade` class
+                before showing the modal, then ad it back.
+             --}}
+            make a bootstrap.Modal from me
+            set hadFade to I match .fade
+            remove .fade from me
+            call it.show() then settle
+            if hadFade add .fade to me
+        @endif
+     "
 >
     <div class="modal-dialog @if($centered) modal-dialog-centered @endif @if($scrollable) modal-dialog-scrollable @endif">
         <div class="modal-content" {{ $attributes }}>

@@ -1,4 +1,4 @@
-@props(['method' => 'post', 'action' => ''])
+@props(['method' => 'post', 'action' => '', 'preventUnload' => false])
 @php
     if (! in_array(strtolower($method), ['get', 'post'])) {
         $formMethod = $method;
@@ -10,24 +10,100 @@
 @once
   <script>
     document.addEventListener('alpine:init', () => {
-      Alpine.data('sleek__form', () => ({
-        loading: false,
+      Alpine.data('sleek__form', () => {
+        let formState
 
-        form: {
-          ['@submit'](event) {
-            // We're patching preventDefault here so users of this component can prevent form submission without
-            // having to manually manage the loading state.
-            const _preventDefault = event.preventDefault
-            event.preventDefault = () => {
-              this.loading = false
-              _preventDefault.call(event)
+        return ({
+          loading: false,
+
+          init() {
+            formState = new FormState(this.$el)
+
+            @if($preventUnload)
+              window.addEventListener('beforeunload', (event) => {
+                if (this.isDirty && !this.loading) event.preventDefault()
+              })
+            @endif
+          },
+          destroy() {
+            formState = null
+          },
+
+          get isDirty() {
+            return formState.isDirty
+          },
+
+          form: {
+            ['@submit'](event) {
+              // We're patching preventDefault here so users of this component can prevent form submission without
+              // having to manually manage the loading state.
+              const _preventDefault = event.preventDefault
+              event.preventDefault = () => {
+                this.loading = false
+                _preventDefault.call(event)
+              }
+
+              this.loading = true
             }
+          }
+        });
+      })
+    })
 
-            this.loading = true
+    class FormState {
+      #el
+      #fieldMetadata = []
+
+      constructor(el) {
+        this.#el = el
+        this.initMetadata()
+      }
+
+      initMetadata() {
+        this.#el.querySelectorAll('[name]').forEach(field => {
+          this.#fieldMetadata.push(new FormFieldObserver(field))
+        })
+      }
+
+      get isDirty() {
+        return this.#fieldMetadata.some(field => field.isDirty)
+      }
+    }
+
+    class FormFieldObserver {
+      #el
+      #initialValue
+
+      constructor(el) {
+        this.#el = el
+        this.#initialValue = this.value
+      }
+
+      get isDirty() {
+        return this.initialValue !== this.value
+      }
+
+      get value() {
+        if (this.#el instanceof HTMLInputElement ||
+                this.#el instanceof HTMLSelectElement ||
+                this.#el instanceof HTMLTextAreaElement) {
+
+          if (this.#el.type === 'checkbox' || this.#el.type === 'radio') {
+            return this.#el.checked ?? false;
+          } else {
+            return this.#el.value;
+          }
+        } else {
+          if (typeof this.#el.value !== 'undefined') {
+            return this.#el.value;
           }
         }
-      }))
-    })
+      }
+
+      get initialValue() {
+        return this.#initialValue;
+      }
+    }
   </script>
 @endonce
 

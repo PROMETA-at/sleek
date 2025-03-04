@@ -26,7 +26,7 @@ class EntityForm extends \Illuminate\View\Component
 
         // This default is based on resource controllers, where routes are automatically named based on their
         //  path and method.
-        if (! $this->action) {
+        if ($this->action === null) {
             if ($this->method == 'put' || $this->method == 'patch')
                 $this->action = route("$this->routePrefix.update", [$this->model]);
             else if ($this->method == 'post')

@@ -1,8 +1,7 @@
 <?php namespace Prometa\Sleek\Views\Components;
 
-use Illuminate\Pagination\AbstractPaginator;
 use Illuminate\Support\Arr;
-use function Prometa\Sleek\as_parameter_name;
+use function Prometa\Sleek\array_merge_recursive_distinct;
 
 class EntityTable extends \Illuminate\View\Component
 {

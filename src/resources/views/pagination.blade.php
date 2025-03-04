@@ -76,6 +76,7 @@
     </span>
     <div class="btn-group itemSelect">
       @php
+          use function Prometa\Sleek\array_merge_recursive_distinct;
           $pageSizeName ??= 'page-size'
       @endphp
       @foreach([10, 20, 50, 100] as $pageSize)

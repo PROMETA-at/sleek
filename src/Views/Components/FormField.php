@@ -21,7 +21,8 @@ class FormField extends \Illuminate\View\Component
         public array   $options = [],
         public bool    $multiple = false,
         public ?string $id = null,
-        public string $mode = 'radio',
+        public string  $mode = 'radio',
+        public bool    $floating = true,
     ) {
         $this->originalName = $name;
 

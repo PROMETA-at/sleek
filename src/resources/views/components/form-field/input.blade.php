@@ -1,4 +1,4 @@
-<x-sleek::form-field.wrapper :floating="!in_array($type, ['file'])">
+<x-sleek::form-field.wrapper :floating="$floating && !in_array($type, ['file'])">
   @forwardSlots
   <x-bs::form-control
     {{

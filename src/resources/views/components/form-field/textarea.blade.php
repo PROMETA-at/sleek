@@ -1,4 +1,4 @@
-<x-sleek::form-field.wrapper floating>
+<x-sleek::form-field.wrapper :floating="$floating ?? true">
   <textarea
     id="{{ $id }}"
     name="{{ $name }}"

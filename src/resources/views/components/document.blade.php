@@ -34,7 +34,7 @@
     }
 </style>
 </head>
-<body>
+<body {{ $attributes }}>
   {{ $slot }}
   @stack('body-end')
 </body>

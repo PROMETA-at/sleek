@@ -80,6 +80,9 @@
       }
 
       get isDirty() {
+        if (this.#el.hasAttribute('dirty') && !!this.#el.getAttribute('dirty'))
+          return !!safeEval(this.#el.getAttribute('dirty'))
+
         return this.initialValue !== this.value
       }
 
@@ -103,6 +106,14 @@
       get initialValue() {
         return this.#initialValue;
       }
+    }
+
+    function safeEval(jsString) {
+        try {
+            return eval(`(function() { return ${jsString}; })()`);
+        } catch (e) {
+            return jsString;
+        }
     }
   </script>
 @endonce

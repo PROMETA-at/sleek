@@ -53,6 +53,7 @@
     class FormState {
       #el
       #fieldMetadata = []
+      #isDirty = false
 
       constructor(el) {
         this.#el = el
@@ -62,6 +63,18 @@
       initMetadata() {
         this.#el.querySelectorAll('[name]').forEach(field => {
           this.#fieldMetadata.push(new FormFieldObserver(field))
+          field.addEventListener('dirty', () => {
+            if (!this.#isDirty) {
+              this.#isDirty = true
+              this.#el.dispatchEvent(new CustomEvent('dirty'));
+            }
+          })
+          field.addEventListener('clean', () => {
+            if (this.#isDirty && this.#fieldMetadata.every(field => !field.isDirty)) {
+              this.#isDirty = false
+              this.#el.dispatchEvent(new CustomEvent('clean'));
+            }
+          })
         })
       }
 
@@ -73,10 +86,21 @@
     class FormFieldObserver {
       #el
       #initialValue
+      #isDirty = false
 
       constructor(el) {
         this.#el = el
         this.#initialValue = this.value
+
+        this.#el.addEventListener('input', (e) => {
+          if (!this.#isDirty && this.isDirty) {
+            this.#isDirty = true
+            this.#el.dispatchEvent(new CustomEvent('dirty'))
+          } else if (this.#isDirty && !this.isDirty) {
+            this.#isDirty = false
+            this.#el.dispatchEvent(new CustomEvent('clean'))
+          }
+        })
       }
 
       get isDirty() {

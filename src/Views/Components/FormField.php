@@ -23,6 +23,7 @@ class FormField extends \Illuminate\View\Component
         public ?string $id = null,
         public string  $mode = 'radio',
         public bool    $floating = true,
+        public ?string $placeholder = null,
     ) {
         $this->originalName = $name;
 

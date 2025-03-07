@@ -41,10 +41,10 @@ class FormField extends \Illuminate\View\Component
             else $this->label = __("$this->i18nPrefix.fields.{$this->name}");
         }
 
+        if (! $this->accessor) $this->accessor = $this->name;
         // This needs to happen before we rewrite the name, since `old()` uses dotted syntax to access nested data.
         $this->value = old($this->name, $value ?? optional($modelFromContext, fn ($x) => data_get($x, $this->accessor)) ?? null);
 
-        if (! $this->accessor) $this->accessor = $this->name;
         // Sometimes, a field might need to reference nested data, as part of a JSON-field for example.
         // This data can be referenced using dot-notation, but the field name needs to follow the urlencoded structure,
         // like field[sub][subsub].

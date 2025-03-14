@@ -141,6 +141,13 @@ class ComponentTagCompiler extends \Illuminate\View\Compilers\ComponentTagCompil
                     : array_merge($attributes, $this->getAttributesFromAttributeString(':name='.$matches['boundName']));
             }
 
+            if ($isScoped) {
+                $bindings = trim($attributes['bind'], "'");
+                unset($attributes['bind']);
+                $uses = trim($attributes['use'] ?? '', "'");
+                unset($attributes['use']);
+            }
+
             if ($hasSpreadAttributes) {
                 $spreadValue = $attributes['attributes'];
                 unset($attributes['attributes']);
@@ -153,10 +160,6 @@ class ComponentTagCompiler extends \Illuminate\View\Compilers\ComponentTagCompil
             } else $attributesString = "[".$this->attributesToString($attributes)."]";
 
             if ($isScoped) {
-                $bindings = trim($attributes['bind'], "'");
-                unset($attributes['bind']);
-                $uses = trim($attributes['use'] ?? '', "'");
-                unset($attributes['use']);
                 return " @slot({$name}, $attributesString bind ({$bindings})" . (strlen($uses) ? " use ({$uses})" : '') . ')';
             } else return " @slot({$name}, null, $attributesString)";
         }, $value);

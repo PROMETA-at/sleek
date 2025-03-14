@@ -28,6 +28,8 @@ class BladeCompiler extends \Illuminate\View\Compilers\BladeCompiler
 
         if ($isScoped) {
             list($slot, $attributes) = explode(',', $matches['args']);
+            if (empty($slot)) $slot = '"slot"';
+
             $uses = isset($matches['uses'])
                 ? array_map('trim', explode(',', $matches['uses']))
                 : [];

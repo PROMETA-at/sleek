@@ -15,4 +15,8 @@ class Factory extends BaseFactory
 
         parent::slot($name, $content, $attributes);
     }
+
+    public function registerFragment($name, $content) {
+        $this->fragments[$name] = $content;
+    }
 }

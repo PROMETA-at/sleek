@@ -1,7 +1,9 @@
 <?php namespace Prometa\Sleek\Providers;
 
+use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator as BaseLengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\ComponentAttributeBag;
 use Illuminate\View\DynamicComponent;
@@ -129,6 +131,15 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
               ->filter(fn ($_, $key) => str_starts_with($key, $prefix))
               ->mapWithKeys(fn ($v, $k) => [ substr($k, strlen($prefix)) => $v])
               ->toArray());
+        });
+
+        Request::macro('urlWithQuery', function ($query) {
+            /** @var $this ComponentAttributeBag */
+            $question = $this->getBaseUrl().$this->getPathInfo() === '/' ? '/?' : '?';
+
+            return count($this->query()) > 0
+                ? $question.Arr::query(array_merge($this->query(), $query))
+                : $question.Arr::query($query);
         });
 
         $this->booted(function () {

@@ -1,5 +1,7 @@
 <?php namespace Prometa\Sleek\Providers;
 
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator as BaseLengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
@@ -140,6 +142,15 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
             return count($this->query()) > 0
                 ? $question.Arr::query(array_merge($this->query(), $query))
                 : $question.Arr::query($query);
+        });
+
+        Relation::macro('asSubquery', function () {
+            /** @var Relation $this */
+
+            if ($this instanceof HasManyThrough) $parentBuilder = $this->farParent->newQuery();
+            else $parentBuilder = $this->getParent()->newQuery();
+
+            return $this->getRelationExistenceQuery($this->getModel()->newQuery(), $parentBuilder, []);
         });
 
         $this->booted(function () {

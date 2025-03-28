@@ -39,6 +39,7 @@
                         EOF,
                         'data-bs-target' => "#{$keyField}-{$key}"
                     ]),
+                'content' => $slot,
             ])
             ->values()
     );

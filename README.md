@@ -37,6 +37,7 @@ Sleek is a Laravel package that provides a variety of useful features for your L
   - [Auto Filter](#auto-filter)
 - [UI Components](#ui-components)
   - [Alert](#alert)
+  - [Tabs](#tabs)
   - [Entity-Table](#entity-table)
   - [Entity-Form](#entity-form)
   - [Form](#form)
@@ -1000,6 +1001,94 @@ Sleek::alert([
 ```
 
 Available positions: `center`, `top-left`, `top-right`, `bottom`, `bottom-left`, `bottom-right`
+
+### Tabs
+
+Sleek provides a headless tab component as well as various styled presets to make handling tabs simple. The tabs
+component uses dynamically named slots to identify tabs and render them only when needed. The tabs also come with
+predefined attributes to load them in via HTMX to prevent page reloads.
+
+Here's how you can use one of the presets, rendering the tab bar with bootstrap pills:
+```html
+<x-sleek::tabs.pills>
+    <x-slot:tab-key1 label="Show Tab 1">
+        Here goes the tab content
+    </x-slot:tab-key1>
+    <x-slot:tab-key2 label="Show Tab 2">
+        This is another tab
+    </x-slot:tab-key2>
+</x-sleek::tabs.pills>
+```
+
+This snippet already does a lot, so lets break it down:
+
+- The tabs component uses a query string parameter to identify the currently active tab. By default, this parameter is
+  named `tab`, but can be configured with the `key-field` parameter. The tabs are identified by slot name, excluding the
+  `tab-` part, so in our example the first tab is named `key1`, the second one is `key2`. You can name them however you
+  like, just keep them URL-friendly.
+- If the query string parameter is not present, the tabs component will render the first tab. You can override this
+  behavior by setting the `default` parameter on the tabs component.
+- The tab-bar will automatically be assembled from all slots matching the `tab-...` pattern. Each slot's label parameter
+  will be use as the content for the individual tab buttons. These buttons are regular links, so without any additional
+  javascript they will force a page reload.
+- *However*, if you have HTMX included, they will instead use HTMX to load the respective tab. The tabs component will
+  by itself handle all the necessary wiring, such that the same endpoint will only return the content of the requested
+  tab if the necessary HTMX-Parameters (and the query string parameter) are present.
+
+  > [!NOTE]
+  > We patched the View Facade to override the resolved fragment from within the view for this to work.
+  > As such, this mechanic cannot be used inside another fragment, since the tabs component will override any
+  > fragment you yourself wanted to resolve.
+
+There are a couple of pre-styled variations on the tabs component for you to use:
+
+- `pills`, as mentioned before, will use bootstrap pills for the tab bar.
+- `vertical` will use pills, but render them on the left side from top to bottom, with the content to the right.
+- `card` will render a bootstrap card with navigation in the card header
+- `collapse` will render the tabs as a bootstrap accordion
+
+#### Headless Tab Component
+
+If these presets don't fit your need, you can use the headless base component to use your own markup:
+```html
+<x-sleek::tabs>
+    <x-slot bind="$tabs">
+        <p>Here you can render your own markup:</p>
+        <ul>
+            @foreach($tabs->headers as $header)
+            <li>
+                <p>
+                    Make sure to pass the attributes to the navigational element.
+                    The href- as well as all necessary HTMX-attributes are in here.
+                </p>
+                <a {{ $header->attributes }}>{{ $header->label }}</a>
+            </li>
+            @endforeach
+        </ul>
+      
+        <p>
+          This is the container for the tab content.
+          Make sure to pass the body attributes to the container element so it can be targeted by HTMX. 
+        </p>
+        <div {{ $tabs->body->attributes }}>
+          <p>This renders the default tab.</p>
+          {{ $tabs->body }}
+        </div>
+    </x-slot>
+    
+    <x-slot:tab-key1 label="Tab 1">
+        This is one tab
+    </x-slot:tab-key1>
+    <x-slot:tab-key2 label="Tab 2">
+        This is another tab
+    </x-slot:tab-key2>
+</x-sleek>
+```
+
+> [!NOTE]
+> Usually, you don't need to explicitly target the default (unnamed) slot. However here we use a callback-slot, just
+> like with the entity-table. 
+> We do this to ensure the default slot is evaluated *after* all other slots have been processed.
 
 ### Entity-Table
 

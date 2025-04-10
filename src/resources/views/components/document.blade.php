@@ -13,6 +13,16 @@
   @if(count($viteAssets))
     @vite($viteAssets)
   @endif
+
+  <script>
+    function triggerInit({target: element}) {
+      element.querySelectorAll("[hx-on\\:init]")
+        .forEach((node) => node.dispatchEvent(new CustomEvent("init", { bubbles: false, cancelable: false })))
+    }
+    window.onload = triggerInit;
+    document.addEventListener("DOMNodeInserted", triggerInit);
+  </script>
+
   @foreach($__data['sleek::assets']['favicon'] ?? [] as $faviconLink)
       <link rel="{{ $faviconLink['rel'] ?? 'icon' }}" href="{{ $faviconLink['href'] }}" type="{{ $faviconLink['type'] }}"/>
   @endforeach

@@ -1035,10 +1035,10 @@ This snippet already does a lot, so lets break it down:
   by itself handle all the necessary wiring, such that the same endpoint will only return the content of the requested
   tab if the necessary HTMX-Parameters (and the query string parameter) are present.
 
-  > [!NOTE]
-  > We patched the View Facade to override the resolved fragment from within the view for this to work.
-  > As such, this mechanic cannot be used inside another fragment, since the tabs component will override any
-  > fragment you yourself wanted to resolve.
+> [!NOTE]
+> We patched the View Facade to override the resolved fragment from within the view for this to work.
+> As such, this mechanic cannot be used inside another fragment, since the tabs component will override any
+> fragment you yourself wanted to resolve.
 
 There are a couple of pre-styled variations on the tabs component for you to use:
 
@@ -1055,24 +1055,22 @@ If these presets don't fit your need, you can use the headless base component to
     <x-slot bind="$tabs">
         <p>Here you can render your own markup:</p>
         <ul>
-            @foreach($tabs->headers as $header)
+            @foreach($tabs as $tab)
             <li>
-                <p>
-                    Make sure to pass the attributes to the navigational element.
-                    The href- as well as all necessary HTMX-attributes are in here.
-                </p>
-                <a {{ $header->attributes }}>{{ $header->label }}</a>
+                {{ $tab->link->withAttributes(fn ($a) => $a->class(['...'])) }}
             </li>
             @endforeach
         </ul>
-      
-        <p>
-          This is the container for the tab content.
-          Make sure to pass the body attributes to the container element so it can be targeted by HTMX. 
-        </p>
-        <div {{ $tabs->body->attributes }}>
-          <p>This renders the default tab.</p>
-          {{ $tabs->body }}
+
+        <div>
+            @foreach($tabs as $tab)
+                <p>
+                    Only the currently active tab will render with content.
+                    All other tabs will just render their own container. This is important so that they can later be
+                    targeted by HTMX's oob directive.
+                </p>
+                {{ $tabs->withAttributes(fn ($a) => $a->class(['...'])) }}
+            @endforeach
         </div>
     </x-slot>
     
@@ -1084,6 +1082,10 @@ If these presets don't fit your need, you can use the headless base component to
     </x-slot:tab-key2>
 </x-sleek>
 ```
+
+The tab and it's link operate much like a `ComponentSlot`, they are `Htmlable` and have a `ComponentAttributeBag` you
+can modify to add additional HTML-Attributes to the rendered element. For convenience, the `withAttributes` method
+can be used to modify the attributes bag fluently.
 
 > [!NOTE]
 > Usually, you don't need to explicitly target the default (unnamed) slot. However here we use a callback-slot, just

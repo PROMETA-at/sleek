@@ -8,7 +8,11 @@
 
 
   @stack('assets')
-  @vite($__data['sleek::assets']['vite'] ?? [])
+
+  @php($viteAssets = $__data['sleek::assets']['vite'] ?? [])
+  @if(count($viteAssets))
+    @vite($viteAssets)
+  @endif
   @foreach($__data['sleek::assets']['favicon'] ?? [] as $faviconLink)
       <link rel="{{ $faviconLink['rel'] ?? 'icon' }}" href="{{ $faviconLink['href'] }}" type="{{ $faviconLink['type'] }}"/>
   @endforeach

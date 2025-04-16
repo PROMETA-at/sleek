@@ -3,7 +3,7 @@
     if (!is_array($value)) $value = [$value];
 @endphp
 
-<x-sleek::form-field.wrapper floating>
+<x-sleek::form-field.wrapper :floating="$floating ?? true">
   @forwardSlots
   <select id="{{ $id }}"
           name="{{ $name }}"

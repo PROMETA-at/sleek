@@ -16,7 +16,7 @@
 
   <script>
     function triggerInit({target: element}) {
-      element.querySelectorAll("[hx-on\\:init]")
+      element?.querySelectorAll?.("[hx-on\\:init]")
         .forEach((node) => node.dispatchEvent(new CustomEvent("init", { bubbles: false, cancelable: false })))
     }
     window.onload = triggerInit;

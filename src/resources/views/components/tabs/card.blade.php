@@ -1,8 +1,8 @@
 <x-sleek::tabs {{ $attributes }}>
 @forwardSlots
 
-<x-slot bind="$tabs">
-    <x-bs::card hx-on::after-settle="this.querySelector(`a.nav-link#${event.detail.elt.id}-link`)?.tab.show()">
+<x-slot bind="$tabs" use="$attributes">
+    <x-bs::card hx-on::after-settle="this.querySelector(`a.nav-link#${event.detail.elt.id}-link`)?.tab.show()" {{ $attributes }}>
         <x-slot:header>
             <ul class="nav nav-tabs card-header-tabs">
                 @foreach($tabs as $tab)

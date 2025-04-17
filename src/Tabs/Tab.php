@@ -2,6 +2,7 @@
 
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\View\ComponentAttributeBag;
+use Illuminate\View\ComponentSlot;
 use Stringable;
 
 class Tab implements Htmlable, Stringable
@@ -14,7 +15,7 @@ class Tab implements Htmlable, Stringable
         public readonly string $key,
         public readonly string $content,
         string $href,
-        string $label,
+        ComponentSlot|string $label,
         public readonly bool $active = false,
         private readonly ?TabsContext $context = null,
     ) {

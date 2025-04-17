@@ -5,7 +5,7 @@
 
     $tabSlots = collect($__laravel_slots)
         ->filter(fn ($_, $key) => str_starts_with($key, 'tab'))
-        ->mapWithKeys(fn ($x, $key) => [strtolower(substr($key, 3)) => $x]);
+        ->mapWithKeys(fn ($x, $key) => [Str::snake(substr($key, 3)) => $x]);
 
     $activeSlot = request($keyField, $default ?? $tabSlots->keys()->first());
 
@@ -17,7 +17,7 @@
                     $key,
                     $slot->toHtml(),
                     $slot->attributes->get('href', request()->urlWithQuery([$keyField => $key])),
-                    $slot->attributes->get('label', ''),
+                    $__laravel_slots["label" . Str::studly($key)] ?? $slot->attributes->get('label', ''),
                     $key === $activeSlot,
                     $tabsContext,
                 ),

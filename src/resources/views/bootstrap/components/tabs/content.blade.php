@@ -1,5 +1,3 @@
-@props(['key'])
-
-<div {{ $attributes->class(['tab-content']) }} id="{{ $key }}-tab-content">
+<div {{ $attributes->class(['tab-content']) }}>
     {{ $slot }}
 </div>

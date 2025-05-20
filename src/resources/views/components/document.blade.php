@@ -15,12 +15,17 @@
   @endif
 
   <script>
-    function triggerInit({target: element}) {
+    function triggerInit(element) {
       element?.querySelectorAll?.("[hx-on\\:init]")
         .forEach((node) => node.dispatchEvent(new CustomEvent("init", { bubbles: false, cancelable: false })))
     }
-    window.onload = triggerInit;
-    document.addEventListener("DOMNodeInserted", triggerInit);
+    window.onload = function ({ target }) { triggerInit(target) }
+
+    const observer = new MutationObserver(mutationList =>
+      mutationList.filter(m => m.type === 'childList').forEach(m => {
+        m.addedNodes.forEach(triggerInit);
+      }));
+    observer.observe(document, {childList: true, subtree: true})
   </script>
 
   @foreach($__data['sleek::assets']['favicon'] ?? [] as $faviconLink)

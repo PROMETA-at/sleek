@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator as BaseLengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\View\ComponentAttributeBag;
 use Illuminate\View\DynamicComponent;
@@ -151,6 +152,16 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
             else $parentBuilder = $this->getParent()->newQuery();
 
             return $this->getRelationExistenceQuery($this->getModel()->newQuery(), $parentBuilder, []);
+        });
+
+        $this->loadTranslationsFrom(__DIR__ . '/../resources/lang', 'sleek');
+        $this->publishes([
+            __DIR__ . '/../resources/lang' => resource_path('lang/vendor/sleek'),
+        ]);
+
+        Collection::macro('withEmptyOption', function ($label = null) {
+            /** @var Collection $this */
+            return $this->prepend($label ?? __('sleek::options.no-value'), '');
         });
 
         $this->booted(function () {

@@ -6,7 +6,7 @@
 
     <x-slot bind="$tabs" use="$nav, $content">
         <div hx-on::after-settle="this.querySelector(`a.nav-link#${event.detail.elt.id}-link`)?.tab.show()">
-            <x-apply :hoc="$nav" base="bs::nav.pills">
+            <x-apply :hoc="$nav" base="bs::nav.pills" :args="[$tabs]">
                 @foreach($tabs as $tab)
                     <x-bs::nav.item>
                         {{
@@ -22,7 +22,7 @@
                 @endforeach
             </x-apply>
 
-            <x-apply :hoc="$content" base="bs::tabs.content">
+            <x-apply :hoc="$content" base="bs::tabs.content" :args="[$tabs]">
                 @foreach($tabs as $tab)
                     {{
                         $tab->withAttributes(fn ($a) => $a

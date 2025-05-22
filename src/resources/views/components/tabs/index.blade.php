@@ -1,6 +1,7 @@
 @props(['keyField' => 'tab', 'default' => null, 'clientSideNavigation' => false, 'htmx' => true])
 @php
     use Illuminate\View\ComponentSlot;
+    use function Prometa\Sleek\capture;
     use Prometa\Sleek\Tabs\{Tab, TabCollection, TabsContext};
 
     $tabSlots = collect($__laravel_slots)
@@ -27,14 +28,27 @@
                     'hx-swap' => 'beforeend',
                 ]: [])))
     );
+@endphp
 
+{{ is_callable($slot) ? $slot($tabs, $tabsContext) : $slot }}
+
+@php
+    /**
+     * This section intentionally happens after executing the default slot above.
+     *
+     * The execution will likely append necessary properties to the tab and link elements.
+     * This side effect is intentional; it allows the user to define properties in the normal
+     * flow (without fragment capturing) without having to worry about whether a fragment or the full
+     * component will be rendered.
+     */
     if (request()->header('HX-Request') && request()->has($keyField)) {
+        $tabs->current()->withAttributes(['hx-swap-oob' => 'true']);
+
         $tabHtml = isset($fragment) && is_callable($fragment)
-            ? $fragment($tabs->current())
-            : $tabs->current()->withAttributes(['hx-swap-oob' => 'true']);
+            ? capture(fn () => $fragment($tabs->current()))
+            : $tabs->current()->toHtml();
+
         $__env->registerFragment($activeSlot, $tabHtml);
         view()->selectFragment($activeSlot);
     }
 @endphp
-
-{{ is_callable($slot) ? $slot($tabs, $tabsContext) : $slot }}

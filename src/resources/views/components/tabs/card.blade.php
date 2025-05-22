@@ -7,7 +7,7 @@
 <x-slot bind="$tabs" use="$attributes, $nav, $content">
     <x-bs::card hx-on::after-settle="this.querySelector(`a.nav-link#${event.detail.elt.id}-link`)?.tab.show()" {{ $attributes }}>
         <x-slot:header>
-            <x-apply :hoc="$nav" base="bs::nav" class="nav-tabs card-header-tabs">
+            <x-apply :hoc="$nav" base="bs::nav" :args="[$tabs]" class="nav-tabs card-header-tabs">
                 @foreach($tabs as $tab)
                   <x-bs::nav.item>
                     {{
@@ -26,7 +26,7 @@
 
         @php($attributes = $content->attributes)
         <x-slot:body {{ $attributes->class(['tab-content']) }}>
-            <x-wrap-with :component="$content">
+            <x-wrap-with :component="$content" :args="[$tabs]">
                 @foreach($tabs as $tab)
                   {{
                       $tab->withAttributes(fn ($a) => $a

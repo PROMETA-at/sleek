@@ -36,6 +36,8 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
 
         // Set the alias for the icon component to use x-icon instead of x-sleek::icon
         Blade::component('sleek::components.icon', 'icon');
+        Blade::component('sleek::components.wrap-with', 'wrap-with');
+        Blade::component('sleek::components.apply', 'apply');
 
         $this->callAfterResolving('blade.compiler', function (BladeCompiler $bladeCompiler) {
             $bladeCompiler->component('dynamic-component', DynamicComponent::class);
@@ -97,6 +99,13 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
             });
             $bladeCompiler->directive('endflag', function () {
                 return '<?php endif; ?>';
+            });
+
+            $bladeCompiler->directive('capture', function () {
+                return '<?php ob_start(); ?>';
+            });
+            $bladeCompiler->directive('into', function ($variable) {
+                return "<?php $variable = new \Illuminate\View\ComponentSlot(ob_get_clean()); ?>";
             });
         });
 

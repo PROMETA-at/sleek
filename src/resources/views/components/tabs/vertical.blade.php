@@ -1,9 +1,12 @@
+@ensureSlotFor($nav, true)
+@ensureSlotFor($content, true)
+
 <x-sleek::tabs {{ $attributes }}>
     @forwardSlots
 
-    <x-slot bind="$tabs">
+    <x-slot bind="$tabs" use="$nav, $content">
         <div class="d-flex align-items-start" hx-on::after-settle="this.querySelector(`a.nav-link#${event.detail.elt.id}-link`)?.tab.show()">
-            <x-bs::nav.pills orientation="vertical">
+            <x-apply :hoc="$nav" base="bs::nav.pills" orientation="vertical">
                 @foreach($tabs as $tab)
                     <x-bs::nav.item>
                         {{
@@ -17,16 +20,16 @@
                         }}
                     </x-bs::nav.item>
                 @endforeach
-            </x-bs::nav.pills>
+            </x-apply>
 
-            <x-bs::tabs.content>
+            <x-apply :hoc="$content" base="bs::tabs.content">
                 @foreach($tabs as $tab)
                     {{
                         $tab->withAttributes(fn ($a) => $a
                             ->class(['tab-pane', 'active' => $tab->active]))
                     }}
                 @endforeach
-            </x-bs::tabs.content>
+            </x-apply>
         </div>
     </x-slot>
 </x-sleek::tabs>

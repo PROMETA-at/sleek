@@ -29,6 +29,7 @@ class CallableComponentSlot
     {
         $this->callable = $callable;
 
+        if ($attributes instanceof ComponentAttributeBag) $attributes = $attributes->all();
         $this->withAttributes($attributes);
     }
 

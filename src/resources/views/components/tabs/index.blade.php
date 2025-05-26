@@ -26,6 +26,7 @@
                     'hx-get' => $slot->attributes->get('href', request()->urlWithQuery([$keyField => $key])),
                     'hx-target' => 'next .tab-content',
                     'hx-swap' => 'beforeend',
+                    'hx-push-url' => 'true',
                 ]: [])))
     );
 @endphp

@@ -7,6 +7,7 @@
     'centered' => false,
     'fade' => false,
     'showOnLoad' => false,
+    'size' => null,
 ])
 
 @ensureSlotFor($header)
@@ -36,7 +37,12 @@
         @endif
      "
 >
-    <div class="modal-dialog @if($centered) modal-dialog-centered @endif @if($scrollable) modal-dialog-scrollable @endif">
+    <div class="
+      modal-dialog 
+      @if($centered) modal-dialog-centered @endif 
+      @if($scrollable) modal-dialog-scrollable @endif
+      @if($size) modal-{{ $size }} @endif
+    ">
         <div class="modal-content" {{ $attributes }}>
             @isset($header)
                 <div class="modal-header" {{ $header->attributes }}>

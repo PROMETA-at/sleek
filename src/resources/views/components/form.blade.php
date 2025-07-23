@@ -1,4 +1,4 @@
-@props(['method' => 'post', 'action' => '', 'preventUnload' => false])
+@props(['method' => 'post', 'action' => ''])
 @php
     if (! in_array(strtolower($method), ['get', 'post'])) {
         $formMethod = $method;
@@ -19,11 +19,9 @@
           init() {
             formState = new FormState(this.$el)
 
-            @if($preventUnload)
-              window.addEventListener('beforeunload', (event) => {
-                if (this.isDirty && !this.loading) event.preventDefault()
-              })
-            @endif
+            window.addEventListener('beforeunload', (event) => {
+              if (!!this.$el.getAttribute('prevent-unload') && this.isDirty && !this.loading) event.preventDefault()
+            })
           },
           destroy() {
             formState = null
@@ -88,26 +86,38 @@
       #initialValue
       #isDirty = false
 
+      /**
+       * @param {HTMLElement} el
+       */
       constructor(el) {
         this.#el = el
-        this.#initialValue = this.value
+        if (isCustomElement(el.tagName) && !isCustomElementConnected(el)) {
+          el.addEventListener('upgrade', () => {
+            this.#initialValue = this.value
+          }, { once: true })
+        } else {
+          this.#initialValue = this.value
+        }
 
-        this.#el.addEventListener('input', (e) => {
+        this.#el.addEventListener('input', this.updateDirtyState.bind(this))
+        this.#el.addEventListener('change', this.updateDirtyState.bind(this))
+      }
+
+      updateDirtyState() {
           if (!this.#isDirty && this.isDirty) {
-            this.#isDirty = true
-            this.#el.dispatchEvent(new CustomEvent('dirty'))
+              this.#isDirty = true
+              this.#el.dispatchEvent(new CustomEvent('dirty'))
           } else if (this.#isDirty && !this.isDirty) {
-            this.#isDirty = false
-            this.#el.dispatchEvent(new CustomEvent('clean'))
+              this.#isDirty = false
+              this.#el.dispatchEvent(new CustomEvent('clean'))
           }
-        })
       }
 
       get isDirty() {
         if (this.#el.hasAttribute('dirty') && !!this.#el.getAttribute('dirty'))
           return !!safeEval(this.#el.getAttribute('dirty'))
 
-        return this.initialValue !== this.value
+        return !valueEqual(this.initialValue, this.value)
       }
 
       get value() {
@@ -138,6 +148,27 @@
         } catch (e) {
             return jsString;
         }
+    }
+
+    function isCustomElement(tagName) {
+        return tagName.includes('-')
+    }
+
+    function valueEqual(v1, v2) {
+        if (Array.isArray(v1) !== Array.isArray(v2)) return false
+        if (Array.isArray(v1)) {
+            const v2Set = new Set(v2)
+            return v1.length === v2.length && v1.every(e => v2Set.has(e))
+        }
+        return v1 === v2
+    }
+
+    /**
+     * @param {HTMLElement} el
+     */
+    function isCustomElementConnected(el) {
+        const constructor = customElements.get(el.tagName.toLowerCase())
+        return !!constructor && el instanceof constructor
     }
   </script>
 @endonce

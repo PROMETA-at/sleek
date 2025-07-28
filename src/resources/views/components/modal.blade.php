@@ -1,6 +1,7 @@
 @flags(['close', 'native' => false])
 
 @ensureSlotFor($header)
+@ensureSlotFor($extra, true)
 
 @flag('native')
   <dialog {{ $attributes->class([
@@ -53,6 +54,6 @@
           </x-slot:body>
       @endunless
 
-      @isset($extra) {{ $extra }} @endisset
+      @slot('slot', $extra)
   </x-bs::modal>
 @endif

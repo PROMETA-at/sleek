@@ -8,7 +8,9 @@
 ])
 
 <div class="modal @if($fade) fade @endif"
-     id="{{ $id }}"
+     @isset($id)
+        id="{{ $id }}"
+     @endisset
      tabindex="-1"
      aria-hidden="true"
      data-bs-backdrop="{{ $backdrop }}"

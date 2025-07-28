@@ -4,7 +4,7 @@
 
 @php($formAttributes = ['action', 'method', 'fields', 'enctype', 'target'])
 
-<x-sleek::modal {{ $attributes->except($formAttributes) }}>
+<x-sleek::modal :id="$id" {{ $attributes->except($formAttributes) }}>
     @php($isNative = $component->hasFlag('native'))
 
     <x-slot:header>

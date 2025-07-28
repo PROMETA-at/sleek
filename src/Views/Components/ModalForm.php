@@ -1,6 +1,4 @@
-<?php
-
-namespace Prometa\Sleek\Views\Components;
+<?php namespace Prometa\Sleek\Views\Components;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\View\Component;
@@ -8,8 +6,8 @@ use Illuminate\View\Component;
 class ModalForm extends Component
 {
     public function __construct(
-        public $id,
-        public $title,
+        public string $title,
+        public $id = null,
         public $formId = null,
         public $formType = 'form',
         // Need to define the model as an explicit parameter,

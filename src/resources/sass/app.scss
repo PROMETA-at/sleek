@@ -43,3 +43,76 @@ $enable-negative-margins: true;
     }
 }
 
+// Reset User-Agent nonsense
+dialog {
+    border: none;
+}
+
+dialog.bs {
+    // Padding is set by the modal-container inside
+    padding: 0;
+    // BS-Modals naturally stretch to screen and are constrained by max-width instead
+    width: auto;
+
+    // Bootstrap vars copied over from .modal
+    // We can't use bootstraps class because of additional styling there that's unwanted here.
+    --bs-modal-zindex: 1055;
+    --bs-modal-width: 500px;
+    --bs-modal-padding: 1rem;
+    --bs-modal-margin: 0.5rem;
+    --bs-modal-color: var(--bs-body-color);
+    --bs-modal-bg: var(--bs-body-bg);
+    --bs-modal-border-color: var(--bs-border-color-translucent);
+    --bs-modal-border-width: var(--bs-border-width);
+    --bs-modal-border-radius: var(--bs-border-radius-lg);
+    --bs-modal-box-shadow: var(--bs-box-shadow-sm);
+    --bs-modal-inner-border-radius: calc(var(--bs-border-radius-lg) - (var(--bs-border-width)));
+    --bs-modal-header-padding-x: 1rem;
+    --bs-modal-header-padding-y: 1rem;
+    --bs-modal-header-padding: 1rem 1rem;
+    --bs-modal-header-border-color: var(--bs-border-color);
+    --bs-modal-header-border-width: var(--bs-border-width);
+    --bs-modal-title-line-height: 1.5;
+    --bs-modal-footer-gap: 0.5rem;
+    --bs-modal-footer-bg: ;
+    --bs-modal-footer-border-color: var(--bs-border-color);
+    --bs-modal-footer-border-width: var(--bs-border-width);
+
+    border-radius: var(--bs-modal-border-radius);
+    max-width: var(--bs-modal-width);
+
+    &.size-xl {
+        --bs-modal-width: 1140px;
+    }
+    &.size-lg {
+        --bs-modal-width: 800px;
+    }
+    &.size-sm {
+        --bs-modal-width: 300px;
+    }
+}
+
+
+dialog.fade:open {
+    opacity: 1;
+    transform: translateY(0);
+}
+dialog.fade {
+    opacity: 0;
+    transform: translateY(-50px);
+    transition:
+        opacity 0.2s ease-out,
+        transform 0.2s ease-out,
+        overlay 0.2s ease-out allow-discrete,
+        display 0.2s ease-out allow-discrete;
+
+    @media (prefers-reduced-motion: reduce) {
+        transition: none;
+    }
+}
+@starting-style {
+    dialog.fade:open {
+        opacity: 0;
+        transform: translateY(-50px);
+    }
+}

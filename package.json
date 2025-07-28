@@ -1,0 +1,29 @@
+{
+  "name": "sleek",
+  "version": "1.0.0",
+  "description": "Sleek is a Laravel package that provides a variety of useful features for your Laravel application. All components are styled with Bootstrap for a cohesive and attractive design. The package comes with Bootstrap UI components featuring aggressive defaults.",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "dev": "cd workbench && vite"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PROMETA-at/sleek.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PROMETA-at/sleek/issues"
+  },
+  "homepage": "https://github.com/PROMETA-at/sleek#readme",
+  "devDependencies": {
+    "bootstrap": "^5.3.7",
+    "bootstrap-icons": "^1.13.1",
+    "laravel-vite-plugin": "^2.0.0",
+    "sass-embedded": "^1.89.2",
+    "vite": "^7.0.6"
+  }
+}

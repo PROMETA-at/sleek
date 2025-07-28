@@ -8,13 +8,20 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\View\ComponentAttributeBag;
-use Illuminate\View\DynamicComponent;
+use Illuminate\View\{
+  Component, 
+  AnonymousComponent, 
+  ComponentAttributeBag, 
+  DynamicComponent,
+};
 use Prometa\Sleek\Blade\BladeCompiler;
 use Prometa\Sleek\HandleQueryParametersMixin;
 use Prometa\Sleek\Pagination\LengthAwarePaginator;
-use Prometa\Sleek\Views\Factory;
-use Prometa\Sleek\Views\SleekPageState;
+use Prometa\Sleek\Views\{
+  Factory,
+  SleekPageState,
+  AnonymousComponent as ModifiedAnonymousComponent
+};
 use Illuminate\Support\Facades\Route;
 
 class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
@@ -33,6 +40,10 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
         });
 
         $this->app->bind(BaseLengthAwarePaginator::class , LengthAwarePaginator::class);
+        Component::resolveComponentsUsing(function ($comp, $data) {
+            if ($comp !== AnonymousComponent::class) return app()->make($comp, $data);
+            else return new ModifiedAnonymousComponent($data['view'], $data['data']);
+        });
 
         // Set the alias for the icon component to use x-icon instead of x-sleek::icon
         Blade::component('sleek::components.icon', 'icon');

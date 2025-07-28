@@ -4,7 +4,9 @@
 
 @php($formAttributes = ['action', 'method', 'fields', 'enctype', 'target'])
 
-<x-sleek::modal id="{{$id}}" {{ $attributes->except($formAttributes) }}>
+<x-sleek::modal {{ $attributes->except($formAttributes) }}>
+    @php($isNative = $component->hasFlag('native'))
+
     <x-slot:header>
         @isset($header)
             {{ $header }}
@@ -23,7 +25,14 @@
                 @isset($footer)
                     {{ $footer }}
                 @else
-                    <button {{ $cancel->attributes->except(['label'])->class(['btn', 'btn-outline-secondary']) }} type="button" data-bs-dismiss="modal">{{ $cancel->attributes->get('label') ?? __('common.actions.cancel') }}</button>
+                    <button 
+                      {{ $cancel->attributes->except(['label'])->class(['btn', 'btn-outline-secondary']) }} 
+                      type="button" 
+                      @if($isNative)
+                        _="on click close() the closest <dialog />"
+                      @else
+                        data-bs-dismiss="modal"
+                      @endif >{{ $cancel->attributes->get('label') ?? __('common.actions.cancel') }}</button>
                     <button type="submit" class="btn btn-success" :disabled="loading" form="{{ $formId }}">
                         <span x-show="loading" class="spinner-border spinner-border-sm modal-spinner hidden-spinner" role="status" aria-hidden="true"></span>
                         {{ $submit->attributes->get('label') ?? __('common.actions.submit') }}

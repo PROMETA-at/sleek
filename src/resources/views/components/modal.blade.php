@@ -1,4 +1,4 @@
-@flags(['close', 'native' => false])
+@flags(['close', 'native' => false, 'scroll'])
 
 @ensureSlotFor($header)
 @ensureSlotFor($extra, true)
@@ -10,7 +10,11 @@
       'size-xl' => $attributes->get('size') === 'xl',
       'size-lg' => $attributes->get('size') === 'lg',
       'size-sm' => $attributes->get('size') === 'sm',
-    ]) }} closedby="any"
+    ]) }}
+    closedby="any"
+    @unlessFlag('scroll')
+      style="overflow: visible"
+    @endflag
   >
     <x-bs::modal.content>
       @forwardSlots

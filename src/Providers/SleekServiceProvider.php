@@ -108,6 +108,14 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
                     (isset(\${$flagName}) && (\${$flagName} === true || \${$flagName} === 'true'))
                 ): ?>";
             });
+            $bladeCompiler->directive('unlessFlag', function ($arguments) {
+                $flagName = trim($arguments, '\'"');
+                $negFlagName = 'no'.ucfirst($flagName);
+                return "<?php if (!(
+                    !(isset(\${$negFlagName}) && (\${$negFlagName} === true || \${$negFlagName} === 'true')) &&
+                    (isset(\${$flagName}) && (\${$flagName} === true || \${$flagName} === 'true'))
+                )): ?>";
+            });
             $bladeCompiler->directive('endflag', function () {
                 return '<?php endif; ?>';
             });

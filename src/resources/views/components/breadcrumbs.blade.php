@@ -31,19 +31,3 @@
         @endforeach
     </ul>
 </nav>
-
-@once
-    <style>
-        .breadcrumbs {
-            display: flex;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .breadcrumbs li:not(:last-child):after {
-            content: '>';
-            margin: 0 0.5em;
-        }
-    </style>
-@endonce

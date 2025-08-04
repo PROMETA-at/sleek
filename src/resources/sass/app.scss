@@ -43,6 +43,19 @@ $enable-negative-margins: true;
     }
 }
 
+.breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.breadcrumbs li:not(:last-child):after {
+    content: '>';
+    margin: 0 0.5em;
+}
+
 // Reset User-Agent nonsense
 dialog {
     border: none;

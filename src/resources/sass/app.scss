@@ -43,7 +43,8 @@ $enable-negative-margins: true;
     }
 
     .bg-#{$color} {
-        background-color: rgb(from var(--bs-#{color}) r g b / var(--bs-bg-opacity));
+        --bs-bg-opacity: 1;
+        background-color: rgb(from var(--bs-#{$color}) r g b / var(--bs-bg-opacity)) !important;
     }
 }
 

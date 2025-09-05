@@ -10,6 +10,10 @@ Sleek is a Laravel package that provides a variety of useful features for your L
   - [Defining the Menu Structure](#defining-the-menu-structure)
   - [Authentication](#authentication)
   - [Language Switcher](#language-switcher)
+  - [Theme Configuration](#theme-configuration)
+- [Navigation](#navigation)
+  - [Breadcrumbs](#breadcrumbs)
+  - [Custom Breadcrumb Labels](#custom-breadcrumb-labels)
 - [Forms](#forms)
   - [Defining a Form](#defining-a-form)
   - [Defining Form Fields](#defining-form-fields)
@@ -36,6 +40,7 @@ Sleek is a Laravel package that provides a variety of useful features for your L
   - [Auto Paginate](#auto-paginate) 
   - [Auto Filter](#auto-filter)
 - [UI Components](#ui-components)
+  - [Icons](#icons)
   - [Alert](#alert)
   - [Tabs](#tabs)
   - [Entity-Table](#entity-table)
@@ -188,6 +193,68 @@ The package has a built-in language switcher. You only need to define the availa
 ```php
 Sleek::language(['de' => 'Deutsch', 'en' => 'Englisch']);
 ```
+
+### Theme Configuration
+
+Sleek allows you to configure Bootstrap theme colors to match your application's branding.
+
+```php
+Sleek::theme([
+    'colors' => [
+        'primary' => '#007bff',
+        'secondary' => '#6c757d',
+        'success' => '#28a745',
+        // ...
+    ]
+]);
+```
+
+Bootstrap itself is primarily a Sass-based system, but Sleek injects theming at runtime via plain CSS. 
+To make this work seamlessly, Sleek overrides the relevant Bootstrap styles to reference Bootstrap’s CSS variables 
+(like the `--bs-*` tokens) and relies on native CSS capabilities (variables, color functions and transforms) 
+rather than recompiling Sass. This effort is a work in progress and only encompasses select bootstrap classes so far.
+Feel free to open a pull request or contribute to the project if you need more classes.
+
+## Navigation
+
+### Breadcrumbs
+
+Sleek provides an automatic breadcrumb component that generates navigation breadcrumbs based on your current route structure. Simply add the component to your layout and it will intelligently create breadcrumbs from the route segments:
+
+```blade
+<x-sleek::breadcrumbs />
+```
+
+The breadcrumbs component automatically:
+- Generates breadcrumbs from the current route structure
+- Uses translation keys following the pattern `breadcrumbs.<segment>` for each URL segment
+- Handles route parameters intelligently, especially when they represent models
+
+For example, if your current route is `/users/123/edit`, the component will look for translations:
+- `breadcrumbs.users` for the "users" segment
+- `breadcrumbs.edit` for the "edit" segment
+- For the "123" segment, it will try to resolve it as a model (see Custom Breadcrumb Labels below)
+
+### Custom Breadcrumb Labels
+
+When your routes include model parameters (like `/users/{user}/edit`), Sleek can automatically display meaningful labels instead of just the model ID. To enable this, implement the `RendersAsBreadcrumb` interface on your models:
+
+```php
+use Prometa\Sleek\RendersAsBreadcrumb;
+
+class User extends Model implements RendersAsBreadcrumb
+{
+    public function asBreadcrumb(): string
+    {
+        return $this->name;
+    }
+}
+```
+
+Now when the breadcrumbs component encounters a User model in the route parameters, it will display the user's name instead of their ID. This makes your breadcrumbs much more user-friendly:
+
+- Without interface: `Home > Users > 123 > Edit`
+- With interface: `Home > Users > John Doe > Edit`
 
 ## Forms
 
@@ -958,6 +1025,33 @@ This configuration tells `autoFilter()` to dynamically append the suitable condi
 - `role`: appends `->where('role', 'admin')->where('role', 'user')`
 
 ## UI Components
+
+### Icons
+
+Sleek provides a convenient icon component that makes it easy to use Bootstrap Icons throughout your application. Instead of writing lengthy `<i class="bi bi-*">` tags, you can use the simple `<x-icon />` component:
+
+```blade
+{{-- Instead of: <i class="bi bi-envelope"></i> --}}
+<x-icon envelope />
+
+{{-- Instead of: <i class="bi bi-person-fill"></i> --}}
+<x-icon person-fill />
+```
+
+The icon component automatically maps the icon name to the corresponding Bootstrap Icon class. This provides a much cleaner syntax and makes your Blade templates more readable.
+
+You can also pass additional attributes to customize the icon:
+
+```blade
+<x-icon envelope class="text-primary" style="font-size: 1.5rem;" />
+```
+
+In addition to the shorthand boolean attribute (e.g., `<x-icon envelope />`), you can explicitly pass a name attribute if you prefer or when generating components programmatically:
+
+```blade
+<x-icon name="envelope" />
+<x-icon name="person-fill" class="text-primary" />
+```
 
 ### Alert
 

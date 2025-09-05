@@ -52,4 +52,24 @@
     </x-sleek::modal>
   </section>
 
+  <hr />
+
+  <h3>Icon Component</h3>
+  <div class="d-flex gap-3 align-items-center">
+    <!-- Basic icon -->
+    <x-icon envelope /> Basic envelope
+    
+    <!-- Icon with class attribute -->
+    <x-icon person class="text-primary" /> Primary person
+    
+    <!-- Icon with style attribute -->
+    <x-icon house style="font-size: 2rem; color: green;" /> Large green house
+    
+    <!-- Icon with multiple attributes -->
+    <x-icon star class="text-warning" style="font-size: 1.5rem;" title="Favorite" /> Warning star with tooltip
+
+    <!-- Using explicit name -->
+    <x-icon name="hand-thumbs-up-fill" class="text-primary" /> Danger star with explicit name
+  </div>
+
 </x-sleek::view>

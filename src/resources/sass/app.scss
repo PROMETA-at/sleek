@@ -41,6 +41,10 @@ $enable-negative-margins: true;
         --bs-btn-disabled-color: var(--bs-#{$color});
         --bs-btn-disabled-border-color: var(--bs-#{$color});
     }
+
+    .bg-#{$color} {
+        background-color: rgb(from var(--bs-#{color}) r g b / var(--bs-bg-opacity));
+    }
 }
 
 .breadcrumbs {

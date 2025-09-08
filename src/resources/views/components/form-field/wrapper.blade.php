@@ -18,7 +18,7 @@
 <div class="input-group mb-2 @error($name) has-validation @enderror" {{ $inputGroup->attributes }}>
   {{ $before ?? null }}
   @if($floating)
-    <x-bs::form-floating>
+    <x-bs::form-floating :class="$errors->has($name) ? 'is-invalid' : ''">
       @isset($label)
         @slot('label', $label, ['for' => $name ?? $label->attributes->get('for') ?? '', ...$label->attributes])
       @endisset

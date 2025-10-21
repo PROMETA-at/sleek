@@ -2,12 +2,12 @@
 
 /**
  * @method static void raise(string $message, $type = 'info')
- * @method static static language(callable | array $data)
- * @method static static authentication(callable | array | false $data)
- * @method static static menu(callable | array $data)
- * @method static static theme(callable | array $data)
- * @method static static assets(callable | array $data)
- * @method static static alert(callable | array $data)
+ * @method static static|\Prometa\Sleek\Views\Builder\SleekLanguageBuilder language(callable | array $data = null)
+ * @method static static|\Prometa\Sleek\Views\Builder\SleekAuthenticationBuilder authentication(callable | array | false $data = null)
+ * @method static static|\Prometa\Sleek\Views\Builder\SleekMenuBuilder menu(callable | array $data = null)
+ * @method static static|\Prometa\Sleek\Views\Builder\SleekThemeBuilder theme(callable | array $data = null)
+ * @method static static|\Prometa\Sleek\Views\Builder\SleekAssetsBuilder assets(callable | array $data = null)
+ * @method static static|\Prometa\Sleek\Views\Builder\SleekAlertBuilder alert(callable | array $data = null)
  */
 class Sleek extends \Illuminate\Support\Facades\Facade
 {

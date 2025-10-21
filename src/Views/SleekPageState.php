@@ -2,6 +2,13 @@
 
 namespace Prometa\Sleek\Views;
 
+use Prometa\Sleek\Views\Builder\SleekAlertBuilder;
+use Prometa\Sleek\Views\Builder\SleekAssetsBuilder;
+use Prometa\Sleek\Views\Builder\SleekAuthenticationBuilder;
+use Prometa\Sleek\Views\Builder\SleekLanguageBuilder;
+use Prometa\Sleek\Views\Builder\SleekMenuBuilder;
+use Prometa\Sleek\Views\Builder\SleekThemeBuilder;
+
 class SleekPageState
 {
     private $menuDataProvider = null;
@@ -17,8 +24,12 @@ class SleekPageState
         session()->flash('sleek_alert', ['message' => $message, 'type' => $type]);
     }
 
-    public function language(callable|array $data): static
+    public function language(callable|array $data = null): static|SleekLanguageBuilder
     {
+        if ($data === null) {
+            return new SleekLanguageBuilder($this);
+        }
+
         $factory =
             is_callable($data)
                 ? $data
@@ -34,8 +45,12 @@ class SleekPageState
         return $this->resolve($this->languageProvider);
     }
 
-    public function authentication(callable|array|false $data): static
+    public function authentication(callable|array|false $data = null): static|SleekAuthenticationBuilder
     {
+        if ($data === null) {
+            return new SleekAuthenticationBuilder($this);
+        }
+
         $factory =
             is_callable($data)
                 ? $data
@@ -51,8 +66,12 @@ class SleekPageState
         return $this->resolve($this->authenticationProvider, []);
     }
 
-    public function menu(callable|array $data): static
+    public function menu(callable|array $data = null): static|SleekMenuBuilder
     {
+        if ($data === null) {
+            return new SleekMenuBuilder($this);
+        }
+
         $factory =
             is_callable($data)
                 ? $data
@@ -93,8 +112,12 @@ class SleekPageState
         return $structure['logo'] ?? null;
     }
 
-    public function theme(callable|array $theme): static
+    public function theme(callable|array $theme = null): static|SleekThemeBuilder
     {
+        if ($theme === null) {
+            return new SleekThemeBuilder($this);
+        }
+
         $factory =
             is_callable($theme)
                 ? $theme
@@ -127,8 +150,12 @@ class SleekPageState
         return $this->resolve($this->documentProvider);
     }
 
-    public function alert(callable|array $data): static
+    public function alert(callable|array $data = null): static|SleekAlertBuilder
     {
+        if ($data === null) {
+            return new SleekAlertBuilder($this);
+        }
+
         $factory =
             is_callable($data)
                 ? $data
@@ -143,8 +170,12 @@ class SleekPageState
         return $this->resolve($this->alertProvider, []);
     }
 
-    public function assets(callable|array $data): static
+    public function assets(callable|array $data = null): static|SleekAssetsBuilder
     {
+        if ($data === null) {
+            return new SleekAssetsBuilder($this);
+        }
+
         $factory =
             is_callable($data)
                 ? $data

@@ -111,6 +111,40 @@ User::query()
 > [!NOTE]
 > We do not supply the "page" since Laravel takes care of that internally.
 
+### Pagination Window
+
+Out of the box, the rendered pagination controls show a tight, balanced window of page buttons — first and last
+pages pinned, a slider hugging the current page, and ellipses collapsing whatever's left over. For a 15-page list
+on page 1 you get:
+
+```
+‹  1  2  3  4  5  6  7  8  …  14  15  ›
+```
+
+And on page 8:
+
+```
+‹  1  2  …  5  6  7  8  9  10  11  …  14  15  ›
+```
+
+Two knobs on the paginator shape this:
+
+- `onEachSide` is Laravel's standard pagination slider — pages on either side of the current page (defaults to `3`).
+- `borderWindowSize` is Sleek's addition — pages pinned at each edge of the list (defaults to `2`).
+
+When the current page sits close enough to an edge that the slider would otherwise touch the border, the two
+collapse into a single contiguous run that spans `2 * onEachSide + borderWindowSize` pages from that edge. That's
+why page 1 of 15 shows `1..8` instead of just `1..4 … 14 15` — the slider absorbs the border and stretches forward
+so the visible button count doesn't collapse as you near the edge.
+
+For smaller tables you'll usually want to dial both down. Set them on the paginator before handing it to the table:
+
+```php
+$users = User::query()->autoPaginate()->onEachSide(1)->borderWindowSize(1);
+```
+
+That gives you a much tighter control — `1  2  3  …  15` near the edges and `1  …  3  4  5  …  15` in the middle.
+
 ### Scoping Parameter Names
 
 Sometimes you might want to render multiple tables on the same page. While this can get complicated pretty quickly, with

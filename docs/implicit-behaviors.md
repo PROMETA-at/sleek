@@ -28,6 +28,7 @@ asking for them.
 | Value extraction | Column name + entity | Dot-notation into model attributes | `'col' => 'accessor'` or `'col' => ['accessor' => '...']` |
 | Sorting controls | `:sortable="true"` | Adds `sort-by` and `sort-direction` query params | `:sortable="['col1', 'col2']"` |
 | Pagination | `:entities` is a `Paginator` | Renders pagination links above and below | `navigation="top"`, `"bottom"`, or `:navigation="false"` |
+| Pagination window | Paginator instance | Shows `current ± 3` plus 2 pinned at each edge, collapsing with ellipses | `->onEachSide(N)` / `->borderWindowSize(N)` on the paginator |
 | Page size links | Paginator present | Rendered alongside pagination | — |
 | Parameter scoping | `scoped="prefix"` | All params become `prefix[param]` | — |
 

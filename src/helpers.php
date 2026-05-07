@@ -6,7 +6,7 @@ use Illuminate\Support\Str;
 
 function resolveKeyFromContext() {
     $currentRoute = Route::getCurrentRoute();
-    if ($routeName = $currentRoute->getName()) {
+    if ($routeName = $currentRoute?->getName()) {
         return substr($routeName, 0, strrpos($routeName, '.') ?: strlen($routeName));
     }
 }

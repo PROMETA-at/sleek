@@ -7,14 +7,12 @@
   <dialog {{ $attributes->class([
       'bs',
       'fade',
+      'no-scroll' => !($scroll ?? true) || ($noScroll ?? false),
       'size-xl' => $attributes->get('size') === 'xl',
       'size-lg' => $attributes->get('size') === 'lg',
       'size-sm' => $attributes->get('size') === 'sm',
     ]) }}
     closedby="any"
-    @unlessFlag('scroll')
-      style="overflow: visible"
-    @endflag
   >
     <x-bs::modal.content>
       @forwardSlots

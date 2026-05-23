@@ -72,6 +72,31 @@ dialog.bs {
     // BS-Modals naturally stretch to screen and are constrained by max-width instead
     width: auto;
 
+    // Let popovers, dropdowns, etc. escape the dialog. Scrolling is delegated to
+    // .modal-body below so header/footer stay pinned and tall content doesn't
+    // overflow the viewport.
+    overflow: visible;
+    max-height: 100vh;
+
+    .modal-content {
+        display: flex;
+        flex-direction: column;
+        max-height: 100vh;
+    }
+    .modal-header,
+    .modal-footer { flex: 0 0 auto; }
+    .modal-body {
+        flex: 1 1 auto;
+        overflow-y: auto;
+        min-height: 0;
+    }
+
+    &.no-scroll {
+        max-height: none;
+        .modal-content { max-height: none; }
+        .modal-body { overflow: visible; }
+    }
+
     // Bootstrap vars copied over from .modal
     // We can't use bootstraps class because of additional styling there that's unwanted here.
     --bs-modal-zindex: 1055;

@@ -22,6 +22,18 @@ User::query()
     ->get()
 ```
 
+### Scoped Parameters
+Once you put more than one table on a page, a single set of `sort-by` / `sort-direction` parameters isn't enough — every table would sort in lockstep. The [`scoped` property](tables.md#scoping-parameter-names) on `sleek::entity-table` solves the view side by namespacing the parameters it appends to links, so `scoped="users"` turns `sort-by` into `users[sort-by]`.
+
+To read those namespaced parameters, hand the same name to `autoSort()` as its `$prefix`:
+
+```php
+User::query()
+    // Reads `users[sort-by]` / `users[sort-direction]` instead of the bare parameters
+    ->autoSort('users')
+    ->get()
+```
+
 ## Auto Paginate
 Building on the behavior described in the [Pagination Controls](tables.md#pagination-controls), the **auto paginate helper** automatically applies pagination parameters from the request to your query. When you call `autoPaginate()`, it looks for the following parameters:
 - `page-size`: The number of items per page (defaults to a given value if it's not provided in the request)
@@ -48,6 +60,15 @@ User::query()
 Automatically adjusts the query to display 100 items per page by appending `->paginate(100)`. This ensures that the `page-size` parameter from the request takes precedence over the default value.
 
 If the request does not include a `page-size` parameter, `autoPaginate()` will use the default size specified in the method call, such as 50 in this case.
+
+### Scoped Parameters
+Just like `autoSort()`, `autoPaginate()` accepts a `$prefix` to match a [`scoped`](tables.md#scoping-parameter-names) table. Pass it as the second argument — after the default page size — and the helper reads the namespaced `page-size` and paginates under the namespaced `page`:
+
+```php
+User::query()
+    // Reads `users[page-size]` and renders links with `users[page]`
+    ->autoPaginate(50, 'users')
+```
 
 ## Auto Filter
 The **auto filter helper** simplifies the process of applying query filters based on request parameters. When `autoFilter()` is called, it dynamically checks the request for filter parameters and applies them to the query using a configured filter pipeline.

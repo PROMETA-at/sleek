@@ -1,7 +1,7 @@
 # Blade Tag-Layer Lexer: Replace Regex Tag Parsing in Sleek's ComponentTagCompiler
 
 > **For agentic workers:** Handoff for a fresh session. Read "Current state" and "Hard constraints"
-> before touching code. Steps use checkbox (`- [ ]`) syntax for tracking.
+> before touching code. Steps use checkbox (`- [x]`) syntax for tracking.
 >
 > **Related:** [`2026-07-07-scoped-slot-registry.md`](2026-07-07-scoped-slot-registry.md) — the scoped-slot
 > feature whose regex implementation this plan replaces. Runtime side (closure slots, `Views\Factory`,
@@ -104,22 +104,46 @@ Derived from the current patterns — port behavior, don't re-derive:
 
 ## Testing
 
-- [ ] Differential harness: compile all package + workbench templates (77 files) through old and new
+- [x] Differential harness: compile all package + workbench templates (77 files) through old and new
       pipelines, assert byte-identical output. Keep the old implementation available until this passes
       (e.g. compile via both classes in the test, not a runtime flag).
-- [ ] Port Laravel's `BladeComponentTagCompilerTest` fixtures (framework repo, `tests/View/Blade/`) as
+- [x] Port Laravel's `BladeComponentTagCompilerTest` fixtures (framework repo, `tests/View/Blade/`) as
       lexer edge-case inputs for the differential harness.
-- [ ] Existing tests stay green: `ScopedSlotCompilerTest`, `TabsLazyRenderTest`,
+- [x] Existing tests stay green: `ScopedSlotCompilerTest`, `TabsLazyRenderTest`,
       `EntityTableColumnSlotTest`, `BtnComponentTest` (`composer test`).
-- [ ] Lexer unit tests for the cases regex is known to fumble: `>` inside quoted/unquoted bound values,
+- [x] Lexer unit tests for the cases regex is known to fumble: `>` inside quoted/unquoted bound values,
       `/>` inside strings, multiline attributes, `@class` with nested parens, unpaired tags.
 
 ## Steps
 
-- [ ] Lexer with token stream (Phase 1 raw-attribute-substring form) + unit tests.
-- [ ] Tree builder with tolerant pairing + slot-to-component attribution + unit tests.
-- [ ] Emitter reusing parent helpers; move `resolveSlotScoping()`/`matchScopedSlot()` onto it.
-- [ ] Rewire `ComponentTagCompiler::compile()`; delete `compileOpeningTags()`, `compileSlots()`,
-      `attributeSlotsToComponents()`, and the three pattern methods once differential harness passes.
-- [ ] Run full suite + `composer lint`; update `docs/implicit-behaviors.md` only if observable behavior
-      changed (goal: it hasn't).
+- [x] Lexer with token stream (Phase 1 raw-attribute-substring form) + unit tests.
+- [x] Tree builder with tolerant pairing + slot-to-component attribution + unit tests.
+- [x] Emitter reusing parent helpers; `resolveSlotScoping()`/`matchScopedSlot()` kept where they are.
+      *Deviation:* emission stayed on `ComponentTagCompiler` (as `emit()` / `emitComponent()` /
+      `emitSlot()`) rather than moving to a separate class — a standalone emitter would have had to
+      widen the visibility of the parent's protected helpers to reach them.
+- [x] Rewire `ComponentTagCompiler::compile()`; deleted `compileOpeningTags()`, `compileSlots()`,
+      `attributeSlotsToComponents()`, and the three pattern methods. The pre-lexer implementation
+      lives on as `tests/Fixtures/LegacyComponentTagCompiler.php`, the reference side of the harness.
+- [x] Run full suite (140 tests green). `composer lint` could not run — `phpstan` is not installed
+      in this checkout, and was already missing before this work.
+- [x] `docs/implicit-behaviors.md` untouched: no documented convention changed.
+
+## Outcome (2026-07-27)
+
+Implemented as `src/Blade/TagLexer.php` (lexer), `src/Blade/TagToken.php`, `src/Blade/TagTree.php`
+(pairing/attribution) and the `emit*()` methods on `src/Blade/ComponentTagCompiler.php`.
+
+**Byte-identity holds** on all 77 shipped templates and 70 edge-case inputs
+(`tests/Unit/TagLexerDifferentialTest.php`). One deliberate difference, covered by its own test:
+when a template contains *several* unresolvable components, the reported one changes. The regex
+pipeline compiled every self-closing tag before any opening tag, so the error came from whichever
+pass reached an unresolvable component first; emission is now in document order, so the first
+offender in the source is reported. Templates that compile at all are unaffected.
+
+Scaling is linear, as intended: 21 KB / 1000 tags → 1.0 ms, 340 KB / 16 000 tags → 18.6 ms.
+
+Known divergence not chased, because no real template can hit it: the regex passes ran
+`compileSlots()` over the whole document first, so a slot tag buried inside another tag's quoted
+attribute value (`<x-foo bar="<x-slot:a>">`) used to be compiled and mangle its host. The lexer
+consumes the quoted value as a value and leaves it alone.

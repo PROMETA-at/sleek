@@ -5,88 +5,120 @@ namespace Prometa\Sleek\Blade;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 
+/**
+ * Compiles Blade's component and slot tags from a lexed token stream instead of the parent's regex
+ * passes. {@see TagLexer} finds the tags, {@see TagTree} pairs them, and this class emits — reusing
+ * the parent's semantic helpers (`componentClass()`, `componentString()`,
+ * `getAttributesFromAttributeString()`, `attributesToString()`) unchanged.
+ *
+ * The lexer buys two things the regexes could not: slots know their enclosing component by
+ * construction rather than by replaying a second scan in lock-step, and tag boundaries survive
+ * quotes, echoes and nested parens without a wall of lookarounds. Emission stays the parent's.
+ */
 class ComponentTagCompiler extends \Illuminate\View\Compilers\ComponentTagCompiler
 {
     /**
-     * Compile the opening tags within the given string.
+     * Compile the component and slot tags within the given string.
      *
      * @param  string  $value
      * @return string
-     *
-     * @throws \InvalidArgumentException
      */
-    protected function compileOpeningTags(string $value)
+    public function compile(string $value)
     {
-        return preg_replace_callback($this->componentOpeningPattern(), function (array $matches) {
-            $this->boundAttributes = [];
+        $tokens = (new TagLexer)->tokenize($value);
 
-            $attributes = $this->getAttributesFromAttributeString($matches['attributes']);
+        (new TagTree)->attribute($tokens);
 
-            return $this->componentString($matches[1], $attributes);
-        }, $value);
+        return $this->emit($tokens);
     }
 
-    public function compileSlots(string $value)
+    /**
+     * Walk the tokens in document order, replacing each tag with its compiled form.
+     *
+     * @param  array<int, TagToken>  $tokens
+     */
+    protected function emit(array $tokens): string
     {
-        // Slots compile before component tags, so the raw <x-...> tags are still literal text. A
-        // document-order scan attributes every slot to its nearest enclosing component, letting the
-        // registry decide which slots compile as scoped (closure-backed) rather than eager.
         $registry = $this->blade instanceof BladeCompiler ? $this->blade->scopedSlotRegistry() : [];
-        $attributions = $this->attributeSlotsToComponents($value, $registry);
 
-        $value = preg_replace_callback($this->slotOpeningPattern(), function ($matches) use (&$attributions) {
-            // Dequeue this slot's attribution — the scan visits slot tags in the same document order
-            // preg_replace_callback does, so shifting keeps the two in lock-step.
-            $attribution = array_shift($attributions);
+        $compiled = '';
 
-            $name = $this->stripQuotes($matches['inlineName'] ?: $matches['name'] ?: $matches['boundName']);
+        foreach ($tokens as $token) {
+            $compiled .= match ($token->kind) {
+                TagToken::TEXT => $token->text,
+                TagToken::COMPONENT_OPEN => $this->emitComponent($token),
+                TagToken::COMPONENT_SELF_CLOSE => $this->emitComponent($token)."\n@endComponentClass##END-COMPONENT-CLASS##",
+                TagToken::COMPONENT_CLOSE => ' @endComponentClass##END-COMPONENT-CLASS##',
+                TagToken::SLOT_OPEN => $this->emitSlot($token, $registry),
+                TagToken::SLOT_CLOSE => ' @endslot',
+            };
+        }
 
-            if (Str::contains($name, '-') && ! empty($matches['inlineName'])) {
-                $name = Str::camel($name);
-            }
+        return $compiled;
+    }
 
-            // If the name was given as a simple string, we will wrap it in quotes as if it was bound for convenience...
-            if (! empty($matches['inlineName']) || ! empty($matches['name'])) {
-                $name = "'{$name}'";
-            }
+    protected function emitComponent(TagToken $token): string
+    {
+        $this->boundAttributes = [];
 
-            $this->boundAttributes = [];
+        return $this->componentString($token->name, $this->getAttributesFromAttributeString($token->attributes));
+    }
 
-            $attributes = $this->getAttributesFromAttributeString($matches['attributes']);
-            $hasSpreadAttributes = array_key_exists('attributes', $attributes);
+    /**
+     * Emit a slot opening as either a scoped (closure-backed) or an eager `@slot` directive. The
+     * registry decides which, keyed on the slot's enclosing component.
+     *
+     * @param  array<int, array{componentPattern: string, slotPattern: string, params: ?string}>  $registry
+     */
+    protected function emitSlot(TagToken $token, array $registry): string
+    {
+        $name = $this->stripQuotes($token->inlineName ?: $token->slotName ?: $token->boundName);
 
-            // If an inline name was provided and a name or bound name was *also* provided, we will assume the name should be an attribute...
-            if (! empty($matches['inlineName']) && (! empty($matches['name']) || ! empty($matches['boundName']))) {
-                $attributes = ! empty($matches['name'])
-                    ? array_merge($attributes, $this->getAttributesFromAttributeString('name='.$matches['name']))
-                    : array_merge($attributes, $this->getAttributesFromAttributeString(':name='.$matches['boundName']));
-            }
+        $attribution = $this->matchScopedSlot($registry, $token->enclosingComponent, $name);
 
-            [$isScoped, $bindings] = $this->resolveSlotScoping($attribution, $attributes);
+        if (Str::contains($name, '-') && ! empty($token->inlineName)) {
+            $name = Str::camel($name);
+        }
 
-            if ($isScoped) {
-                // `use` is obsolete — scope capture already carries every definition-site variable
-                // into the body. Accept and discard it so existing templates keep compiling.
-                unset($attributes['bind'], $attributes['use']);
-            }
+        // If the name was given as a simple string, we will wrap it in quotes as if it was bound for convenience...
+        if (! empty($token->inlineName) || ! empty($token->slotName)) {
+            $name = "'{$name}'";
+        }
 
-            if ($hasSpreadAttributes) {
-                $spreadValue = $attributes['attributes'];
-                unset($attributes['attributes']);
-                $attributesString = '['.$this->attributesToString($attributes).']';
-                $attributesString = <<<EOF
-                    $spreadValue instanceof Illuminate\View\ComponentAttributeBag
-                    ? {$spreadValue}->merge($attributesString)->getAttributes()
-                    : array_merge($spreadValue ?? [], $attributesString)
-                EOF;
-            } else $attributesString = "[".$this->attributesToString($attributes)."]";
+        $this->boundAttributes = [];
 
-            if ($isScoped) {
-                return " @slot({$name}, $attributesString bind ({$bindings}))";
-            } else return " @slot({$name}, null, $attributesString)";
-        }, $value);
+        $attributes = $this->getAttributesFromAttributeString($token->attributes);
+        $hasSpreadAttributes = array_key_exists('attributes', $attributes);
 
-        return preg_replace('/<\/\s*x[\-\:]slot[^>]*>/', ' @endslot', $value);
+        // If an inline name was provided and a name or bound name was *also* provided, we will assume the name should be an attribute...
+        if (! empty($token->inlineName) && (! empty($token->slotName) || ! empty($token->boundName))) {
+            $attributes = ! empty($token->slotName)
+                ? array_merge($attributes, $this->getAttributesFromAttributeString('name='.$token->slotName))
+                : array_merge($attributes, $this->getAttributesFromAttributeString(':name='.$token->boundName));
+        }
+
+        [$isScoped, $bindings] = $this->resolveSlotScoping($attribution, $attributes);
+
+        if ($isScoped) {
+            // `use` is obsolete — scope capture already carries every definition-site variable
+            // into the body. Accept and discard it so existing templates keep compiling.
+            unset($attributes['bind'], $attributes['use']);
+        }
+
+        if ($hasSpreadAttributes) {
+            $spreadValue = $attributes['attributes'];
+            unset($attributes['attributes']);
+            $attributesString = '['.$this->attributesToString($attributes).']';
+            $attributesString = <<<EOF
+                $spreadValue instanceof Illuminate\View\ComponentAttributeBag
+                ? {$spreadValue}->merge($attributesString)->getAttributes()
+                : array_merge($spreadValue ?? [], $attributesString)
+            EOF;
+        } else $attributesString = "[".$this->attributesToString($attributes)."]";
+
+        if ($isScoped) {
+            return " @slot({$name}, $attributesString bind ({$bindings}))";
+        } else return " @slot({$name}, null, $attributesString)";
     }
 
     /**
@@ -124,75 +156,7 @@ class ComponentTagCompiler extends \Illuminate\View\Compilers\ComponentTagCompil
     }
 
     /**
-     * Scan component and slot tags in document order, attributing each slot open tag to its nearest
-     * enclosing component. Returns one entry per slot open tag (in order): the registry match array
-     * or null when the slot is not registry-scoped.
-     *
-     * @return array<int, ?array{mode: string, params: ?string, component: string, slot: string}>
-     */
-    protected function attributeSlotsToComponents(string $value, array $registry): array
-    {
-        $tokens = [];
-        $slotOffsets = [];
-
-        // Slot open tags — the tags we attribute.
-        preg_match_all($this->slotOpeningPattern(), $value, $slotOpens, PREG_OFFSET_CAPTURE | PREG_SET_ORDER);
-        foreach ($slotOpens as $m) {
-            $slotOffsets[$m[0][1]] = true;
-            $raw = ($m['inlineName'][0] ?? '') ?: ($m['name'][0] ?? '') ?: ($m['boundName'][0] ?? '');
-            $tokens[] = ['offset' => $m[0][1], 'kind' => 'slot', 'name' => $this->stripQuotes($raw)];
-        }
-
-        // Slot close tags — recorded only so the component-close scan can skip them.
-        preg_match_all('/<\/\s*x[\-\:]slot[^>]*>/', $value, $slotCloses, PREG_OFFSET_CAPTURE | PREG_SET_ORDER);
-        foreach ($slotCloses as $m) {
-            $slotOffsets[$m[0][1]] = true;
-        }
-
-        // Component open / self-closing / closing tags. A <x-slot...> tag also matches the component
-        // patterns (same start offset); skip those so slots never land on the component stack.
-        preg_match_all($this->componentOpeningPattern(), $value, $opens, PREG_OFFSET_CAPTURE | PREG_SET_ORDER);
-        foreach ($opens as $m) {
-            if (isset($slotOffsets[$m[0][1]])) continue;
-            $tokens[] = ['offset' => $m[0][1], 'kind' => 'open', 'name' => $m[1][0]];
-        }
-
-        preg_match_all($this->componentSelfClosingPattern(), $value, $selfs, PREG_OFFSET_CAPTURE | PREG_SET_ORDER);
-        foreach ($selfs as $m) {
-            if (isset($slotOffsets[$m[0][1]])) continue;
-            $tokens[] = ['offset' => $m[0][1], 'kind' => 'selfclose'];
-        }
-
-        preg_match_all('/<\/\s*x[-\:][\w\-\:\.]*\s*>/', $value, $closes, PREG_OFFSET_CAPTURE | PREG_SET_ORDER);
-        foreach ($closes as $m) {
-            if (isset($slotOffsets[$m[0][1]])) continue;
-            $tokens[] = ['offset' => $m[0][1], 'kind' => 'close'];
-        }
-
-        usort($tokens, fn ($a, $b) => $a['offset'] <=> $b['offset']);
-
-        $stack = [];
-        $attributions = [];
-        foreach ($tokens as $token) {
-            switch ($token['kind']) {
-                case 'open':
-                    $stack[] = $token['name'];
-                    break;
-                case 'close':
-                    array_pop($stack);
-                    break;
-                case 'slot':
-                    $component = empty($stack) ? null : end($stack);
-                    $attributions[] = $this->matchScopedSlot($registry, $component, $token['name']);
-                    break;
-                // self-closing components are recognised but never pushed.
-            }
-        }
-
-        return $attributions;
-    }
-
-    /**
+     * @param  array<int, array{componentPattern: string, slotPattern: string, params: ?string}>  $registry
      * @return ?array{mode: string, params: ?string, component: string, slot: string}
      */
     protected function matchScopedSlot(array $registry, ?string $component, string $slotName): ?array
@@ -211,149 +175,6 @@ class ComponentTagCompiler extends \Illuminate\View\Compilers\ComponentTagCompil
         }
 
         return null;
-    }
-
-    protected function componentOpeningPattern(): string
-    {
-        return "/
-            <
-                \s*
-                x[-\:]([\w\-\:\.]*)
-                (?<attributes>
-                    (?:
-                        \s+
-                        (?:
-                            (?:
-                                @(?:class)(\( (?: (?>[^()]+) | (?-1) )* \))
-                            )
-                            |
-                            (?:
-                                @(?:style)(\( (?: (?>[^()]+) | (?-1) )* \))
-                            )
-                            |
-                            (?:
-                                \{\{\s*\\\$(?:[^}]+?)?\s*\}\}
-                            )
-                            |
-                            (?:
-                                (\:\\\$)(\w+)
-                            )
-                            |
-                            (?:
-                                [\w\-:.@%]+
-                                (
-                                    =
-                                    (?:
-                                        \\\"[^\\\"]*\\\"
-                                        |
-                                        \'[^\']*\'
-                                        |
-                                        [^\'\\\"=<>]+
-                                    )
-                                )?
-                            )
-                        )
-                    )*
-                    \s*
-                )
-                (?<![\/=\-])
-            >
-        /x";
-    }
-
-    protected function componentSelfClosingPattern(): string
-    {
-        return "/
-            <
-                \s*
-                x[-\:]([\w\-\:\.]*)
-                \s*
-                (?<attributes>
-                    (?:
-                        \s+
-                        (?:
-                            (?:
-                                @(?:class)(\( (?: (?>[^()]+) | (?-1) )* \))
-                            )
-                            |
-                            (?:
-                                @(?:style)(\( (?: (?>[^()]+) | (?-1) )* \))
-                            )
-                            |
-                            (?:
-                                \{\{\s*\\\$attributes(?:[^}]+?)?\s*\}\}
-                            )
-                            |
-                            (?:
-                                (\:\\\$)(\w+)
-                            )
-                            |
-                            (?:
-                                [\w\-:.@%]+
-                                (
-                                    =
-                                    (?:
-                                        \\\"[^\\\"]*\\\"
-                                        |
-                                        \'[^\']*\'
-                                        |
-                                        [^\'\\\"=<>]+
-                                    )
-                                )?
-                            )
-                        )
-                    )*
-                    \s*
-                )
-            \/>
-        /x";
-    }
-
-    protected function slotOpeningPattern(): string
-    {
-        return "/
-            <
-                \s*
-                x[\-\:]slot
-                (?:\:(?<inlineName>\w+(?:-\w+)*))?
-                (?:\s+name=(?<name>(\"[^\"]+\"|\\\'[^\\\']+\\\'|[^\s>]+)))?
-                (?:\s+\:name=(?<boundName>(\"[^\"]+\"|\\\'[^\\\']+\\\'|[^\s>]+)))?
-                (?<attributes>
-                    (?:
-                        \s+
-                        (?:
-                            (?:
-                                @(?:class)(\( (?: (?>[^()]+) | (?-1) )* \))
-                            )
-                            |
-                            (?:
-                                @(?:style)(\( (?: (?>[^()]+) | (?-1) )* \))
-                            )
-                            |
-                            (?:
-                                \{\{\s*\\\$(?:[^}]+?)?\s*\}\}
-                            )
-                            |
-                            (?:
-                                [\w\-:.@]+
-                                (
-                                    =
-                                    (?:
-                                        \\\"[^\\\"]*\\\"
-                                        |
-                                        \'[^\']*\'
-                                        |
-                                        [^\'\\\"=<>]+
-                                    )
-                                )?
-                            )
-                        )
-                    )*
-                    \s*
-                )
-                (?<![\/=\-])
-            >
-        /x";
     }
 
     /**

@@ -10,26 +10,28 @@ namespace Prometa\Sleek\Blade;
  * re-derivation: the token stream must mark exactly the spans the regexes would have replaced,
  * warts included, so compiled output stays byte-identical.
  *
- * One wart is preserved deliberately, because it looks like a bug here: tag recognition is attempted
- * in the order the old passes ran — slot open, then self-closing component, then opening component —
- * since that order is what decides which grammar applies. A `<x-slot ... />` therefore lexes as a
- * *component* named `slot`, exactly as before.
+ * One wart is preserved deliberately, because it looks like a bug here: a slot tag is tried before a
+ * component tag, and the slot grammar never accepted `/>`, so `<x-slot ... />` lexes as a
+ * *component* named `slot` — exactly as it did when `compileSlots()` ran as its own earlier pass.
  *
- * The grammars are otherwise near-identical: they differ in their terminator, and in two
- * alternatives the slot pattern never grew (the `:$var` shorthand, and `%` in attribute names).
+ * Beyond that the two grammars differ only in their terminator and in two alternatives the slot
+ * pattern never grew (the `:$var` shorthand, and `%` in attribute names), so opening and
+ * self-closing components share one scan.
  *
  * Anything that does not form a valid tag stays literal text, mirroring a regex non-match.
  */
 class TagLexer
 {
-    /** Attribute grammar of the opening-component pattern. */
-    protected const MODE_OPEN = 'open';
-
-    /** Attribute grammar of the self-closing-component pattern. */
-    protected const MODE_SELF_CLOSE = 'self-close';
+    /** Attribute grammar of the component patterns, self-closing or not. */
+    protected const MODE_COMPONENT = 'component';
 
     /** Attribute grammar of the slot-opening pattern. */
     protected const MODE_SLOT = 'slot';
+
+    /** Terminator kinds {@see terminatorAt()} can report. */
+    protected const TERMINATOR_OPEN = 'open';
+
+    protected const TERMINATOR_SELF_CLOSE = 'self-close';
 
     /** Characters PCRE's `\s` matches. */
     protected const WHITESPACE = " \t\n\r\f\v";
@@ -150,36 +152,32 @@ class TagLexer
     /**
      * `<x-name ...>` or `<x-name ... />`.
      *
-     * Self-closing is tried first because `compileSelfClosingTags()` ran before
-     * `compileOpeningTags()`, and the two accept different attribute forms.
+     * Both shapes share one scan. They used to need two, because `compileSelfClosingTags()` ran
+     * before `compileOpeningTags()` over separate grammars — so every opening tag paid for a failed
+     * self-closing scan first. The grammars now differ only in their terminator, which a single
+     * pass can decide on arrival.
      *
      * @param  int  $nameStart  Offset just past the `x-` / `x:` prefix.
      */
     protected function matchComponentOpen(string $value, int $offset, int $nameStart, int $length): ?TagToken
     {
         $nameEnd = $this->runOf($value, $nameStart, self::COMPONENT_NAME);
-        $name = substr($value, $nameStart, $nameEnd - $nameStart);
+        $failed = [];
+        $end = $this->scanAttributes($value, $nameEnd, $length, self::MODE_COMPONENT, $failed);
 
-        foreach ([self::MODE_SELF_CLOSE, self::MODE_OPEN] as $mode) {
-            $failed = [];
-            $end = $this->scanAttributes($value, $nameEnd, $length, $mode, $failed);
-
-            if ($end === null) {
-                continue;
-            }
-
-            $selfClosing = $mode === self::MODE_SELF_CLOSE;
-
-            return new TagToken(
-                $selfClosing ? TagToken::COMPONENT_SELF_CLOSE : TagToken::COMPONENT_OPEN,
-                substr($value, $offset, ($end + ($selfClosing ? 2 : 1)) - $offset),
-                $offset,
-                name: $name,
-                attributes: substr($value, $nameEnd, $end - $nameEnd),
-            );
+        if ($end === null) {
+            return null;
         }
 
-        return null;
+        $selfClosing = $this->terminatorAt($value, $end, self::MODE_COMPONENT) === self::TERMINATOR_SELF_CLOSE;
+
+        return new TagToken(
+            $selfClosing ? TagToken::COMPONENT_SELF_CLOSE : TagToken::COMPONENT_OPEN,
+            substr($value, $offset, ($end + ($selfClosing ? 2 : 1)) - $offset),
+            $offset,
+            name: substr($value, $nameStart, $nameEnd - $nameStart),
+            attributes: substr($value, $nameEnd, $end - $nameEnd),
+        );
     }
 
     /**
@@ -278,7 +276,7 @@ class TagLexer
             }
         }
 
-        if ($this->terminatesAt($value, $afterSpace, $mode)) {
+        if ($this->terminatorAt($value, $afterSpace, $mode) !== null) {
             return $afterSpace;
         }
 
@@ -430,20 +428,29 @@ class TagLexer
     }
 
     /**
-     * Whether the tag's terminator sits on the given offset.
+     * Which terminator, if any, sits on the given offset.
      *
-     * The opening grammars refuse a `>` preceded by `/`, `=` or `-`; that guard is what keeps `=>`
-     * and `->` inside unquoted bound expressions — and the `/` of a self-closing tag — from being
-     * read as the end of an opening tag.
+     * `/>` is tested first so a self-closing tag stays self-closing — matching the old pass order,
+     * where every self-closing tag was compiled before any opening tag was looked at.
+     *
+     * The opening form refuses a `>` preceded by `/`, `=` or `-`; that guard is what keeps `=>` and
+     * `->` inside unquoted bound expressions — and the `/` of a self-closing tag — from being read
+     * as the end of an opening tag. Slots only ever terminated with `>`.
      */
-    protected function terminatesAt(string $value, int $cursor, string $mode): bool
+    protected function terminatorAt(string $value, int $cursor, string $mode): ?string
     {
-        if ($mode === self::MODE_SELF_CLOSE) {
-            return ($value[$cursor] ?? '') === '/' && ($value[$cursor + 1] ?? '') === '>';
+        if ($mode === self::MODE_COMPONENT
+            && ($value[$cursor] ?? '') === '/'
+            && ($value[$cursor + 1] ?? '') === '>') {
+            return self::TERMINATOR_SELF_CLOSE;
         }
 
-        return ($value[$cursor] ?? '') === '>'
-            && ! in_array($value[$cursor - 1] ?? '', ['/', '=', '-'], true);
+        if (($value[$cursor] ?? '') === '>'
+            && ! in_array($value[$cursor - 1] ?? '', ['/', '=', '-'], true)) {
+            return self::TERMINATOR_OPEN;
+        }
+
+        return null;
     }
 
     // --- Closing tags ------------------------------------------------------------------------

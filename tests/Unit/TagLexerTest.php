@@ -41,6 +41,27 @@ class TagLexerTest extends TestCase
         $this->assertSame(' title=bar', $token->attributes);
     }
 
+    public function test_open_and_self_closing_shapes_are_decided_by_one_scan()
+    {
+        // Both shapes share a grammar and differ only in terminator, so a single scan decides them
+        // on arrival. `/>` wins over `>` at the same offset, keeping the old pass order's outcome.
+        $cases = [
+            '<x-alert a=b c/>' => [TagToken::COMPONENT_SELF_CLOSE, ' a=b c'],
+            '<x-alert a=b c>' => [TagToken::COMPONENT_OPEN, ' a=b c'],
+            '<x-alert a=b/ >' => [TagToken::COMPONENT_OPEN, ' a=b/ '],
+            '<x-alert a="x/>y" >' => [TagToken::COMPONENT_OPEN, ' a="x/>y" '],
+            '<x-alert a="/>" b=c/>' => [TagToken::COMPONENT_SELF_CLOSE, ' a="/>" b=c'],
+            '<x-alert @class(["a" => "/>"]) >' => [TagToken::COMPONENT_OPEN, ' @class(["a" => "/>"]) '],
+        ];
+
+        foreach ($cases as $source => [$kind, $attributes]) {
+            $token = $this->onlyTag($source);
+
+            $this->assertSame($kind, $token->kind, "Wrong shape for [{$source}].");
+            $this->assertSame($attributes, $token->attributes, "Wrong attribute span for [{$source}].");
+        }
+    }
+
     public function test_attributes_may_span_lines()
     {
         $source = "<x-alert\n    title=\"foo\"\n    :subtitle=\"\$bar\"\n>";

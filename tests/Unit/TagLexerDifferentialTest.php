@@ -112,6 +112,21 @@ class TagLexerDifferentialTest extends TestCase
             '<x-alert :title=$a->b>',
             '<x-alert title=bar/>',
             '<x-alert title=bar baz />',
+
+            // Terminator ambiguity: one scan now decides open vs self-closing on arrival, where the
+            // old passes decided it by running two whole grammars in order. These are the shapes
+            // where an unquoted value, a `/` and a `>` can be read more than one way.
+            '<x-alert a=b c/>',
+            '<x-alert a=b c>',
+            '<x-alert a=b/ >',
+            '<x-alert a=b/>c',
+            '<x-alert a="x/>y" >',
+            '<x-alert a="/>" b=c/>',
+            '<x-alert a=b c="/>" />',
+            '<x-alert @class(["a" => "/>"]) >',
+            '<x-alert @class(["a" => "/>"]) />',
+            '<x-alert a=b c d e/>',
+            '<x-alert a=b c d e>',
             '</x-alert>',
             '<x-alert>',
             '<x-alert><x-slot:foo>a</x-alert>',
@@ -142,6 +157,12 @@ class TagLexerDifferentialTest extends TestCase
         $this->assertSame('<x-sleek::icon {{ $spread }} />', $legacy, 'Expected the old passes to leave this uncompiled.');
         $this->assertStringContainsString('##BEGIN-COMPONENT-CLASS##', $lexed);
         $this->assertStringContainsString('$spread', $lexed);
+
+        // Also with no space before the terminator, where the spread abuts the `/>`.
+        $this->assertStringContainsString(
+            '##BEGIN-COMPONENT-CLASS##',
+            $this->outcome(new ComponentTagCompiler(...$this->compilerArguments()), '<x-sleek::icon {{ $spread }}/>')
+        );
 
         // It now compiles to what the equivalent paired tag always did.
         $paired = $this->outcome(new ComponentTagCompiler(...$this->compilerArguments()), '<x-sleek::icon {{ $spread }}></x-sleek::icon>');

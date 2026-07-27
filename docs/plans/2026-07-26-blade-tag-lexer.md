@@ -149,7 +149,7 @@ Implemented as `src/Blade/TagLexer.php` (lexer), `src/Blade/TagToken.php`, `src/
    error came from whichever pass reached one first; emission is now in document order. Templates
    that compile at all are unaffected.
 
-Scaling is linear, as intended: 21 KB / 1000 tags → 1.0 ms, 340 KB / 16 000 tags → 18.6 ms.
+Scaling is linear, as intended: 21 KB / 1000 tags → 0.9 ms, 340 KB / 16 000 tags → 15.3 ms.
 
 **Measured, not taken further:** fusing the three passes into generators / `LazyCollection` was
 evaluated and rejected. Attribution + emission traversal together cost 0.77 ms of a 20.6 ms
@@ -157,12 +157,26 @@ pipeline (<4%), a fused generator was *slower* than array-build-plus-two-walks (
 16 000 tokens), and `LazyCollection` cost 29.8 ms — it would more than double compile time.
 Streaming would also force output to be emitted before a later tag can abort the compile.
 
-The one real inefficiency left is in the tag matcher, not the iteration: every *opening* tag runs a
-full failed self-closing DFS first, because that is the pass order the regexes ran in. Measured at
-0.037 ms/KB for self-closing tags vs 0.074 ms/KB for opening ones — a 2× tax on the commonest tag
-shape. Now that the spread rule is unified, `MODE_OPEN` and `MODE_SELF_CLOSE` differ *only* in their
-terminator, so a single scan with a terminator predicate accepting either would collapse the two
-without the re-validation step that would otherwise be needed. Not attempted here.
+**The real inefficiency was in the tag matcher, and has been removed.** Every *opening* tag used to
+run a full failed self-closing DFS first, because that was the pass order the regexes ran in:
+0.037 ms/KB for self-closing tags vs 0.074 ms/KB for opening ones, a 2× tax on the commonest tag
+shape. Once the spread rule was unified the two component grammars differed *only* in their
+terminator, so `MODE_OPEN`/`MODE_SELF_CLOSE` collapsed into one `MODE_COMPONENT` scan, with
+`terminatorAt()` deciding the shape on arrival (`/>` tested before `>`, preserving the old pass
+order's outcome where both are reachable).
+
+| | before | after |
+|---|---|---|
+| opening tags | 0.074 ms/KB | 0.036 ms/KB |
+| self-closing tags | 0.037 ms/KB | 0.035 ms/KB |
+| mixed template, 340 KB | 18.6 ms | 15.3 ms |
+
+Opening tags now cost the same per byte as self-closing ones — the tax is gone rather than halved.
+The risk this carried was ordering: with two passes, a `/>` reachable by *any* attribute reading beat
+a `>` reachable by any other, whereas one scan takes whichever the depth-first order reaches first.
+Thirteen terminator-ambiguity shapes (unquoted values containing `/`, quoted and parenthesised `/>`,
+trailing `/` before whitespace) were added to the differential corpus and to `TagLexerTest`; all
+agree with the old implementation.
 
 Known divergence not chased, because no real template can hit it: the regex passes ran
 `compileSlots()` over the whole document first, so a slot tag buried inside another tag's quoted

@@ -118,9 +118,8 @@ class TagLexerDifferentialTest extends TestCase
             '<x-a><x-slot:one><x-b><x-slot:two>x</x-slot></x-b></x-slot></x-a>',
             '<x- >',
             '<x->',
-            '<x-alert {{ $foo }} />',
+            '<x-alert {{ $attributes }} />',
             '<x-alert {{ $foo }}></x-alert>',
-            '<x-alert {{ $attributesFoo }} />',
             'plain text with a < and a > and no tags',
             '{{ $a < $b }}<x-alert />',
         ];
@@ -129,9 +128,34 @@ class TagLexerDifferentialTest extends TestCase
     }
 
     /**
-     * The one deliberate behavior change: the regex passes compiled every self-closing tag before
-     * any opening tag, so with several unresolvable components the reported one depended on which
-     * pass reached it first. Emission is now in document order, so the first offender is reported.
+     * Deliberate divergence #1. Sleek widened spread attributes to accept any variable, not just
+     * `$attributes` — but the widening was applied to the opening and slot patterns only, leaving
+     * `componentSelfClosingPattern()` on Laravel's `$attributes`. A self-closing tag spreading any
+     * other variable therefore matched no pattern at all and was emitted as literal text, rendering
+     * the raw tag into the page. The lexer applies one spread rule to all three grammars.
+     */
+    public function test_a_self_closing_tag_may_spread_any_variable()
+    {
+        $legacy = $this->outcome(new LegacyComponentTagCompiler(...$this->compilerArguments()), '<x-sleek::icon {{ $spread }} />');
+        $lexed = $this->outcome(new ComponentTagCompiler(...$this->compilerArguments()), '<x-sleek::icon {{ $spread }} />');
+
+        $this->assertSame('<x-sleek::icon {{ $spread }} />', $legacy, 'Expected the old passes to leave this uncompiled.');
+        $this->assertStringContainsString('##BEGIN-COMPONENT-CLASS##', $lexed);
+        $this->assertStringContainsString('$spread', $lexed);
+
+        // It now compiles to what the equivalent paired tag always did.
+        $paired = $this->outcome(new ComponentTagCompiler(...$this->compilerArguments()), '<x-sleek::icon {{ $spread }}></x-sleek::icon>');
+
+        $this->assertSame(
+            $paired,
+            str_replace("\n@endComponentClass##END-COMPONENT-CLASS##", ' @endComponentClass##END-COMPONENT-CLASS##', $lexed)
+        );
+    }
+
+    /**
+     * Deliberate divergence #2: the regex passes compiled every self-closing tag before any opening
+     * tag, so with several unresolvable components the reported one depended on which pass reached
+     * it first. Emission is now in document order, so the first offender is reported.
      */
     public function test_unresolvable_components_are_reported_in_document_order()
     {

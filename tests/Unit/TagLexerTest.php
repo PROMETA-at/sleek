@@ -56,6 +56,20 @@ class TagLexerTest extends TestCase
         $this->assertSame(' @class(["a" => foo(bar(1)), "b" => true]) ', $token->attributes);
     }
 
+    public function test_spread_attributes_accept_any_variable_in_every_grammar()
+    {
+        foreach ([
+            '<x-alert {{ $spread }} />' => TagToken::COMPONENT_SELF_CLOSE,
+            '<x-alert {{ $spread }}>' => TagToken::COMPONENT_OPEN,
+            '<x-slot:foo {{ $spread }}>' => TagToken::SLOT_OPEN,
+        ] as $source => $kind) {
+            $token = $this->onlyTag($source);
+
+            $this->assertSame($kind, $token->kind, "Expected [{$source}] to lex as {$kind}.");
+            $this->assertStringContainsString('{{ $spread }}', $token->attributes);
+        }
+    }
+
     public function test_a_dangling_arrow_prevents_the_tag_from_closing()
     {
         // `->` before `>` is what the old patterns' lookbehind guarded against; nothing here forms

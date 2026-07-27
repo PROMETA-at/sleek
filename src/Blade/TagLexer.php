@@ -10,14 +10,13 @@ namespace Prometa\Sleek\Blade;
  * re-derivation: the token stream must mark exactly the spans the regexes would have replaced,
  * warts included, so compiled output stays byte-identical.
  *
- * Two warts worth naming, because they look like bugs here:
+ * One wart is preserved deliberately, because it looks like a bug here: tag recognition is attempted
+ * in the order the old passes ran — slot open, then self-closing component, then opening component —
+ * since that order is what decides which grammar applies. A `<x-slot ... />` therefore lexes as a
+ * *component* named `slot`, exactly as before.
  *
- * - Tag recognition is attempted in the order the old passes ran — slot open, then self-closing
- *   component, then opening component — because that is what decides which grammar applies. A
- *   `<x-slot ... />` therefore lexes as a *component* named `slot`, exactly as before.
- * - The three grammars differ in which attribute forms they accept: self-closing components only
- *   accept a `{{ $attributes... }}` spread, while opening components and slots accept any
- *   `{{ $var }}` echo (a Sleek widening of the upstream patterns).
+ * The grammars are otherwise near-identical: they differ in their terminator, and in two
+ * alternatives the slot pattern never grew (the `:$var` shorthand, and `%` in attribute names).
  *
  * Anything that does not form a valid tag stays literal text, mirroring a regex non-match.
  */
@@ -310,7 +309,7 @@ class TagLexer
             }
         }
 
-        if (($end = $this->matchEcho($value, $cursor, $length, $mode === self::MODE_SELF_CLOSE)) !== null) {
+        if (($end = $this->matchEcho($value, $cursor, $length)) !== null) {
             $ends[] = $end;
         }
 
@@ -380,10 +379,10 @@ class TagLexer
     }
 
     /**
-     * `{{ $... }}`. Self-closing components only accept the `$attributes` spread; the other two
-     * grammars take any variable.
+     * `{{ $... }}` — a spread attribute. Any variable will do, not just `$attributes`; Sleek widened
+     * this so a component can forward a bag it assembled itself.
      */
-    protected function matchEcho(string $value, int $cursor, int $length, bool $spreadOnly): ?int
+    protected function matchEcho(string $value, int $cursor, int $length): ?int
     {
         if (substr_compare($value, '{{', $cursor, 2) !== 0) {
             return null;
@@ -392,10 +391,6 @@ class TagLexer
         $start = $this->skipWhitespace($value, $cursor + 2, $length);
 
         if (($value[$start] ?? '') !== '$') {
-            return null;
-        }
-
-        if ($spreadOnly && substr_compare($value, 'attributes', $start + 1, 10) !== 0) {
             return null;
         }
 

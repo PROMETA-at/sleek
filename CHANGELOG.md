@@ -15,6 +15,9 @@
   (`bind="$value, $entity"`), instead of a runtime fatal deep in the row loop.
 - Scoped slots with more than one attribute now compile correctly (the name/attributes split no longer breaks on
   commas inside the attribute array).
+- **Self-closing tags can spread any variable.** `<x-icon {{ $spread }} />` matched no compiler pattern and was
+  emitted as literal text — the raw tag rendered into the page. Spreading a variable other than `$attributes` now
+  works on self-closing tags, as it always did on paired tags and slots.
 
 ### Changed
 - **Side effects in inactive tab slot bodies** (counters, `@push`, `@once`) no longer run on initial load — they

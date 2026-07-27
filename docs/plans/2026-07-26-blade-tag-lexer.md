@@ -134,14 +134,35 @@ Derived from the current patterns — port behavior, don't re-derive:
 Implemented as `src/Blade/TagLexer.php` (lexer), `src/Blade/TagToken.php`, `src/Blade/TagTree.php`
 (pairing/attribution) and the `emit*()` methods on `src/Blade/ComponentTagCompiler.php`.
 
-**Byte-identity holds** on all 77 shipped templates and 70 edge-case inputs
-(`tests/Unit/TagLexerDifferentialTest.php`). One deliberate difference, covered by its own test:
-when a template contains *several* unresolvable components, the reported one changes. The regex
-pipeline compiled every self-closing tag before any opening tag, so the error came from whichever
-pass reached an unresolvable component first; emission is now in document order, so the first
-offender in the source is reported. Templates that compile at all are unaffected.
+**Byte-identity holds** on all 77 shipped templates and the edge-case corpus
+(`tests/Unit/TagLexerDifferentialTest.php`). Two deliberate differences, each covered by its own test:
+
+1. **Self-closing tags can spread any variable.** Sleek had widened spread attributes from
+   `{{ $attributes }}` to any `{{ $var }}` in the opening and slot patterns, but
+   `componentSelfClosingPattern()` was still upstream Laravel's verbatim — so
+   `<x-icon {{ $spread }} />` matched *no* pattern and fell through to the output as literal text,
+   rendering the raw tag into the page. The lexer applies one spread rule to all three grammars.
+   The harness caught this only because it was asked to: byte-identity locked the bug in until the
+   asymmetry was questioned.
+2. **Error reporting order.** With *several* unresolvable components in one template, the reported
+   one changes — the regex pipeline compiled every self-closing tag before any opening tag, so the
+   error came from whichever pass reached one first; emission is now in document order. Templates
+   that compile at all are unaffected.
 
 Scaling is linear, as intended: 21 KB / 1000 tags → 1.0 ms, 340 KB / 16 000 tags → 18.6 ms.
+
+**Measured, not taken further:** fusing the three passes into generators / `LazyCollection` was
+evaluated and rejected. Attribution + emission traversal together cost 0.77 ms of a 20.6 ms
+pipeline (<4%), a fused generator was *slower* than array-build-plus-two-walks (1.98 vs 1.84 ms per
+16 000 tokens), and `LazyCollection` cost 29.8 ms — it would more than double compile time.
+Streaming would also force output to be emitted before a later tag can abort the compile.
+
+The one real inefficiency left is in the tag matcher, not the iteration: every *opening* tag runs a
+full failed self-closing DFS first, because that is the pass order the regexes ran in. Measured at
+0.037 ms/KB for self-closing tags vs 0.074 ms/KB for opening ones — a 2× tax on the commonest tag
+shape. Now that the spread rule is unified, `MODE_OPEN` and `MODE_SELF_CLOSE` differ *only* in their
+terminator, so a single scan with a terminator predicate accepting either would collapse the two
+without the re-validation step that would otherwise be needed. Not attempted here.
 
 Known divergence not chased, because no real template can hit it: the regex passes ran
 `compileSlots()` over the whole document first, so a slot tag buried inside another tag's quoted

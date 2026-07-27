@@ -1,8 +1,12 @@
 <?php namespace Prometa\Sleek\Views;
 
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\View\ComponentAttributeBag;
+use Stringable;
 
-class CallableComponentSlot
+use function Prometa\Sleek\capture;
+
+class CallableComponentSlot implements Htmlable, Stringable
 {
     /**
      * The slot attribute bag.
@@ -14,7 +18,7 @@ class CallableComponentSlot
     /**
      * The slot contents.
      *
-     * @var string
+     * @var callable
      */
     protected $callable;
 
@@ -48,5 +52,23 @@ class CallableComponentSlot
 
     public function __invoke() {
         return call_user_func($this->callable, ...func_get_args());
+    }
+
+    /**
+     * Render the slot by invoking it with no arguments.
+     *
+     * Only meaningful for zero-argument (deferred) slots; invoking a
+     * parameterized slot without its arguments is a usage error regardless.
+     *
+     * @return string
+     */
+    public function toHtml()
+    {
+        return capture($this->callable);
+    }
+
+    public function __toString(): string
+    {
+        return $this->toHtml();
     }
 }

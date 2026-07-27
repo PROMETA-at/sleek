@@ -1,6 +1,5 @@
 @props(['keyField' => 'tab', 'default' => null, 'clientSideNavigation' => false, 'htmx' => true])
 @php
-    use Illuminate\View\ComponentSlot;
     use function Prometa\Sleek\capture;
     use Prometa\Sleek\Tabs\{Tab, TabCollection, TabsContext};
 
@@ -13,10 +12,10 @@
     $tabsContext = new TabsContext($keyField);
     $tabs = new TabCollection(
         $tabSlots
-            ->map(fn (ComponentSlot $slot, $key) => tap(
+            ->map(fn ($slot, $key) => tap(
                 new Tab(
                     $key,
-                    $slot->toHtml(),
+                    $key === $activeSlot ? $slot->toHtml() : '',
                     $slot->attributes->get('href', request()->urlWithQuery([$keyField => $key])),
                     $__laravel_slots["label" . Str::studly($key)] ?? $slot->attributes->get('label', ''),
                     $key === $activeSlot,

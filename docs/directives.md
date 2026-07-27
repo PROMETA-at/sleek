@@ -163,3 +163,74 @@ With the force flag, your template code gets much cleaner:
 
 No `isset`, no type checks, just clean conditional rendering. The slot attributes are safely
 accessible too, so you can forward them right onto your wrapper elements.
+
+## Scoped Slots (`scopedSlots()`)
+
+A normal Blade slot body runs *at the call site*, before your component ever sees it. That's usually fine, but it
+means two things you can't fix from inside the component: an inactive tab's expensive query still runs, and a slot
+you intend to call yourself (once per table row, say) has no way to receive arguments unless the consumer opts in
+with `bind`. Sleek's tabs and entity-table solve both by registering their slots as *scoped* — the slot compiles
+to a closure instead of eager output. The same mechanism is open to your own components:
+
+```php
+// In your service provider's boot(), inside callAfterResolving('blade.compiler', ...):
+$bladeCompiler->scopedSlots('acme::accordion*', 'panel-*');
+$bladeCompiler->scopedSlots('acme::data-grid', 'cell-*', params: '$value, $row');
+```
+
+That's it. Now any `panel-*` slot written inside an `<x-acme::accordion>` (or any preset matching
+`acme::accordion*`) defers until your component invokes it, and any `cell-*` slot inside `<x-acme::data-grid>`
+becomes a callable that receives `$value, $row`.
+
+There are two modes, and the difference is whether your component hands the slot any arguments:
+
+### Zero-argument mode
+
+Leave `params` off and matching slots compile to argument-less closures. Nothing new appears in scope — the body
+sees exactly the variables it would have seen as a plain slot — it just doesn't *run* until you render it. This is
+the tabs case: the consumer writes an ordinary-looking slot and never learns it became lazy.
+
+```blade
+<x-acme::accordion>
+    <x-slot:panel-billing label="Billing">
+        {{ $account->invoiceHistory() }}  {{-- only runs when this panel is shown --}}
+    </x-slot:panel-billing>
+</x-acme::accordion>
+```
+
+Inside your component, invoke the slot when you want its output — Sleek's `CallableComponentSlot` renders with
+`{{ $panelBilling }}` or `$panelBilling->toHtml()`. Adding a `bind` to a zero-argument slot is a **compile-time
+error**: it could only ever fail at runtime, so we catch it early.
+
+### Parameterized mode
+
+Pass `params` and the consumer keeps writing `bind` explicitly — naming what they receive. This is the
+entity-table case:
+
+```blade
+<x-acme::data-grid :rows="$orders" :columns="['total']">
+    <x-slot:cell-total bind="$value, $row">
+        <strong>{{ money($value) }}</strong> for {{ $row->customer }}
+    </x-slot:cell-total>
+</x-acme::data-grid>
+```
+
+Forget the `bind` and you get a **compile-time error** that suggests the exact attribute to write
+(`bind="$value, $row"`) — the string you passed as `params`. Note the design rule at work here: the compiler
+never invents variable names. In zero-argument mode it defers execution invisibly; in parameterized mode it makes
+the consumer name what they receive. It will never silently inject a `$value` you didn't declare.
+
+In both modes the slot body has full access to the surrounding template scope — variables defined before the slot
+are simply available inside it, and so is `$loop` inside a `@foreach`.
+
+### Two things to know
+
+- **Register at boot, before anything compiles.** Registrations live on the compiler, and slots consult them the
+  moment a template compiles. The `callAfterResolving('blade.compiler', ...)` hook is the right place.
+- **Changing registrations needs `php artisan view:clear`.** Because the compiled output of a template depends on
+  what's registered, adding, removing, or editing a `scopedSlots()` call means existing compiled views are stale.
+  Clear them and they recompile. This is the same caveat as any Blade compiler extension.
+
+Matching is graceful: a slot the registry doesn't recognize — a dynamically-named slot, a slot inside
+`<x-dynamic-component>`, anything the compiler can't attribute to a registered component — simply compiles the way
+it always did. You never get a *new* failure mode, only the scoped behavior where it applies.

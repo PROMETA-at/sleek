@@ -54,6 +54,12 @@ class SleekServiceProvider extends \Illuminate\Support\ServiceProvider
             $bladeCompiler->component('dynamic-component', DynamicComponent::class);
             $bladeCompiler->componentNamespace('Prometa\\Sleek\\Views\\Components', 'sleek');
             $bladeCompiler->anonymousComponentPath(__DIR__.'/../resources/views/bootstrap/components', 'bs');
+
+            // Scoped slots: tab bodies defer until their tab is active (covers the base component and
+            // all presets — consumer slots are written on the preset tag and forwarded at runtime),
+            // and entity-table column slots keep their explicit bind, now enforced at compile time.
+            $bladeCompiler->scopedSlots('sleek::tabs*', 'tab-*');
+            $bladeCompiler->scopedSlots('sleek::entity-table', 'column-*', params: '$value, $entity');
             $bladeCompiler->directive('forwardSlots', function () {
               return '<?php foreach ($__laravel_slots as $slotName => $slotContent) {
                 if ($slotName === "__default") continue;

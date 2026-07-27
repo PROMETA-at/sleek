@@ -227,6 +227,11 @@ For each column of each row, `sleek::entity-table` will look for a slot called `
 of the column to be rendered. If found, it will then call this callable slot, passing the extracted value of that column
 and the full row value as the first and second parameter respectively.
 
+Because the table hands your slot two arguments, the `bind` is required — and Sleek now enforces that at compile
+time. Forget it and you'll get a clear error naming exactly what to write (`bind="$value, $entity"`) instead of a
+runtime fatal deep inside the row loop. Your column body also has full access to the surrounding template scope:
+variables defined before the table are simply in scope inside the slot, with nothing to declare.
+
 In effect, this allows us to define custom markup for each column or even handle virtual columns where we ignore the
 extracted value and render custom html instead. For example, you might define an "actions" column that renders
 navigational links for each record:

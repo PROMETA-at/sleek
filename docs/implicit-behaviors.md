@@ -53,6 +53,7 @@ asking for them.
 |---|---|---|---|
 | Active tab | Query string parameter | `?tab=key` selects active tab | `key-field="custom"` |
 | Default tab | No query parameter | First tab is shown | `default="key"` |
+| Lazy tab bodies | Slot named `tab-*` | Only the active tab's body executes; inactive bodies never run until the tab is fetched | — |
 | HTMX loading | HTMX available | Tabs load via AJAX with fragment rendering | — |
 
 ## Breadcrumbs
@@ -68,3 +69,14 @@ asking for them.
 |---|---|---|
 | Loading spinner | Form submit | Submit button disabled, spinner shown (Alpine.js) |
 | Method/action guessing | `:model` present | Same rules as `entity-form` |
+
+## Scoped Slots
+
+| Behavior | Trigger | Rule | Override |
+|---|---|---|---|
+| Deferred tab bodies | `tab-*` slot inside `x-sleek::tabs*` | Slot compiles to a zero-argument closure; the body runs only when the tab is active | — |
+| Callable column slots | `column-*` slot inside `x-sleek::entity-table` | Slot compiles to a closure receiving `$value, $entity`; missing `bind` is a compile-time error | — |
+
+Both are driven by the same compiler registry (`scopedSlots()`), so the compiled output of a template depends
+on what's registered. After changing registrations — including upgrading Sleek — run `php artisan view:clear` so
+templates recompile. See [directives.md](directives.md) for registering your own scoped slots.

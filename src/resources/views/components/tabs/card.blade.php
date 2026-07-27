@@ -4,7 +4,7 @@
 <x-sleek::tabs {{ $attributes }}>
 @forwardSlots
 
-<x-slot bind="$tabs" use="$attributes, $nav, $content">
+<x-slot bind="$tabs">
     <x-bs::card hx-on::after-settle="this.querySelector(`a.nav-link#${event.detail.elt.id}-link`)?.tab.show()" {{ $attributes }}>
         <x-slot:header>
             <x-apply :hoc="$nav" base="bs::nav" :args="[$tabs]" class="nav-tabs card-header-tabs">

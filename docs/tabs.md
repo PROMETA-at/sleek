@@ -50,6 +50,32 @@ the same page (or you just want a more descriptive URL):
 
 Now the URL reads `?section=settings` instead of `?tab=settings`.
 
+## Lazy Tab Bodies
+
+Here's the part that makes tabs cheap: **only the active tab's body runs.** The other tab slots are never
+executed on the initial render — their aggregate queries, API calls, and heavy view fragments cost you nothing
+until someone actually opens the tab.
+
+```blade
+<x-sleek::tabs.pills>
+    <x-slot:tab-overview label="Overview">
+        {{ $order->summary }}
+    </x-slot:tab-overview>
+    <x-slot:tab-analytics label="Analytics">
+        {{-- This expensive aggregate only fires when the Analytics tab is the active one --}}
+        @foreach($order->hourlyRevenueBreakdown() as $bucket) ... @endforeach
+    </x-slot:tab-analytics>
+</x-sleek::tabs.pills>
+```
+
+On first load with the Overview tab active, `hourlyRevenueBreakdown()` is never called. When the user clicks
+Analytics, HTMX fetches that tab and the body runs then — the exact same moment the fragment is rendered. So any
+side effects inside a tab body (`@push`, `@once`, a counter, a log line) fire when the tab is *shown*, not when
+the page first loads. If you were relying on an inactive tab's body running eagerly, that no longer happens.
+
+This is why `$tab->content` in the headless API is only populated for the active tab — the contract was always
+lazy, and now the implementation matches it.
+
 If you want a specific tab to be active when no query parameter is present (instead of always defaulting to the
 first one), you can set `default`:
 

@@ -3,7 +3,7 @@
 <x-sleek::tabs {{ $attributes }}>
     @forwardSlots
 
-    <x-slot bind="$tabs" use="$flush, $attributes">
+    <x-slot bind="$tabs">
         @php
             if (!$attributes->has('id'))
                 $attributes['id'] = uuid_create();

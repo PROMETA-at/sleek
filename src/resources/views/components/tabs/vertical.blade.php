@@ -4,7 +4,7 @@
 <x-sleek::tabs {{ $attributes }}>
     @forwardSlots
 
-    <x-slot bind="$tabs" use="$nav, $content">
+    <x-slot bind="$tabs">
         <div class="d-flex align-items-start" hx-on::after-settle="this.querySelector(`a.nav-link#${event.detail.elt.id}-link`)?.tab.show()">
             <x-apply :hoc="$nav" base="bs::nav.pills" :args="[$tabs]" orientation="vertical">
                 @foreach($tabs as $tab)

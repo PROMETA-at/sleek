@@ -28,6 +28,21 @@ With this simple definition we get for free:
 
 There's a lot more to cover, but lets go through the above points for now:
 
+### Responsive Tables
+
+On screens up to `600px` wide, entity tables automagically collapse each row into a labelled card. The responsive
+rules only target tables rendered by `sleek::entity-table`, so other tables on the same page keep their own layout.
+
+If your application needs a different cutoff, set `$sleek-table-breakpoint` before importing Sleek's Sass entry point:
+
+```scss
+$sleek-table-breakpoint: 48rem;
+
+@import '../../vendor/prometa/sleek/src/resources/sass/app.scss';
+```
+
+The same breakpoint controls Sleek's compact pagination layout. Leave the variable unset to keep the default `600px`.
+
 ### Table Header Generation
 
 `sleek::entity-table` will use the provided `columns` array to generate the column headers for the table. The field

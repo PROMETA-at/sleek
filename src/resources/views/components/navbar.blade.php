@@ -1,6 +1,6 @@
 @props(['items' => null])
 
-<nav id="sidebarMenu" class="navbar navbar-expand-lg shadow-lg p-3 d-flex">
+<nav id="sidebarMenu" class="navbar navbar-expand-lg shadow-lg p-3 d-flex {{ $__data['sleek::navPosition'] === 'side' ? 'navbar-side' : 'navbar-top' }}">
     <a class="navbar-brand text-center" style="margin-right: 0" href="{{$__data['sleek::logo']['route'] ?? '/'}}">
         @if($__data['sleek::logo']['image'] ?? false)
             <img src="{{ $__data['sleek::logo']['image'] }}" alt="{{ env('APP_NAME') }}" style="height: 2rem; max-width: 100%">
@@ -115,41 +115,6 @@
     :is(#sidebarMenu) {
       background-color: var(--bs-primary);
     }
-
-    @if($__data['sleek::navPosition'] === 'side')
-        #mobileNavbar, #sidebarMenu ul.navbar-nav {
-          flex-direction: column;
-        }
-        @media only screen and (min-width: 799px) {
-          #sidebarMenu {
-            flex-direction: column;
-
-            justify-content: initial;
-            align-items: initial;
-            & .navbar-collapse {
-              flex-basis: initial;
-              align-items: initial;
-            }
-
-            & .account {
-              margin-top: auto;
-            }
-          }
-        }
-    @else
-        #sidebarMenu .account {
-          order: 10;
-        }
-        @media only screen and (min-width: 799px) {
-          #sidebarMenu .divider {
-            display: none;
-          }
-          #sidebarMenu .extra {
-            order: 3;
-            margin-left: auto;
-          }
-        }
-    @endif
 
     #sidebarMenu :is(.nav-item > .nav-link, .dropdown-toggle) {
       color: {{ $__data['sleek::theme']['colors']['primary-font-color'] ??  'white'}};

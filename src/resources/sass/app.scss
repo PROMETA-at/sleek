@@ -4,8 +4,66 @@
 @import "bootstrap/scss/mixins";
 
 $enable-negative-margins: true;
+$sleek-table-breakpoint: 600px !default;
 
 @import "bootstrap/scss/bootstrap";
+
+.layout {
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+}
+
+.navbar-side #mobileNavbar,
+.navbar-side ul.navbar-nav {
+    flex-direction: column;
+}
+
+// Keep the sidebar layout aligned with Bootstrap's navbar-expand-lg breakpoint.
+@include media-breakpoint-up(lg) {
+    .layout-side {
+        grid-template-columns: auto 1fr;
+        grid-template-rows: initial;
+
+        & > nav {
+            min-width: 20ch;
+            position: sticky;
+            top: 0;
+            max-height: 100vh;
+        }
+    }
+
+    .navbar-side {
+        flex-direction: column;
+        justify-content: initial;
+        align-items: initial;
+
+        .navbar-collapse {
+            flex-basis: initial;
+            align-items: initial;
+        }
+
+        .account {
+            margin-top: auto;
+        }
+    }
+
+    .navbar-top {
+        .account {
+            order: 10;
+        }
+
+        .divider {
+            display: none;
+        }
+
+        .extra {
+            order: 3;
+            margin-left: auto;
+        }
+    }
+}
 
 @each $color, $value in $theme-colors {
     .btn-#{$color} {
@@ -59,6 +117,81 @@ $enable-negative-margins: true;
 .breadcrumbs li:not(:last-child):after {
     content: '>';
     margin: 0 0.5em;
+}
+
+@media screen and (max-width: $sleek-table-breakpoint) {
+    .sleek-entity-table {
+        border: 0;
+
+        caption {
+            font-size: 1.3em;
+        }
+
+        thead {
+            border: none;
+            clip: rect(0 0 0 0);
+            height: 1px;
+            margin: -1px;
+            overflow: hidden;
+            padding: 0;
+            position: absolute;
+            width: 1px;
+        }
+
+        tbody {
+            display: block;
+        }
+
+        tr {
+            border-bottom: 3px solid #ddd;
+            display: block;
+            margin-bottom: .625em;
+        }
+
+        td {
+            border-bottom: 1px solid #ddd;
+            display: block;
+            font-size: .8em;
+            text-align: right;
+
+            &::before {
+                content: attr(data-label);
+                float: left;
+                font-weight: bold;
+                text-transform: uppercase;
+            }
+
+            &:last-child {
+                border-bottom: 0;
+            }
+        }
+    }
+
+    .sleek-pagination {
+        .pageLinkButtons,
+        .itemSelect,
+        .perPageText {
+            display: none !important;
+        }
+
+        .showingResults {
+            justify-content: flex-end !important;
+            align-items: flex-end !important;
+            width: 100%;
+        }
+
+        .nextPreviousButton {
+            justify-content: flex-start !important;
+            align-items: flex-start !important;
+            width: 100%;
+        }
+
+        .flex-fill.d-flex.align-items-center.gap-2.mb-2 {
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+        }
+    }
 }
 
 // Reset User-Agent nonsense

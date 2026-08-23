@@ -105,6 +105,10 @@ You can customize these routes using the Sleek-Facade:
 Sleek::authentication(['login' => '/custom-login', 'logout' => '/custom-logout']);
 ```
 
+### Responsive Navigation
+
+The sidebar and navbar expand together at Bootstrap's `lg` breakpoint. Sleek derives its sidebar styles from Bootstrap's Sass breakpoint map, so a Bootstrap build with a customized `lg` breakpoint keeps them aligned.
+
 If you do not need authentication routes, you can deactivate it as follows.
 
 ```php

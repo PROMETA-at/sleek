@@ -29,6 +29,17 @@ class EntityTableColumnSlotTest extends TestCase
         $this->assertStringContainsString('CELL:World', $html);
     }
 
+    public function test_entity_table_uses_the_scoped_responsive_class()
+    {
+        $html = $this->blade(
+            '<x-sleek::entity-table :entities="$rows" :columns="[\'title\']" />',
+            ['rows' => $this->rows]
+        )->__toString();
+
+        $this->assertStringContainsString('class="table table-hover table-striped sleek-entity-table"', $html);
+        $this->assertStringNotContainsString('<style>', $html);
+    }
+
     public function test_column_slot_without_bind_is_a_compile_error_naming_the_expected_bind()
     {
         $this->expectException(InvalidArgumentException::class);

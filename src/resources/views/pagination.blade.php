@@ -1,4 +1,4 @@
-<nav class="d-flex justify-items-center justify-content-between">
+<nav class="sleek-pagination d-flex justify-items-center justify-content-between">
   <div class="d-flex justify-content-between flex-fill d-sm-none nextPreviousButton">
     <ul class="pagination" >
       {{-- Previous Page Link --}}
@@ -102,28 +102,3 @@
     </div>
   </div>
 </nav>
-<style>
-    @media screen and (max-width: 600px) {
-        .pageLinkButtons, .itemSelect, .perPageText {
-            display: none !important;
-        }
-
-        .showingResults {
-            justify-content: flex-end !important;
-            align-items: flex-end !important;
-            width: 100%;
-        }
-
-        .nextPreviousButton {
-            justify-content: flex-start !important;
-            align-items: flex-start !important;
-            width: 100%;
-        }
-
-        .flex-fill.d-flex.align-items-center.gap-2.mb-2 {
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: space-between !important;
-        }
-    }
-</style>

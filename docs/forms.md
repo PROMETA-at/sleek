@@ -21,6 +21,32 @@ when applicable:
 <x-sleek::form method="GET" :action="route('some.get.route')"></x-sleek::form>
 ```
 
+### Optional Alpine Enhancements
+
+The forms above are fully functional HTML forms on their own. They submit natively, include CSRF protection when
+applicable, and handle method spoofing without JavaScript. Sleek emits Alpine directives as an optional progressive
+enhancement, but does not install Alpine for you.
+
+To enable the enhancements, install Alpine in your application and start it from your JavaScript entry point:
+
+```bash
+npm install alpinejs
+```
+
+```js
+import Alpine from 'alpinejs'
+
+window.Alpine = Alpine
+
+Alpine.start()
+```
+
+With Alpine running, `sleek::form` automagically tracks whether its named fields are dirty and exposes that state to
+the form. Add `prevent-unload` to warn users before they leave a dirty form. On submission, it also sets a loading
+state; `sleek::modal-form` uses that state to disable its default submit button and show its spinner.
+
+Without Alpine, those bindings stay inert and native form submission continues to work. That's it.
+
 ### Defining Form Fields
 
 To define a form field, sleek provides the `sleek::form-field` component. This component wraps the standard HTML-Input,

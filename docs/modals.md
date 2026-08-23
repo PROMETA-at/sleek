@@ -115,7 +115,7 @@ spinner. Lets break it down — here's what happened automagically:
 - The **fields** were generated as form fields, with values pulled from `$user`
 - A **header** was created from the `title` prop
 - **Cancel** and **Submit** buttons were rendered in the footer with translated labels
-- The submit button gets **disabled with a spinner** on form submission via Alpine.js
+- With Alpine enabled, the submit button gets **disabled with a spinner** on form submission
 
 Lets go through the important parts:
 
@@ -188,9 +188,10 @@ For more complex layouts, skip the `fields` attribute and use the default slot (
 
 ### Loading State
 
-When the form is submitted, Alpine.js kicks in: the submit button becomes disabled and a spinner appears next to the
-label. This happens automatically — no configuration needed. The spinner is hidden by default and only activates once
-Alpine.js has initialized, so there is no flash of spinner on page load.
+When Alpine is enabled, submitting the form disables the default submit button and shows a spinner next to the label.
+The spinner is hidden until Alpine initializes, so there is no flash on page load. Alpine is an optional progressive
+enhancement: without it, the modal form still submits natively, while the loading state stays inactive. See
+[Optional Alpine Enhancements](forms.md#optional-alpine-enhancements) to install and register Alpine.
 
 ### Button Labels
 

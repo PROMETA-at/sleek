@@ -67,7 +67,7 @@ asking for them.
 
 | Behavior | Trigger | Rule |
 |---|---|---|
-| Loading spinner | Form submit | Submit button disabled, spinner shown (Alpine.js) |
+| Loading spinner | Form submit with Alpine enabled | Submit button disabled, spinner shown |
 | Method/action guessing | `:model` present | Same rules as `entity-form` |
 
 ## Scoped Slots

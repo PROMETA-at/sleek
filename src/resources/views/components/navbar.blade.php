@@ -1,4 +1,4 @@
-@props(['items' => null])
+@props(['items' => null, 'guard' => null])
 
 <nav id="sidebarMenu" class="navbar navbar-expand-lg shadow-lg p-3 d-flex {{ $__data['sleek::navPosition'] === 'side' ? 'navbar-side' : 'navbar-top' }}">
     <a class="navbar-brand text-center" style="margin-right: 0" href="{{$__data['sleek::logo']['route'] ?? '/'}}">
@@ -89,7 +89,7 @@
                             @endif
 
                             <ul class="navbar-nav">
-                                @if(Auth::check())
+                                @if(Auth::guard($guard ?? $__data['sleek::authentication']['guard'] ?? null)->check())
                                     <li class="nav-item">
                                         <a class="nav-link" href="{{ $__data['sleek::authentication']['logout'] ?? route('logout') }}">
                                             <i class="bi bi-box-arrow-in-left"></i> Logout

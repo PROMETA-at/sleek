@@ -105,6 +105,28 @@ You can customize these routes using the Sleek-Facade:
 Sleek::authentication(['login' => '/custom-login', 'logout' => '/custom-logout']);
 ```
 
+Apps using a non-default authentication guard can set it alongside those routes. The navbar then checks that guard when choosing the Login or Logout action:
+
+```php
+Sleek::authentication([
+    'guard' => 'admin',
+    'login' => '/admin/login',
+    'logout' => '/admin/logout',
+]);
+```
+
+The authentication builder exposes the same guard setting through `Sleek::authentication()->guard('admin')->build()`.
+
+The default remains Laravel's default guard. For a single navbar, pass `guard` directly or through `nav:guard` on `sleek::view`:
+
+```blade
+<x-sleek::navbar guard="admin" />
+
+<x-sleek::view nav:guard="admin">
+    <div>Admin dashboard</div>
+</x-sleek::view>
+```
+
 ### Responsive Navigation
 
 The sidebar and navbar expand together at Bootstrap's `lg` breakpoint. Sleek derives its sidebar styles from Bootstrap's Sass breakpoint map, so a Bootstrap build with a customized `lg` breakpoint keeps them aligned.

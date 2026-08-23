@@ -42,6 +42,12 @@ class SleekAuthenticationBuilder
         return $this;
     }
 
+    public function guard(?string $guard): self
+    {
+        $this->config['guard'] = $guard;
+        return $this;
+    }
+
     public function build(): array
     {
         if (!empty($this->config)) {

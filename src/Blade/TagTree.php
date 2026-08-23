@@ -34,6 +34,7 @@ class TagTree
                     break;
 
                 case TagToken::SLOT_OPEN:
+                case TagToken::SLOT_SELF_CLOSE:
                     // Slots never enter the stack: a slot nested inside another slot still belongs
                     // to the nearest enclosing *component*, and self-closing components have no
                     // body to nest anything in.

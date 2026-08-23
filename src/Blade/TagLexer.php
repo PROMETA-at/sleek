@@ -10,13 +10,8 @@ namespace Prometa\Sleek\Blade;
  * re-derivation: the token stream must mark exactly the spans the regexes would have replaced,
  * warts included, so compiled output stays byte-identical.
  *
- * One wart is preserved deliberately, because it looks like a bug here: a slot tag is tried before a
- * component tag, and the slot grammar never accepted `/>`, so `<x-slot ... />` lexes as a
- * *component* named `slot` — exactly as it did when `compileSlots()` ran as its own earlier pass.
- *
- * Beyond that the two grammars differ only in their terminator and in two alternatives the slot
- * pattern never grew (the `:$var` shorthand, and `%` in attribute names), so opening and
- * self-closing components share one scan.
+ * The two grammars differ only in two alternatives the slot pattern never grew (the `:$var`
+ * shorthand, and `%` in attribute names), so opening and self-closing tags share one scan.
  *
  * Anything that does not form a valid tag stays literal text, mirroring a regex non-match.
  */
@@ -133,9 +128,11 @@ class TagLexer
                         continue;
                     }
 
+                    $selfClosing = $this->terminatorAt($value, $end, self::MODE_SLOT) === self::TERMINATOR_SELF_CLOSE;
+
                     return new TagToken(
-                        TagToken::SLOT_OPEN,
-                        substr($value, $offset, $end + 1 - $offset),
+                        $selfClosing ? TagToken::SLOT_SELF_CLOSE : TagToken::SLOT_OPEN,
+                        substr($value, $offset, ($end + ($selfClosing ? 2 : 1)) - $offset),
                         $offset,
                         attributes: substr($value, $attributeStart, $end - $attributeStart),
                         inlineName: $inlineName,
@@ -435,12 +432,11 @@ class TagLexer
      *
      * The opening form refuses a `>` preceded by `/`, `=` or `-`; that guard is what keeps `=>` and
      * `->` inside unquoted bound expressions — and the `/` of a self-closing tag — from being read
-     * as the end of an opening tag. Slots only ever terminated with `>`.
+     * as the end of an opening tag.
      */
     protected function terminatorAt(string $value, int $cursor, string $mode): ?string
     {
-        if ($mode === self::MODE_COMPONENT
-            && ($value[$cursor] ?? '') === '/'
+        if (($value[$cursor] ?? '') === '/'
             && ($value[$cursor + 1] ?? '') === '>') {
             return self::TERMINATOR_SELF_CLOSE;
         }

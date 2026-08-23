@@ -50,6 +50,8 @@ class ComponentTagCompiler extends \Illuminate\View\Compilers\ComponentTagCompil
                 TagToken::COMPONENT_SELF_CLOSE => $this->emitComponent($token)."\n@endComponentClass##END-COMPONENT-CLASS##",
                 TagToken::COMPONENT_CLOSE => ' @endComponentClass##END-COMPONENT-CLASS##',
                 TagToken::SLOT_OPEN => $this->emitSlot($token, $registry),
+                // Delimit @endslot from immediately following text without rendering whitespace.
+                TagToken::SLOT_SELF_CLOSE => $this->emitSlot($token, $registry).' @endslot<?php ?>',
                 TagToken::SLOT_CLOSE => ' @endslot',
             };
         }

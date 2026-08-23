@@ -68,6 +68,12 @@ class ScopedSlotCompilerTest extends TestCase
         $this->assertStringContainsString('$__env->endSlot(); ?>', $compiled);
     }
 
+    public function test_self_closing_slot_renders_as_an_empty_attribute_carrier()
+    {
+        $this->blade('<x-bs::card><x-slot:header class="marker" /></x-bs::card>')
+            ->assertSee('class="card-header marker"', false);
+    }
+
     /**
      * A slot in an unregistered component still compiles to the plain, eager form. `@slot` is already
      * lowered to `$__env->slot(...)` by the time compileString returns, so we assert on that.
@@ -79,6 +85,16 @@ class ScopedSlotCompilerTest extends TestCase
     {
         $compiled = Blade::compileString(
             '<x-sleek::tabs.pills><x-slot:tab-one label="One">A</x-slot:tab-one></x-sleek::tabs.pills>'
+        );
+
+        $this->assertStringContainsString('function ($__scope) use ($__env)', $compiled);
+        $this->assertStringContainsString('get_defined_vars()', $compiled);
+    }
+
+    public function test_self_closing_registered_slot_keeps_its_component_attribution()
+    {
+        $compiled = Blade::compileString(
+            '<x-sleek::tabs><x-slot:tab-one label="One" /></x-sleek::tabs>'
         );
 
         $this->assertStringContainsString('function ($__scope) use ($__env)', $compiled);

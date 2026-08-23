@@ -20,6 +20,8 @@ class TagToken
 
     public const SLOT_OPEN = 'slot-open';
 
+    public const SLOT_SELF_CLOSE = 'slot-self-close';
+
     public const SLOT_CLOSE = 'slot-close';
 
     /**

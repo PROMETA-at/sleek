@@ -60,7 +60,6 @@ class TagLexerDifferentialTest extends TestCase
             '<x-slot:foo name="bar">x</x-slot>',
             '<x-slot:foo :name="$bar">x</x-slot>',
             '<x-slot name=foo>x</x-slot>',
-            '<x-slot:foo />',
             '<x-slot>x</x-slot >',
             '</x-slot junk here>',
 
@@ -174,7 +173,21 @@ class TagLexerDifferentialTest extends TestCase
     }
 
     /**
-     * Deliberate divergence #2: the regex passes compiled every self-closing tag before any opening
+     * Deliberate divergence #2. Sleek supports empty named slots as attribute carriers, while the
+     * upstream grammar mistakes the self-closing slot tag for a component named `slot:foo`.
+     */
+    public function test_a_self_closing_slot_compiles_like_an_empty_paired_slot()
+    {
+        $compiler = new ComponentTagCompiler(...$this->compilerArguments());
+
+        $selfClosing = $this->outcome($compiler, '<x-slot:foo class="marker" />');
+        $paired = $this->outcome($compiler, '<x-slot:foo class="marker"></x-slot>');
+
+        $this->assertSame($paired.'<?php ?>', $selfClosing);
+    }
+
+    /**
+     * Deliberate divergence #3: the regex passes compiled every self-closing tag before any opening
      * tag, so with several unresolvable components the reported one depended on which pass reached
      * it first. Emission is now in document order, so the first offender is reported.
      */

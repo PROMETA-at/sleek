@@ -141,13 +141,12 @@ class TagLexerTest extends TestCase
         $this->assertSame('"bar"', $combined->slotName);
     }
 
-    public function test_a_self_closing_slot_is_not_a_slot()
+    public function test_a_self_closing_slot_is_a_slot()
     {
-        // The slot pattern never accepted `/>`, so such a tag fell through to the component passes.
         $token = $this->onlyTag('<x-slot:foo />');
 
-        $this->assertSame(TagToken::COMPONENT_SELF_CLOSE, $token->kind);
-        $this->assertSame('slot:foo', $token->name);
+        $this->assertSame(TagToken::SLOT_SELF_CLOSE, $token->kind);
+        $this->assertSame('foo', $token->inlineName);
     }
 
     public function test_slot_closing_tag_tolerates_junk_before_the_bracket()

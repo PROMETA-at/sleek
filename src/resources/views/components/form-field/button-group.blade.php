@@ -6,11 +6,11 @@
                    type="{{ $mode }}"
                    class="btn-check"
                    name="{{ $name }}{{ $mode === 'checkbox' ? '[]' : '' }}"
-                   id="{{ $name }}-{{ $value }}"
+                   id="{{ $id }}-{{ $value }}"
                    autocomplete="off"
                    @if($selectedValue === $value) checked @endif
             >
-            <label class="btn btn-outline-primary" for="{{ $name }}-{{ $value }}">{{ $label }}</label>
+            <label class="btn btn-outline-primary" for="{{ $id }}-{{ $value }}">{{ $label }}</label>
         @endforeach
     </div>
 </x-sleek::form-field.wrapper>

@@ -9,6 +9,26 @@ Sleek features a dynamic page layout system, offering a strong default while sta
 </x-sleek::view>
 ```
 
+### Page Titles
+
+Give each page a title and Sleek automagically adds the application name:
+
+```blade
+<x-sleek::view title="Orders">
+    <div>Your orders go here</div>
+</x-sleek::view>
+```
+
+The document title becomes `Orders – Your App`. Without a `title`, it remains the application name from `config('app.name')`. The navbar brand always uses that application name, so it stays consistent across pages.
+
+When you use the document component directly, pass the same `title` prop:
+
+```blade
+<x-sleek::document title="Orders">
+    {{-- page content --}}
+</x-sleek::document>
+```
+
 ### Defining Assets
 
 Assets are defined via the Sleek-Facade in your ServiceProvider:

@@ -1,4 +1,4 @@
-@aware(['name', 'label', 'type'])
+@aware(['id', 'name', 'label', 'type'])
 @props(['floating' => false])
 
 @php
@@ -8,7 +8,7 @@
 
 @if(!$floating && isset($label))
   <label
-    for="{{ $name ?? $label->attributes->get('for') ?? '' }}"
+    for="{{ $id ?? $label->attributes->get('for') ?? '' }}"
     {{ $label->attributes->class('form-label') }}
   >
     {{ $label }}
@@ -18,9 +18,9 @@
 <div class="input-group mb-2 @error($name) has-validation @enderror" {{ $inputGroup->attributes }}>
   {{ $before ?? null }}
   @if($floating)
-    <x-bs::form-floating :class="$errors->has($name) ? 'is-invalid' : ''">
+    <x-bs::form-floating :class="$errors->has($name) ? 'is-invalid' : ''" :label-for="$id ?? $label->attributes->get('for') ?? ''">
       @isset($label)
-        @slot('label', $label, ['for' => $name ?? $label->attributes->get('for') ?? '', ...$label->attributes])
+        @slot('label', $label)
       @endisset
       {{ $slot }}
     </x-bs::form-floating>

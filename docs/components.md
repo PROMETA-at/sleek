@@ -1,5 +1,53 @@
 # UI Components
 
+## Grid
+
+Sleek wraps Bootstrap's row and column primitives with responsive props, so common grids stay readable without
+assembling utility classes by hand:
+
+```blade
+<x-bs::row cols="1" gutter="3">
+    <x-slot:md cols="2" />
+    <x-slot:xl cols="4" />
+
+    @foreach ($products as $product)
+        <x-bs::col>
+            {{ $product->name }}
+        </x-bs::col>
+    @endforeach
+</x-bs::row>
+```
+
+Props on the component apply at the base breakpoint. Add an empty named slot to override them at a responsive
+breakpoint; the slot accepts the same props as its component:
+
+```blade
+<x-bs::row
+    cols="1"
+    gutter="2"
+    align="center"
+>
+    <x-slot:md cols="2" />
+    <x-slot:lg gutter="4" justify="between" />
+    <x-slot:xl gutter-x="5" />
+
+    <x-bs::col
+        span="12"
+        align="center"
+    >
+        <x-slot:md span="6" order="first" />
+        <x-slot:xl offset="1" />
+
+        Content
+    </x-bs::col>
+</x-bs::row>
+```
+
+The row component supports `cols`, `gutter`, `gutter-x`, `gutter-y`, `align`, and `justify`. The column component
+supports `span`, `offset`, `order`, and `align`; `span="auto"`, `order="first"`, and `order="last"` map directly to
+their Bootstrap counterparts. With no sizing props, a row renders as `row` and a column as `col`. Any additional
+attributes and classes are merged onto the rendered `<div>`.
+
 ## Icons
 
 Ever get tired of typing `<i class="bi bi-envelope"></i>` over and over? Sleek's icon component turns that into

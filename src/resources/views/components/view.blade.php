@@ -1,6 +1,6 @@
-@props(['document' => null, 'page' => null, 'layout' => null, 'nav-items' => null])
+@props(['document' => null, 'page' => null, 'layout' => null, 'nav-items' => null, 'title' => null])
 
-<x-dynamic-component :component="$document ?? $__data['sleek::document'] ?? 'sleek::document'" {{ $attributes->thatStartWith('document:')->trimPrefix('document:') }}>
+<x-dynamic-component :component="$document ?? $__data['sleek::document'] ?? 'sleek::document'" :title="$title" {{ $attributes->thatStartWith('document:')->trimPrefix('document:') }}>
   <x-dynamic-component :component="$page ?? $__data['sleek::page'] ?? 'sleek::page'" {{ $attributes->thatStartWith('page:')->trimPrefix('page:') }} {{ $attributes->thatStartWith('nav:') }}>
     @foreach($__laravel_slots as $slotName => $s)
       @if(str_starts_with($slotName, 'page:'))

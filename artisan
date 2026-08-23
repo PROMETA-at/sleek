@@ -1,0 +1,9 @@
+#!/usr/bin/env php
+<?php
+
+/*
+ * Artisan shim for package development: proxies to orchestra/testbench's CLI,
+ * which boots the workbench app with the Sleek service provider registered.
+ * Exists so tools that expect a Laravel app root (e.g. laravel/lsp) work here.
+ */
+require __DIR__.'/vendor/bin/testbench';

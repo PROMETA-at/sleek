@@ -2,11 +2,10 @@
 
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\View\ComponentAttributeBag;
-use Stringable;
 
 use function Prometa\Sleek\capture;
 
-class CallableComponentSlot implements Htmlable, Stringable
+class CallableComponentSlot implements Htmlable
 {
     /**
      * The slot attribute bag.
@@ -65,10 +64,5 @@ class CallableComponentSlot implements Htmlable, Stringable
     public function toHtml()
     {
         return capture($this->callable);
-    }
-
-    public function __toString(): string
-    {
-        return $this->toHtml();
     }
 }

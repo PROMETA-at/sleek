@@ -4,6 +4,7 @@ namespace Tests\Unit;
 
 use Illuminate\Http\Request;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Prometa\Sleek\Views\CallableComponentSlot;
 use Tests\Fixtures\SideEffect;
 use Tests\TestCase;
 
@@ -81,6 +82,32 @@ class TabsLazyRenderTest extends TestCase
         $this->assertStringContainsString('CONTENT_TWO', $html);
         $this->assertSame(0, SideEffect::count('one'));
         $this->assertSame(1, SideEffect::count('two'));
+    }
+
+    public function test_parameterized_nav_slot_passes_through_component_attributes_without_rendering()
+    {
+        $template = '<x-sleek::tabs.card>'
+            . '<x-slot:nav bind="$content, $tabs">'
+            . '<div data-custom-nav-count="{{ $tabs->count() }}">{{ $content }}</div>'
+            . '</x-slot:nav>'
+            . '<x-slot:tab-one label="One">CONTENT_ONE</x-slot:tab-one>'
+            . '</x-sleek::tabs.card>';
+
+        $html = $this->blade($template)->__toString();
+
+        $this->assertStringContainsString('data-custom-nav-count="1"', $html);
+        $this->assertStringContainsString('CONTENT_ONE', $html);
+    }
+
+    public function test_zero_argument_callable_slot_remains_renderable_by_blade_echo()
+    {
+        $slot = new CallableComponentSlot(function () {
+            echo 'RENDERED_SLOT';
+        });
+
+        $html = $this->blade('{{ $slot }}', compact('slot'))->__toString();
+
+        $this->assertSame('RENDERED_SLOT', $html);
     }
 
     #[DataProvider('presetProvider')]

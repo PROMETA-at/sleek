@@ -8,6 +8,9 @@
   parameterized (`bind`-driven). Available to your own components. See `docs/directives.md`.
 
 ### Fixed
+- **Parameterized callable slots can be passed into child components.** Callable slots no longer opt into
+  PHP string coercion, which caused Laravel to render them without their required arguments while sanitizing
+  bound component attributes such as a customized tabs `nav` slot.
 - **Inactive tab bodies no longer execute.** Tab slot bodies now run only for the active tab, matching the
   long-documented `$tab->content` contract. Aggregate queries and API calls in inactive tabs cost nothing until
   the tab is shown.
